@@ -1,13 +1,15 @@
 /* ============================================================
    Español para brasileños — motor de la aplicación
    SPA sin dependencias: router por hash + progreso en localStorage
+   Estructura: cada lección tiene su propia evaluación;
+   cada módulo tiene además un mazo de tarjetas de repaso.
    ============================================================ */
 (function () {
   "use strict";
 
   var META = window.COURSE_META;
   var MODULES = window.COURSE_MODULES || [];
-  var STORAGE_KEY = "espanol-brasilenos-progress";
+  var STORAGE_KEY = "espanol-brasilenos-progress-v2";
 
   /* ---------- Progreso ---------- */
   function loadProgress() {
@@ -28,12 +30,13 @@
     progress.lessons[lessonKey(mid, lid)] = true;
     saveProgress(progress);
   }
-  function quizResult(mid) { return progress.quizzes[mid] || null; }
-  function setQuizResult(mid, score, total) {
+  function quizResult(mid, lid) { return progress.quizzes[lessonKey(mid, lid)] || null; }
+  function setQuizResult(mid, lid, score, total) {
+    var key = lessonKey(mid, lid);
     var pct = Math.round((score / total) * 100);
-    var prev = progress.quizzes[mid];
+    var prev = progress.quizzes[key];
     if (!prev || pct > prev.pct) {
-      progress.quizzes[mid] = { score: score, total: total, pct: pct, passed: pct >= META.passScore };
+      progress.quizzes[key] = { score: score, total: total, pct: pct, passed: pct >= META.passScore };
     } else if (pct >= META.passScore && !prev.passed) {
       prev.passed = true;
     }
@@ -41,17 +44,18 @@
   }
 
   function moduleStats(mod) {
-    var done = 0;
-    mod.lessons.forEach(function (l) { if (isLessonDone(mod.id, l.id)) done++; });
-    var quiz = quizResult(mod.id);
-    var quizPassed = !!(quiz && quiz.passed);
-    var totalItems = mod.lessons.length + 1;
-    var doneItems = done + (quizPassed ? 1 : 0);
+    var lessonsDone = 0, quizzesPassed = 0;
+    mod.lessons.forEach(function (l) {
+      if (isLessonDone(mod.id, l.id)) lessonsDone++;
+      var q = quizResult(mod.id, l.id);
+      if (q && q.passed) quizzesPassed++;
+    });
+    var totalItems = mod.lessons.length * 2;
+    var doneItems = lessonsDone + quizzesPassed;
     return {
-      lessonsDone: done,
-      quizPassed: quizPassed,
-      quiz: quiz,
-      pct: Math.round((doneItems / totalItems) * 100),
+      lessonsDone: lessonsDone,
+      quizzesPassed: quizzesPassed,
+      pct: totalItems ? Math.round((doneItems / totalItems) * 100) : 0,
       complete: doneItems === totalItems
     };
   }
@@ -59,9 +63,9 @@
   function overallPct() {
     var total = 0, done = 0;
     MODULES.forEach(function (mod) {
-      total += mod.lessons.length + 1;
+      total += mod.lessons.length * 2;
       var s = moduleStats(mod);
-      done += s.lessonsDone + (s.quizPassed ? 1 : 0);
+      done += s.lessonsDone + s.quizzesPassed;
     });
     return total ? Math.round((done / total) * 100) : 0;
   }
@@ -83,6 +87,10 @@
     for (var i = 0; i < MODULES.length; i++) if (MODULES[i].id === mid) return MODULES[i];
     return null;
   }
+  function findLessonIndex(mod, lid) {
+    for (var i = 0; i < mod.lessons.length; i++) if (mod.lessons[i].id === lid) return i;
+    return -1;
+  }
 
   function updateTopbar() {
     var pct = overallPct();
@@ -99,15 +107,18 @@
   /* ---------- Vista: inicio ---------- */
   function viewHome() {
     var pct = overallPct();
-    var lessonsTotal = MODULES.reduce(function (n, m) { return n + m.lessons.length; }, 0);
+    var lessonsTotal = 0, questionsTotal = 0;
+    MODULES.forEach(function (m) {
+      lessonsTotal += m.lessons.length;
+      m.lessons.forEach(function (l) { questionsTotal += l.quiz.questions.length; });
+    });
     var cta;
     if (pct === 0) {
       cta = '<a class="btn white" href="#/module/m1">Comenzar el curso</a>';
     } else if (courseComplete()) {
       cta = '<a class="btn white" href="#/certificate">Ver mi certificado 🎓</a>';
     } else {
-      var next = nextPending();
-      cta = '<a class="btn white" href="' + next + '">Continuar donde lo dejé (' + pct + '%)</a>';
+      cta = '<a class="btn white" href="' + nextPending() + '">Continuar donde lo dejé (' + pct + '%)</a>';
     }
 
     var cards = MODULES.map(function (mod, i) {
@@ -124,7 +135,7 @@
           '<h3>' + esc(mod.title) + '</h3>' +
           '<p>' + esc(mod.description) + '</p>' +
           '<div class="card-foot">' +
-            '<span>' + mod.lessons.length + ' lecciones + quiz</span>' + badge +
+            '<span>' + mod.lessons.length + ' lecciones · ' + mod.lessons.length + ' evaluaciones · tarjetas</span>' + badge +
           '</div>' +
           '<div class="bar' + (s.complete ? " done" : "") + '"><span style="width:' + s.pct + '%"></span></div>' +
         '</div>'
@@ -136,7 +147,7 @@
         '<div class="kicker">Curso contrastivo · portugués (BR) → español · nivel ' + esc(META.level) + '</div>' +
         '<h1>' + esc(META.title) + ': ' + esc(META.subtitle) + '</h1>' +
         '<p>' + esc(META.description) + '</p>' +
-        '<div class="meta"><span>' + MODULES.length + ' módulos</span><span>' + lessonsTotal + ' lecciones</span><span>' + MODULES.length + ' cuestionarios</span><span>Certificado al completar</span></div>' +
+        '<div class="meta"><span>' + MODULES.length + ' módulos</span><span>' + lessonsTotal + ' lecciones</span><span>' + lessonsTotal + ' evaluaciones (' + questionsTotal + ' preguntas)</span><span>Tarjetas de repaso</span><span>Certificado al completar</span></div>' +
         '<p style="margin-top:22px">' + cta + '</p>' +
       '</div>' +
       '<h2 class="section-title">Programa del curso</h2>' +
@@ -148,9 +159,11 @@
     for (var i = 0; i < MODULES.length; i++) {
       var mod = MODULES[i];
       for (var j = 0; j < mod.lessons.length; j++) {
-        if (!isLessonDone(mod.id, mod.lessons[j].id)) return "#/lesson/" + mod.id + "/" + mod.lessons[j].id;
+        var l = mod.lessons[j];
+        if (!isLessonDone(mod.id, l.id)) return "#/lesson/" + mod.id + "/" + l.id;
+        var q = quizResult(mod.id, l.id);
+        if (!q || !q.passed) return "#/quiz/" + mod.id + "/" + l.id;
       }
-      if (!moduleStats(mod).quizPassed) return "#/quiz/" + mod.id;
     }
     return "#/";
   }
@@ -162,9 +175,15 @@
     var idx = MODULES.indexOf(mod);
     var s = moduleStats(mod);
 
-    var rows = mod.lessons.map(function (l, i) {
+    var rows = "";
+    mod.lessons.forEach(function (l, i) {
       var done = isLessonDone(mod.id, l.id);
-      return (
+      var q = quizResult(mod.id, l.id);
+      var qPassed = !!(q && q.passed);
+      var quizLabel = q
+        ? (qPassed ? "Aprobada · mejor nota: " + q.pct + "%" : "Último intento: " + q.pct + "% · se necesita " + META.passScore + "%")
+        : "Sin intentos";
+      rows +=
         '<div class="lesson-row' + (done ? " done" : "") + '" onclick="location.hash=\'#/lesson/' + mod.id + "/" + l.id + '\'">' +
           '<div class="check">✓</div>' +
           '<div class="lesson-info">' +
@@ -172,23 +191,28 @@
             '<h4>' + esc(l.title) + '</h4>' +
           '</div>' +
           '<span class="dur">' + esc(l.duration) + '</span>' +
-        '</div>'
-      );
-    }).join("");
-
-    var quizLabel = s.quiz
-      ? (s.quizPassed ? "Aprobado · mejor nota: " + s.quiz.pct + "%" : "Último intento: " + s.quiz.pct + "% · se necesita " + META.passScore + "%")
-      : "Sin intentos todavía";
-
-    rows +=
-      '<div class="lesson-row quiz-row' + (s.quizPassed ? " done" : "") + '" onclick="location.hash=\'#/quiz/' + mod.id + '\'">' +
-        '<div class="check">✓</div>' +
-        '<div class="lesson-info">' +
-          '<div class="lesson-type">Evaluación</div>' +
-          '<h4>' + esc(mod.quiz.title) + '</h4>' +
         '</div>' +
-        '<span class="dur">' + esc(quizLabel) + '</span>' +
-      '</div>';
+        '<div class="lesson-row quiz-row' + (qPassed ? " done" : "") + '" onclick="location.hash=\'#/quiz/' + mod.id + "/" + l.id + '\'">' +
+          '<div class="check">✓</div>' +
+          '<div class="lesson-info">' +
+            '<div class="lesson-type">Evaluación ' + (i + 1) + '</div>' +
+            '<h4>Evaluación: ' + esc(l.title) + '</h4>' +
+          '</div>' +
+          '<span class="dur">' + esc(quizLabel) + '</span>' +
+        '</div>';
+    });
+
+    if (mod.flashcards && mod.flashcards.length) {
+      rows +=
+        '<div class="lesson-row fc-row" onclick="location.hash=\'#/flashcards/' + mod.id + '\'">' +
+          '<div class="check">🃏</div>' +
+          '<div class="lesson-info">' +
+            '<div class="lesson-type">Estudio libre</div>' +
+            '<h4>Tarjetas de repaso del módulo</h4>' +
+          '</div>' +
+          '<span class="dur">' + mod.flashcards.length + ' tarjetas</span>' +
+        '</div>';
+    }
 
     render(
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Módulo ' + (idx + 1) + '</div>' +
@@ -206,16 +230,13 @@
   function viewLesson(mid, lid) {
     var mod = findModule(mid);
     if (!mod) return viewHome();
-    var li = -1;
-    for (var i = 0; i < mod.lessons.length; i++) if (mod.lessons[i].id === lid) li = i;
+    var li = findLessonIndex(mod, lid);
     if (li < 0) return viewModule(mid);
     var lesson = mod.lessons[li];
     var idx = MODULES.indexOf(mod);
 
     var prevHash = li > 0 ? "#/lesson/" + mid + "/" + mod.lessons[li - 1].id : "#/module/" + mid;
     var prevLabel = li > 0 ? "← Lección anterior" : "← Volver al módulo";
-    var nextHash = li < mod.lessons.length - 1 ? "#/lesson/" + mid + "/" + mod.lessons[li + 1].id : "#/quiz/" + mid;
-    var nextLabel = li < mod.lessons.length - 1 ? "Completar y continuar →" : "Completar e ir al cuestionario →";
 
     render(
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + (idx + 1) + '</a><span class="sep">›</span>Lección ' + (li + 1) + '</div>' +
@@ -226,23 +247,26 @@
         '<div class="lesson-content">' + lesson.content + '</div>' +
         '<div class="lesson-nav">' +
           '<a class="btn ghost" href="' + prevHash + '">' + prevLabel + '</a>' +
-          '<button class="btn" id="btn-complete">' + nextLabel + '</button>' +
+          '<button class="btn" id="btn-complete">Completar e ir a la evaluación →</button>' +
         '</div>' +
       '</div>'
     );
 
     document.getElementById("btn-complete").addEventListener("click", function () {
       markLessonDone(mid, lid);
-      location.hash = nextHash;
+      location.hash = "#/quiz/" + mid + "/" + lid;
     });
   }
 
-  /* ---------- Vista: cuestionario ---------- */
-  function viewQuiz(mid) {
+  /* ---------- Vista: evaluación de la lección ---------- */
+  function viewQuiz(mid, lid) {
     var mod = findModule(mid);
     if (!mod) return viewHome();
+    var li = findLessonIndex(mod, lid);
+    if (li < 0) return viewModule(mid);
+    var lesson = mod.lessons[li];
     var idx = MODULES.indexOf(mod);
-    var quiz = mod.quiz;
+    var quiz = lesson.quiz;
     var answers = new Array(quiz.questions.length).fill(null);
 
     var qHtml = quiz.questions.map(function (q, qi) {
@@ -263,27 +287,26 @@
       );
     }).join("");
 
-    var best = quizResult(mid);
+    var best = quizResult(mid, lid);
     var bestNote = best
-      ? '<span> · Tu mejor nota: <strong>' + best.pct + '%</strong>' + (best.passed ? " (aprobado ✓)" : "") + '</span>'
+      ? '<span> · Tu mejor nota: <strong>' + best.pct + '%</strong>' + (best.passed ? " (aprobada ✓)" : "") + '</span>'
       : "";
 
     render(
-      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + (idx + 1) + '</a><span class="sep">›</span>Cuestionario</div>' +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + (idx + 1) + '</a><span class="sep">›</span>Evaluación ' + (li + 1) + '</div>' +
       '<div class="quiz-shell narrow" style="margin:0 auto">' +
-        '<h1>' + esc(quiz.title) + '</h1>' +
-        '<p class="quiz-sub">' + quiz.questions.length + ' preguntas · nota mínima para aprobar: ' + META.passScore + '%' + bestNote + '</p>' +
+        '<h1>Evaluación: ' + esc(lesson.title) + '</h1>' +
+        '<p class="quiz-sub">' + quiz.questions.length + ' preguntas · nota mínima: ' + META.passScore + '%' + bestNote + '</p>' +
         '<div id="quiz-result"></div>' +
         '<form id="quiz-form">' + qHtml + '</form>' +
         '<div class="lesson-nav">' +
-          '<a class="btn ghost" href="#/module/' + mid + '">← Volver al módulo</a>' +
+          '<a class="btn ghost" href="#/lesson/' + mid + "/" + lid + '">← Releer la lección</a>' +
           '<button class="btn" id="btn-submit">Enviar respuestas</button>' +
         '</div>' +
       '</div>'
     );
 
-    var opts = app.querySelectorAll(".opt");
-    opts.forEach(function (opt) {
+    app.querySelectorAll(".opt").forEach(function (opt) {
       opt.addEventListener("click", function () {
         if (opt.classList.contains("locked")) return;
         var qi = +opt.getAttribute("data-q");
@@ -304,44 +327,114 @@
 
       var score = 0;
       quiz.questions.forEach(function (q, qi) {
-        var correct = q.correct;
         app.querySelectorAll('.opt[data-q="' + qi + '"]').forEach(function (o) {
           var oi = +o.getAttribute("data-o");
           o.classList.add("locked");
           o.querySelector("input").disabled = true;
-          if (oi === correct) o.classList.add("correct");
+          if (oi === q.correct) o.classList.add("correct");
           else if (oi === answers[qi]) o.classList.add("incorrect");
         });
         var ex = document.getElementById("qe" + qi);
         ex.textContent = q.explanation;
         ex.style.display = "block";
-        if (answers[qi] === correct) score++;
+        if (answers[qi] === q.correct) score++;
       });
 
-      setQuizResult(mid, score, quiz.questions.length);
+      setQuizResult(mid, lid, score, quiz.questions.length);
       var pct = Math.round((score / quiz.questions.length) * 100);
       var passed = pct >= META.passScore;
-      var resultBox = document.getElementById("quiz-result");
-      var nextMod = MODULES[idx + 1];
-      var nextBtn = passed
-        ? (nextMod
-            ? '<a class="btn green" href="#/module/' + nextMod.id + '">Siguiente módulo →</a>'
-            : (courseComplete()
-                ? '<a class="btn green" href="#/certificate">Ver mi certificado 🎓</a>'
-                : '<a class="btn green" href="#/">Volver al programa</a>'))
-        : '<button class="btn" onclick="location.reload()">Intentar de nuevo</button>';
-      resultBox.innerHTML =
+
+      var nextBtn;
+      if (passed) {
+        if (li < mod.lessons.length - 1) {
+          nextBtn = '<a class="btn green" href="#/lesson/' + mid + "/" + mod.lessons[li + 1].id + '">Siguiente lección →</a>';
+        } else {
+          var nextMod = MODULES[idx + 1];
+          nextBtn = '<a class="btn ghost" href="#/flashcards/' + mid + '" style="margin-right:8px">Repasar con tarjetas 🃏</a>' +
+            (nextMod
+              ? '<a class="btn green" href="#/module/' + nextMod.id + '">Siguiente módulo →</a>'
+              : (courseComplete()
+                  ? '<a class="btn green" href="#/certificate">Ver mi certificado 🎓</a>'
+                  : '<a class="btn green" href="#/">Volver al programa</a>'));
+        }
+      } else {
+        nextBtn = '<button class="btn" onclick="location.reload()">Intentar de nuevo</button>';
+      }
+
+      document.getElementById("quiz-result").innerHTML =
         '<div class="quiz-result ' + (passed ? "pass" : "fail") + '">' +
           '<div class="score">' + pct + '%</div>' +
           '<p>' + (passed
-            ? "¡Aprobado! Acertaste " + score + " de " + quiz.questions.length + "."
+            ? "¡Aprobada! Acertaste " + score + " de " + quiz.questions.length + "."
             : "Acertaste " + score + " de " + quiz.questions.length + ". Necesitas " + META.passScore + "% — revisa las explicaciones y vuelve a intentarlo.") + '</p>' +
           '<p style="margin-top:14px">' + nextBtn + '</p>' +
         '</div>';
       document.getElementById("btn-submit").style.display = "none";
       updateTopbar();
-      resultBox.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("quiz-result").scrollIntoView({ behavior: "smooth" });
     });
+  }
+
+  /* ---------- Vista: tarjetas de repaso ---------- */
+  function viewFlashcards(mid) {
+    var mod = findModule(mid);
+    if (!mod || !mod.flashcards || !mod.flashcards.length) return viewModule(mid);
+    var idx = MODULES.indexOf(mod);
+    var cards = mod.flashcards.slice();
+    var pos = 0, flipped = false;
+
+    render(
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + (idx + 1) + '</a><span class="sep">›</span>Tarjetas</div>' +
+      '<div class="fc-shell narrow" style="margin:0 auto">' +
+        '<h1>🃏 Tarjetas de repaso · Módulo ' + (idx + 1) + '</h1>' +
+        '<p class="quiz-sub">Haz clic en la tarjeta para girarla. Primero intenta responder en voz alta.</p>' +
+        '<div class="flashcard" id="fc-card" role="button" tabindex="0" aria-label="Tarjeta de repaso, haz clic para girar">' +
+          '<div class="fc-inner" id="fc-inner">' +
+            '<div class="fc-face fc-front"><div class="fc-label">PT · ¿Cómo se dice?</div><div class="fc-text" id="fc-front"></div></div>' +
+            '<div class="fc-face fc-back"><div class="fc-label">ES</div><div class="fc-text" id="fc-back"></div></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fc-controls">' +
+          '<button class="btn ghost" id="fc-prev">← Anterior</button>' +
+          '<span class="fc-counter" id="fc-counter"></span>' +
+          '<button class="btn ghost" id="fc-next">Siguiente →</button>' +
+        '</div>' +
+        '<div class="fc-controls">' +
+          '<button class="btn ghost" id="fc-shuffle">🔀 Mezclar</button>' +
+          '<a class="btn" href="#/module/' + mid + '">Volver al módulo</a>' +
+        '</div>' +
+      '</div>'
+    );
+
+    var inner = document.getElementById("fc-inner");
+    function show() {
+      flipped = false;
+      inner.classList.remove("flipped");
+      document.getElementById("fc-front").innerHTML = cards[pos].front;
+      document.getElementById("fc-back").innerHTML = cards[pos].back;
+      document.getElementById("fc-counter").textContent = (pos + 1) + " / " + cards.length;
+    }
+    document.getElementById("fc-card").addEventListener("click", function () {
+      flipped = !flipped;
+      inner.classList.toggle("flipped", flipped);
+    });
+    document.getElementById("fc-card").addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); flipped = !flipped; inner.classList.toggle("flipped", flipped); }
+    });
+    document.getElementById("fc-prev").addEventListener("click", function () {
+      pos = (pos - 1 + cards.length) % cards.length; show();
+    });
+    document.getElementById("fc-next").addEventListener("click", function () {
+      pos = (pos + 1) % cards.length; show();
+    });
+    document.getElementById("fc-shuffle").addEventListener("click", function () {
+      for (var i = cards.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = cards[i]; cards[i] = cards[j]; cards[j] = t;
+      }
+      pos = 0; show();
+    });
+    show();
   }
 
   /* ---------- Vista: certificado ---------- */
@@ -352,8 +445,10 @@
         var s = moduleStats(mod);
         if (!s.complete) {
           var parts = [];
-          if (s.lessonsDone < mod.lessons.length) parts.push((mod.lessons.length - s.lessonsDone) + " lecciones");
-          if (!s.quizPassed) parts.push("el cuestionario");
+          var lessonsLeft = mod.lessons.length - s.lessonsDone;
+          var quizzesLeft = mod.lessons.length - s.quizzesPassed;
+          if (lessonsLeft) parts.push(lessonsLeft + (lessonsLeft === 1 ? " lección" : " lecciones"));
+          if (quizzesLeft) parts.push(quizzesLeft + (quizzesLeft === 1 ? " evaluación" : " evaluaciones"));
           missing.push("<li><a href=\"#/module/" + mod.id + "\">Módulo " + (i + 1) + " · " + esc(mod.title) + "</a> — falta: " + parts.join(" y ") + "</li>");
         }
       });
@@ -361,7 +456,7 @@
         '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Certificado</div>' +
         '<div class="locked-box">' +
           '<h2>🔒 Tu certificado te está esperando</h2>' +
-          '<p>Para desbloquearlo, completa todas las lecciones y aprueba todos los cuestionarios (≥ ' + META.passScore + '%):</p>' +
+          '<p>Para desbloquearlo, completa todas las lecciones y aprueba todas las evaluaciones (≥ ' + META.passScore + '%):</p>' +
           '<ul>' + missing.join("") + '</ul>' +
         '</div>'
       );
@@ -370,6 +465,7 @@
 
     var name = progress.name || "";
     var dateStr = new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+    var lessonsTotal = MODULES.reduce(function (n, m) { return n + m.lessons.length; }, 0);
 
     render(
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Certificado</div>' +
@@ -382,7 +478,7 @@
         '<h1>' + esc(META.title) + '<br><small style="font-size:.65em">' + esc(META.subtitle) + '</small></h1>' +
         '<p>Se certifica que</p>' +
         '<div class="cert-name" id="cert-display">' + (name ? esc(name) : "________________") + '</div>' +
-        '<p>completó con éxito los ' + MODULES.length + ' módulos del curso contrastivo de español para hablantes de portugués brasileño, aprobando todas las evaluaciones con nota mínima de ' + META.passScore + '%.</p>' +
+        '<p>completó con éxito los ' + MODULES.length + ' módulos y las ' + lessonsTotal + ' evaluaciones del curso contrastivo de español para hablantes de portugués brasileño, con nota mínima de ' + META.passScore + '% en cada una.</p>' +
         '<p class="cert-date">' + dateStr + ' · ¡Enhorabuena! 🎓</p>' +
       '</div>' +
       '<p style="text-align:center;margin-top:22px"><button class="btn ghost" onclick="window.print()">Imprimir / guardar PDF</button></p>'
@@ -403,7 +499,8 @@
     if (parts.length === 0) return viewHome();
     if (parts[0] === "module" && parts[1]) return viewModule(parts[1]);
     if (parts[0] === "lesson" && parts[1] && parts[2]) return viewLesson(parts[1], parts[2]);
-    if (parts[0] === "quiz" && parts[1]) return viewQuiz(parts[1]);
+    if (parts[0] === "quiz" && parts[1] && parts[2]) return viewQuiz(parts[1], parts[2]);
+    if (parts[0] === "flashcards" && parts[1]) return viewFlashcards(parts[1]);
     if (parts[0] === "certificate") return viewCertificate();
     viewHome();
   }

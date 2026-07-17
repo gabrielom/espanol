@@ -256,7 +256,76 @@ a:hover { text-decoration: underline; }
 }
 .lesson-row h4 { font-size: .98rem; font-weight: 600; }
 .lesson-row .dur { font-size: .8rem; color: var(--ink-soft); white-space: nowrap; }
-.lesson-row.quiz-row { border-left: 4px solid var(--blue); }
+.lesson-row.quiz-row {
+  border-left: 4px solid var(--blue);
+  margin-left: 34px;
+  background: #fbfcfe;
+}
+.lesson-row.fc-row { border-left: 4px solid var(--amber); }
+.lesson-row.fc-row .check { border: none; font-size: 1.1rem; color: inherit; }
+
+/* ---------- Flashcards ---------- */
+.fc-shell { text-align: center; }
+.fc-shell h1 { font-size: 1.45rem; margin-bottom: 6px; }
+.fc-shell .quiz-sub { color: var(--ink-soft); margin-bottom: 22px; font-size: .92rem; }
+.flashcard {
+  perspective: 1200px;
+  max-width: 560px;
+  height: 300px;
+  margin: 0 auto 20px;
+  cursor: pointer;
+  outline-offset: 4px;
+}
+.fc-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform .5s;
+  transform-style: preserve-3d;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fc-inner { transition: none; }
+}
+.fc-inner.flipped { transform: rotateY(180deg); }
+.fc-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px;
+}
+.fc-front { background: var(--card); }
+.fc-back {
+  background: var(--blue);
+  color: #fff;
+  transform: rotateY(180deg);
+}
+.fc-label {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  opacity: .65;
+  font-weight: 700;
+}
+.fc-text { font-size: 1.25rem; font-weight: 600; line-height: 1.45; }
+.fc-text small { display: block; font-size: .85rem; font-weight: 400; opacity: .85; margin-top: 8px; }
+.fc-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.fc-counter { font-size: .9rem; color: var(--ink-soft); min-width: 64px; font-variant-numeric: tabular-nums; }
 
 /* ---------- Lesson page ---------- */
 .lesson-shell {

@@ -18,34 +18,42 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
-También funciona tal cual en GitHub Pages (Settings → Pages → deploy from branch).
+También funciona tal cual en GitHub Pages (el workflow `.github/workflows/pages.yml` la
+despliega automáticamente en cada push a `main`).
 
-El progreso (lecciones completadas, notas de los cuestionarios y el nombre del certificado)
+El progreso (lecciones completadas, notas de las evaluaciones y el nombre del certificado)
 se guarda en el `localStorage` del navegador.
+
+## Tres formas de estudiar
+
+1. **Lecciones** — 42 lecciones contrastivas (6 por módulo) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
+2. **Evaluaciones** — una por lección (42 en total, 270 preguntas), corregidas con explicación en cada pregunta; se aprueban con **70 %**.
+3. **Tarjetas de repaso** — un mazo por módulo (142 tarjetas) con volteo y mezcla, para repaso espaciado.
+
+Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea un **certificado imprimible**.
 
 ## Programa
 
 | Módulo | Tema | Lecciones |
 |---|---|---|
-| 1 🎭 | **Falsos amigos: las trampas clásicas** — embarazada, exquisito, taller, vaso/copa/taza, todavía, apenas, tirar/sacar/quitar | 3 + quiz |
-| 2 🗣️ | **Pronunciación: borra el acento brasileño** — vocales sin reducción ni nasalidad, t/d sin palatalizar, la jota /x/, la rr, s siempre sorda, sílabas tónicas que cambian (policía, teléfono, cerebro) | 3 + quiz |
-| 3 ⚙️ | **Gramática contrastiva I** — muy vs. mucho, apócope (buen, gran, primer), artículos y las dos únicas contracciones, heterogenéricos (el árbol, la sangre, el viaje) | 4 + quiz |
-| 4 🔗 | **Pronombres y estructuras** — colocación pronominal, clíticos obligatorios (le/lo/la, se lo), el mapa tú/vos/usted vs. você, gustar y su familia | 4 + quiz |
-| 5 ⏳ | **Tiempos verbales divergentes** — "he comido" ≠ "tenho comido", el futuro de subjuntivo muerto (cuando vaya / si puedo), el infinitivo personal inexistente (para que hagamos), subjuntivo fino (aunque, ojalá, a lo mejor) | 4 + quiz |
-| 6 🧭 | **Preposiciones, regencias y conectores** — la "a" personal, regencias que cambian (necesitar Ø, enamorarse de, preocuparse por), desde hace, pero vs. sino | 3 + quiz |
-| 7 🏆 | **Del avanzado al nativo** — hay vs. tener, tener hambre/prisa/sueño, el mapa completo de "ficar" (quedarse/ponerse/volverse/hacerse), expresiones idiomáticas, saudade, registro y léxico por país | 4 + quiz |
-
-Cada módulo termina con un cuestionario corregido con explicaciones; se aprueba con **70 %**.
-Al completar todos los módulos se desbloquea un **certificado imprimible**.
+| 1 🎭 | **Falsos amigos** — alto riesgo (embarazada, exquisito), trabajo y casa, mesa y restaurante (vaso/copa/taza, salsa/perejil), cuerpo y salud (pelo/vello, constipado), verbos traicioneros (procurar, contestar, exprimir, prender), adverbios parciales (todavía, apenas, de repente) | 6 + 6 evaluaciones |
+| 2 🗣️ | **Pronunciación** — vocales firmes sin nasalidad, t/d/s/b-v, jota /x/ y rr, heterotónicos y tildes (policía, teléfono, cerebro), ritmo silábico y entonación, taller práctico con pares mínimos y trabalenguas | 6 + 6 |
+| 3 ⚙️ | **Gramática contrastiva I** — muy/mucho y tan/tanto, apócope, artículos y contracciones, días/horas y el neutro "lo", heterogenéricos masculinos (-aje) y femeninos (-umbre) con plurales especiales | 6 + 6 |
+| 4 🔗 | **Pronombres y estructuras** — colocación pronominal, le/lo/la, se lo + duplicación + leísmo, tú/vos/usted vs. você, gustar y su familia, reflexivos divergentes (irse, quedarse, se accidental) | 6 + 6 |
+| 5 ⏳ | **Tiempos verbales** — he comido ≠ tenho comido, futuro de subjuntivo muerto (cuando vaya / si puedo), infinitivo personal inexistente, subjuntivo fino (aunque, ojalá, a lo mejor), imperativo completo, perífrasis (soler, volver a, llevar + gerundio) | 6 + 6 |
+| 6 🧭 | **Preposiciones y conectores** — la "a" personal, regencias que cambian, hace/desde hace/dentro de, por y para a fondo, pero/sino y conectores cultos, preposiciones espaciales (debajo de, doblar a la izquierda) | 6 + 6 |
+| 7 🏆 | **Del avanzado al nativo** — hay vs. tener, el mapa completo de "ficar", ser y estar finos (está casado, estar aburrido), expresiones idiomáticas y saudade, muletillas y cortesía por país, léxico regional coherente | 6 + 6 |
 
 ## Estructura del código
 
 ```
 index.html            página única (SPA con router por hash)
-css/styles.css        diseño inspirado en Coursera
+css/styles.css        diseño inspirado en Coursera + tarjetas de repaso
 js/course.js          metadatos del curso
-js/app.js             motor: router, progreso, cuestionarios, certificado
-js/modules/module*.js contenido de cada módulo (lecciones en HTML + quiz en JSON)
+js/app.js             motor: router, progreso, evaluaciones, tarjetas, certificado
+js/modules/module*.js contenido de cada módulo:
+                        lessons[] → { title, duration, content (HTML), quiz { questions[] } }
+                        flashcards[] → { front, back }
 ```
 
 Para añadir o editar contenido basta tocar los archivos `js/modules/module*.js` —
