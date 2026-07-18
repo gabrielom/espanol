@@ -61,8 +61,11 @@ a:hover { text-decoration: underline; }
   color: var(--blue);
   white-space: nowrap;
   cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.brand small { color: var(--ink-soft); font-weight: 400; display: block; font-size: .7rem; line-height: 1; }
+.brand small { color: var(--ink-soft); font-weight: 400; display: block; font-size: .7rem; line-height: 1; overflow: hidden; text-overflow: ellipsis; }
 .topbar-progress {
   margin-left: auto;
   display: flex;
@@ -71,6 +74,7 @@ a:hover { text-decoration: underline; }
   font-size: .85rem;
   color: var(--ink-soft);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .topbar .bar { width: 140px; }
 
@@ -153,7 +157,7 @@ a:hover { text-decoration: underline; }
 .section-title { font-size: 1.3rem; margin: 8px 0 18px; }
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 20px;
 }
 .card {
@@ -535,7 +539,9 @@ a:hover { text-decoration: underline; }
   .lesson-shell, .quiz-shell { padding: 24px 18px; }
   .hero { padding: 28px 22px; }
   .hero h1 { font-size: 1.5rem; }
-  .topbar .bar { width: 80px; }
+  .topbar-inner { padding: 12px 14px; gap: 10px; }
+  .topbar-progress span:first-child { display: none; } /* oculta el rótulo "Progreso" */
+  .topbar .bar { width: 72px; }
   .certificate { padding: 30px 16px; }
 }
 
