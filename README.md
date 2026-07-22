@@ -48,7 +48,8 @@ Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea 
 
 ```
 index.html            página única (SPA con router por hash)
-css/styles.css        diseño inspirado en Coursera + tarjetas de repaso
+css/styles.css        sistema visual minimalista (tokens tinta/acento, JetBrains Mono)
+fonts/                JetBrains Mono servida localmente (sin CDNs: la app es 100% autocontenida)
 js/course.js          metadatos del curso
 js/app.js             motor: router, progreso, evaluaciones, tarjetas, certificado
 js/modules/module*.js contenido de cada módulo:
