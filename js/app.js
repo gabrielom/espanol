@@ -19,10 +19,30 @@
       return { lessons: {}, quizzes: {}, name: "" };
     }
   }
-  function saveProgress(p) {
+  function saveLocal(p) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
   }
+  function saveProgress(p) {
+    saveLocal(p);
+    if (window.Sync && Sync.isConfigured()) {
+      Sync.schedulePush(function () { return progress; }, function (m) { applyMerged(m, false); });
+    }
+  }
   var progress = loadProgress();
+
+  // Reconcilia el progreso fusionado (de otro dispositivo) con el actual.
+  // Solo re-renderiza si algo cambió y no estamos a mitad de una evaluación.
+  function applyMerged(merged, allowRerender) {
+    var changed = JSON.stringify(merged) !== JSON.stringify(progress);
+    progress = merged;
+    saveLocal(merged);
+    if (changed && allowRerender && !/^#\/quiz\//.test(location.hash)) route();
+  }
+  function pullAndMerge() {
+    if (window.Sync && Sync.isConfigured()) {
+      Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); });
+    }
+  }
 
   function lessonKey(mid, lid) { return mid + "-" + lid; }
   function isLessonDone(mid, lid) { return !!progress.lessons[lessonKey(mid, lid)]; }
@@ -513,6 +533,75 @@
     });
   }
 
+  /* ---------- Vista: sincronización ---------- */
+  function syncSetupHtml(tokenUrl) {
+    return (
+      '<div class="sync-panel">' +
+        '<label class="sync-label" for="sync-token">Token de acceso de GitHub</label>' +
+        '<input type="password" id="sync-token" class="sync-input" placeholder="ghp_… o github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+        '<button class="btn" id="sync-connect">Conectar y sincronizar →</button>' +
+        '<div class="sync-help">' +
+          '<p><span class="sn">1</span> Crea un token en <a href="' + tokenUrl + '" target="_blank" rel="noopener">github.com</a> con el permiso <code>gist</code> (ya viene marcado). Ningún otro permiso hace falta.</p>' +
+          '<p><span class="sn">2</span> Pégalo aquí y pulsa Conectar: se creará (o reutilizará) un gist <strong>secreto</strong> con tu progreso.</p>' +
+          '<p><span class="sn">3</span> En tu iPhone, iPad y Mac abre esta misma página → <em>Sincronizar</em> → pega el <em>mismo token</em>. Eso es todo.</p>' +
+        '</div>' +
+        '<p class="sync-note">El token se guarda solo en este dispositivo y únicamente se envía a api.github.com — nunca al repositorio. El gist es secreto (no aparece en tu perfil). La fusión conserva siempre la mejor nota de cada evaluación, así que nunca pierdes progreso.</p>' +
+      '</div>'
+    );
+  }
+  function syncConnectedHtml(gistId) {
+    var st = window.Sync.getState();
+    var statusTxt = st.detail || (st.status === "syncing" ? "Sincronizando…" : "Conectado");
+    return (
+      '<div class="sync-panel">' +
+        '<div class="sync-connected"><span class="sync-dot ' + st.status + '"></span> ' + esc(statusTxt) + '</div>' +
+        (gistId ? '<div class="sync-gist">Gist secreto: <code>' + esc(gistId) + '</code></div>' : "") +
+        '<div class="sync-actions">' +
+          '<button class="btn" id="sync-now">Sincronizar ahora</button>' +
+          '<button class="btn ghost" id="sync-disconnect">Desconectar este dispositivo</button>' +
+        '</div>' +
+        '<p class="sync-note">Este dispositivo está conectado. El progreso se sincroniza al abrir la página, al volver a ella y al completar lecciones o evaluaciones. En tus otros dispositivos, pega el mismo token para unirlos.</p>' +
+      '</div>'
+    );
+  }
+  function viewSync() {
+    if (!window.Sync) { render('<div class="col-680"><p>La sincronización no está disponible.</p></div>'); return; }
+    var configured = Sync.isConfigured();
+    var gistId = Sync.getGistId();
+    var tokenUrl = "https://github.com/settings/tokens/new?scopes=gist&description=Espanol%20para%20brasilenos%20sync";
+
+    render(
+      '<div class="col-680">' +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Sincronización</div>' +
+      '<div class="sync-view">' +
+        '<h1>Sincronizar dispositivos</h1>' +
+        '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
+        (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl)) +
+      '</div>' +
+      '</div>'
+    );
+
+    if (!configured) {
+      document.getElementById("sync-connect").addEventListener("click", function () {
+        var t = document.getElementById("sync-token").value.trim();
+        if (!t) { alert("Pega tu token de GitHub."); return; }
+        Sync.setToken(t);
+        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); })
+          .then(function () { if (/^#\/?sync/.test(location.hash)) viewSync(); });
+      });
+    } else {
+      document.getElementById("sync-now").addEventListener("click", function () {
+        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); })
+          .then(function () { if (/^#\/?sync/.test(location.hash)) viewSync(); });
+      });
+      document.getElementById("sync-disconnect").addEventListener("click", function () {
+        if (!confirm("¿Desconectar la sincronización en este dispositivo? Tu progreso local se conserva.")) return;
+        Sync.clearConfig();
+        viewSync();
+      });
+    }
+  }
+
   /* ---------- Router ---------- */
   function route() {
     var h = location.hash.replace(/^#\/?/, "");
@@ -523,10 +612,27 @@
     if (parts[0] === "quiz" && parts[1] && parts[2]) return viewQuiz(parts[1], parts[2]);
     if (parts[0] === "flashcards" && parts[1]) return viewFlashcards(parts[1]);
     if (parts[0] === "certificate") return viewCertificate();
+    if (parts[0] === "sync") return viewSync();
     viewHome();
   }
 
   window.addEventListener("hashchange", route);
   document.getElementById("brand").addEventListener("click", function () { location.hash = "#/"; });
   route();
+
+  // Sincronización opcional (GitHub Gist) — reflejar estado en la barra y arrancar.
+  if (window.Sync) {
+    var syncLink = document.getElementById("sync-link");
+    Sync.onState(function (st) {
+      if (!syncLink) return;
+      if (!Sync.isConfigured()) { syncLink.textContent = "Sincronizar"; syncLink.className = "sync-link"; return; }
+      if (st.status === "syncing") { syncLink.textContent = "Sincronizando…"; syncLink.className = "sync-link syncing"; }
+      else if (st.status === "error") { syncLink.textContent = "Error de sync"; syncLink.className = "sync-link err"; }
+      else { syncLink.textContent = "Sincronizado"; syncLink.className = "sync-link ok"; }
+    });
+    if (Sync.isConfigured()) pullAndMerge();
+    window.addEventListener("focus", function () {
+      if (Sync.isConfigured() && !Sync.getState().busy) pullAndMerge();
+    });
+  }
 })();
