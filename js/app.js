@@ -227,13 +227,15 @@
     }
 
     render(
+      '<div class="col-760">' +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Módulo ' + num2(idx + 1) + '</div>' +
       '<div class="module-head">' +
         '<h1>Módulo ' + num2(idx + 1) + ' · ' + esc(mod.title) + '</h1>' +
         '<p>' + esc(mod.description) + '</p>' +
         '<div class="mod-status">' + statusLabel + '<span class="thinbar"><span style="width:' + s.pct + '%"></span></span></div>' +
       '</div>' +
-      '<div class="lesson-list">' + rows + '</div>'
+      '<div class="lesson-list">' + rows + '</div>' +
+      '</div>'
     );
   }
 
@@ -247,8 +249,9 @@
     var idx = MODULES.indexOf(mod);
 
     render(
+      '<div class="col-680">' +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Lección ' + (li + 1) + '</div>' +
-      '<div class="lesson-shell narrow">' +
+      '<div class="lesson-shell">' +
         '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Lección ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
         '<h1>' + esc(lesson.title) + '</h1>' +
         '<div class="dur">' + esc(lesson.duration) + " de lectura" + (isLessonDone(mid, lid) ? ' · <span class="done-flag">Completada ✓</span>' : "") + '</div>' +
@@ -257,6 +260,7 @@
           '<a class="btn ghost" href="#/module/' + mid + '">← Volver al módulo</a>' +
           '<button class="btn" id="btn-complete">Completar e ir a la evaluación →</button>' +
         '</div>' +
+      '</div>' +
       '</div>'
     );
 
@@ -301,8 +305,9 @@
       : "";
 
     render(
+      '<div class="col-680">' +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Evaluación ' + (li + 1) + '</div>' +
-      '<div class="quiz-shell narrow">' +
+      '<div class="quiz-shell">' +
         '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Evaluación ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
         '<h1>Evaluación: ' + esc(lesson.title) + '</h1>' +
         '<p class="quiz-sub">' + quiz.questions.length + ' preguntas · Nota mínima ' + META.passScore + '%' + bestNote + '</p>' +
@@ -312,6 +317,7 @@
           '<a class="btn ghost" href="#/lesson/' + mid + "/" + lid + '">← Releer la lección</a>' +
           '<button class="btn" id="btn-submit">Enviar respuestas →</button>' +
         '</div>' +
+      '</div>' +
       '</div>'
     );
 
@@ -393,8 +399,9 @@
     var pos = 0, flipped = false;
 
     render(
+      '<div class="col-680">' +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Tarjetas</div>' +
-      '<div class="fc-shell narrow">' +
+      '<div class="fc-shell">' +
         '<h1>Tarjetas de repaso · Módulo ' + num2(idx + 1) + '</h1>' +
         '<p class="quiz-sub">Haz clic en la tarjeta para girarla</p>' +
         '<div class="flashcard" id="fc-card" role="button" tabindex="0" aria-label="Tarjeta de repaso, haz clic para girar">' +
@@ -412,6 +419,7 @@
           '<button class="btn ghost" id="fc-shuffle">Mezclar</button>' +
           '<a class="btn" href="#/module/' + mid + '">Volver al módulo</a>' +
         '</div>' +
+      '</div>' +
       '</div>'
     );
 
@@ -462,11 +470,13 @@
         }
       });
       render(
+        '<div class="col-680">' +
         '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Certificado</div>' +
         '<div class="locked-box">' +
           '<h2>Tu certificado te está esperando</h2>' +
           '<p>Para desbloquearlo, completa todas las lecciones y aprueba todas las evaluaciones (≥ ' + META.passScore + '%):</p>' +
           '<ul>' + missing.join("") + '</ul>' +
+        '</div>' +
         '</div>'
       );
       return;
@@ -477,6 +487,7 @@
     var lessonsTotal = MODULES.reduce(function (n, m) { return n + m.lessons.length; }, 0);
 
     render(
+      '<div class="col-680">' +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Certificado</div>' +
       '<div class="cert-form">' +
         '<input type="text" id="cert-name" placeholder="Escribe tu nombre completo" value="' + esc(name) + '">' +
@@ -490,7 +501,8 @@
         '<p>completó con éxito los ' + MODULES.length + ' módulos y las ' + lessonsTotal + ' evaluaciones del curso contrastivo de español para hablantes de portugués brasileño, con nota mínima de ' + META.passScore + '% en cada una.</p>' +
         '<p class="cert-date">' + dateStr + '</p>' +
       '</div>' +
-      '<p style="text-align:center;margin-top:26px"><button class="btn ghost" onclick="window.print()">Imprimir / guardar PDF</button></p>'
+      '<p style="text-align:center;margin-top:26px"><button class="btn ghost" onclick="window.print()">Imprimir / guardar PDF</button></p>' +
+      '</div>'
     );
 
     document.getElementById("btn-name").addEventListener("click", function () {
