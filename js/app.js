@@ -83,6 +83,8 @@
     });
   }
 
+  function num2(n) { return (n < 10 ? "0" : "") + n; }
+
   function findModule(mid) {
     for (var i = 0; i < MODULES.length; i++) if (MODULES[i].id === mid) return MODULES[i];
     return null;
@@ -114,41 +116,39 @@
     });
     var cta;
     if (pct === 0) {
-      cta = '<a class="btn white" href="#/module/m1">Comenzar el curso</a>';
+      cta = '<a class="btn outline-accent" href="#/module/m1">Comenzar el curso <span class="pct">→</span></a>';
     } else if (courseComplete()) {
-      cta = '<a class="btn white" href="#/certificate">Ver mi certificado 🎓</a>';
+      cta = '<a class="btn outline-accent" href="#/certificate">Ver mi certificado <span class="pct">→</span></a>';
     } else {
-      cta = '<a class="btn white" href="' + nextPending() + '">Continuar donde lo dejé (' + pct + '%)</a>';
+      cta = '<a class="btn outline-accent" href="' + nextPending() + '">Continuar donde lo dejé <span class="pct">' + pct + '% →</span></a>';
     }
 
     var cards = MODULES.map(function (mod, i) {
       var s = moduleStats(mod);
-      var badge = s.complete
-        ? '<span class="badge done">Completado ✓</span>'
+      var status = s.complete
+        ? '<span class="card-status done">✓ Completado</span>'
         : s.pct > 0
-          ? '<span class="badge progress">' + s.pct + '%</span>'
-          : '<span class="badge new">Nuevo</span>';
+          ? '<span class="card-status pct">' + s.pct + '%</span>'
+          : '<span class="card-status new">Nuevo</span>';
       return (
-        '<div class="card" onclick="location.hash=\'#/module/' + mod.id + '\'">' +
-          '<div class="mod-num">Módulo ' + (i + 1) + '</div>' +
-          '<div class="icon">' + mod.icon + '</div>' +
+        '<div class="card" role="link" tabindex="0" onclick="location.hash=\'#/module/' + mod.id + '\'" onkeydown="if(event.key===\'Enter\')location.hash=\'#/module/' + mod.id + '\'">' +
+          '<div class="card-top"><span class="eyebrow">Módulo ' + num2(i + 1) + '</span>' + status + '</div>' +
           '<h3>' + esc(mod.title) + '</h3>' +
           '<p>' + esc(mod.description) + '</p>' +
-          '<div class="card-foot">' +
-            '<span>' + mod.lessons.length + ' lecciones · ' + mod.lessons.length + ' evaluaciones · tarjetas</span>' + badge +
-          '</div>' +
-          '<div class="bar' + (s.complete ? " done" : "") + '"><span style="width:' + s.pct + '%"></span></div>' +
+          '<div class="card-meta">' + mod.lessons.length + ' lecciones · ' + mod.lessons.length + ' evaluaciones · tarjetas</div>' +
+          '<div class="bar"><span style="width:' + s.pct + '%"></span></div>' +
         '</div>'
       );
     }).join("");
 
     render(
       '<div class="hero">' +
-        '<div class="kicker">Curso contrastivo · portugués (BR) → español · nivel ' + esc(META.level) + '</div>' +
-        '<h1>' + esc(META.title) + ': ' + esc(META.subtitle) + '</h1>' +
-        '<p>' + esc(META.description) + '</p>' +
-        '<div class="meta"><span>' + MODULES.length + ' módulos</span><span>' + lessonsTotal + ' lecciones</span><span>' + lessonsTotal + ' evaluaciones (' + questionsTotal + ' preguntas)</span><span>Tarjetas de repaso</span><span>Certificado al completar</span></div>' +
-        '<p style="margin-top:22px">' + cta + '</p>' +
+        '<div class="kicker eyebrow">Curso contrastivo · PT-BR → ES · Nivel ' + esc(META.level) + '</div>' +
+        '<h1>' + esc(META.title) + '</h1>' +
+        '<div class="subtitle">' + esc(META.subtitle) + '</div>' +
+        '<p class="intro">' + esc(META.description) + '</p>' +
+        '<div class="meta"><span>' + MODULES.length + ' módulos</span><span>' + lessonsTotal + ' lecciones</span><span>' + lessonsTotal + ' evaluaciones</span><span>' + questionsTotal + ' preguntas</span><span>Certificado</span></div>' +
+        cta +
       '</div>' +
       '<h2 class="section-title">Programa del curso</h2>' +
       '<div class="grid">' + cards + '</div>'
@@ -175,52 +175,63 @@
     var idx = MODULES.indexOf(mod);
     var s = moduleStats(mod);
 
+    var statusLabel = s.complete
+      ? '<span class="label done">Completado · 100%</span>'
+      : s.pct > 0
+        ? '<span class="label progress">En curso · ' + s.pct + '%</span>'
+        : '<span class="label new">Nuevo</span>';
+
     var rows = "";
     mod.lessons.forEach(function (l, i) {
       var done = isLessonDone(mod.id, l.id);
       var q = quizResult(mod.id, l.id);
       var qPassed = !!(q && q.passed);
-      var quizLabel = q
-        ? (qPassed ? "Aprobada · mejor nota: " + q.pct + "%" : "Último intento: " + q.pct + "% · se necesita " + META.passScore + "%")
-        : "Sin intentos";
+      var quizMeta = q
+        ? (qPassed
+            ? '<span class="lrow-meta accent">Aprobada · ' + q.pct + '%</span>'
+            : '<span class="lrow-meta">Último intento · ' + q.pct + '%</span>')
+        : '<span class="lrow-meta muted">Sin intentos</span>';
       rows +=
-        '<div class="lesson-row' + (done ? " done" : "") + '" onclick="location.hash=\'#/lesson/' + mod.id + "/" + l.id + '\'">' +
-          '<div class="check">✓</div>' +
-          '<div class="lesson-info">' +
-            '<div class="lesson-type">Lección ' + (i + 1) + '</div>' +
-            '<h4>' + esc(l.title) + '</h4>' +
+        '<div class="lgroup">' +
+          '<div class="lrow" onclick="location.hash=\'#/lesson/' + mod.id + "/" + l.id + '\'">' +
+            '<div class="mark' + (done ? " done" : "") + '">✓</div>' +
+            '<div class="lrow-body">' +
+              '<span class="eyebrow">Lección ' + (i + 1) + '</span>' +
+              '<h4>' + esc(l.title) + '</h4>' +
+            '</div>' +
+            '<span class="lrow-meta">' + esc(l.duration) + '</span>' +
           '</div>' +
-          '<span class="dur">' + esc(l.duration) + '</span>' +
-        '</div>' +
-        '<div class="lesson-row quiz-row' + (qPassed ? " done" : "") + '" onclick="location.hash=\'#/quiz/' + mod.id + "/" + l.id + '\'">' +
-          '<div class="check">✓</div>' +
-          '<div class="lesson-info">' +
-            '<div class="lesson-type">Evaluación ' + (i + 1) + '</div>' +
-            '<h4>Evaluación: ' + esc(l.title) + '</h4>' +
+          '<div class="lrow sub" onclick="location.hash=\'#/quiz/' + mod.id + "/" + l.id + '\'">' +
+            '<div class="mark eval' + (qPassed ? " passed" : "") + '">✓</div>' +
+            '<div class="lrow-body">' +
+              '<span class="eyebrow">Evaluación ' + (i + 1) + '</span>' +
+              '<h4>Evaluación: ' + esc(l.title) + '</h4>' +
+            '</div>' +
+            quizMeta +
           '</div>' +
-          '<span class="dur">' + esc(quizLabel) + '</span>' +
         '</div>';
     });
 
     if (mod.flashcards && mod.flashcards.length) {
       rows +=
-        '<div class="lesson-row fc-row" onclick="location.hash=\'#/flashcards/' + mod.id + '\'">' +
-          '<div class="check">🃏</div>' +
-          '<div class="lesson-info">' +
-            '<div class="lesson-type">Estudio libre</div>' +
-            '<h4>Tarjetas de repaso del módulo</h4>' +
+        '<div class="lgroup">' +
+          '<div class="lrow" onclick="location.hash=\'#/flashcards/' + mod.id + '\'">' +
+            '<div class="mark square"></div>' +
+            '<div class="lrow-body">' +
+              '<span class="eyebrow">Estudio libre</span>' +
+              '<h4>Tarjetas de repaso del módulo</h4>' +
+            '</div>' +
+            '<span class="lrow-meta">' + mod.flashcards.length + ' tarjetas</span>' +
           '</div>' +
-          '<span class="dur">' + mod.flashcards.length + ' tarjetas</span>' +
         '</div>';
     }
 
     render(
-      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Módulo ' + (idx + 1) + '</div>' +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Módulo ' + num2(idx + 1) + '</div>' +
       '<div class="module-head">' +
-        '<div class="icon">' + mod.icon + '</div>' +
-        '<h1>Módulo ' + (idx + 1) + ' · ' + esc(mod.title) + '</h1>' +
+        '<h1>Módulo ' + num2(idx + 1) + ' · ' + esc(mod.title) + '</h1>' +
         '<p>' + esc(mod.description) + '</p>' +
-        '<div class="bar' + (s.complete ? " done" : "") + '"><span style="width:' + s.pct + '%"></span></div>' +
+        '<div class="mod-status">' + statusLabel + '<span class="thinbar"><span style="width:' + s.pct + '%"></span></span></div>' +
       '</div>' +
       '<div class="lesson-list">' + rows + '</div>'
     );
@@ -235,18 +246,15 @@
     var lesson = mod.lessons[li];
     var idx = MODULES.indexOf(mod);
 
-    var prevHash = li > 0 ? "#/lesson/" + mid + "/" + mod.lessons[li - 1].id : "#/module/" + mid;
-    var prevLabel = li > 0 ? "← Lección anterior" : "← Volver al módulo";
-
     render(
-      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + (idx + 1) + '</a><span class="sep">›</span>Lección ' + (li + 1) + '</div>' +
-      '<div class="lesson-shell narrow" style="margin:0 auto">' +
-        '<div class="lesson-kicker">' + mod.icon + ' Módulo ' + (idx + 1) + ' · Lección ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Lección ' + (li + 1) + '</div>' +
+      '<div class="lesson-shell narrow">' +
+        '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Lección ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
         '<h1>' + esc(lesson.title) + '</h1>' +
-        '<div class="dur">⏱ ' + esc(lesson.duration) + " de lectura" + (isLessonDone(mid, lid) ? ' · <span style="color:var(--green);font-weight:600">completada ✓</span>' : "") + '</div>' +
+        '<div class="dur">' + esc(lesson.duration) + " de lectura" + (isLessonDone(mid, lid) ? ' · <span class="done-flag">Completada ✓</span>' : "") + '</div>' +
         '<div class="lesson-content">' + lesson.content + '</div>' +
         '<div class="lesson-nav">' +
-          '<a class="btn ghost" href="' + prevHash + '">' + prevLabel + '</a>' +
+          '<a class="btn ghost" href="#/module/' + mid + '">← Volver al módulo</a>' +
           '<button class="btn" id="btn-complete">Completar e ir a la evaluación →</button>' +
         '</div>' +
       '</div>'
@@ -280,7 +288,7 @@
       }).join("");
       return (
         '<div class="q-block" id="qb' + qi + '">' +
-          '<div class="q-text"><span class="q-num">' + (qi + 1) + '.</span>' + esc(q.q) + '</div>' +
+          '<div class="q-text"><span class="q-num">' + num2(qi + 1) + '</span>' + esc(q.q) + '</div>' +
           opts +
           '<div class="q-explain" id="qe' + qi + '" style="display:none"></div>' +
         '</div>'
@@ -289,19 +297,20 @@
 
     var best = quizResult(mid, lid);
     var bestNote = best
-      ? '<span> · Tu mejor nota: <strong>' + best.pct + '%</strong>' + (best.passed ? " (aprobada ✓)" : "") + '</span>'
+      ? ' · Mejor nota: <strong>' + best.pct + '%</strong>' + (best.passed ? " ✓" : "")
       : "";
 
     render(
-      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + (idx + 1) + '</a><span class="sep">›</span>Evaluación ' + (li + 1) + '</div>' +
-      '<div class="quiz-shell narrow" style="margin:0 auto">' +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Evaluación ' + (li + 1) + '</div>' +
+      '<div class="quiz-shell narrow">' +
+        '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Evaluación ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
         '<h1>Evaluación: ' + esc(lesson.title) + '</h1>' +
-        '<p class="quiz-sub">' + quiz.questions.length + ' preguntas · nota mínima: ' + META.passScore + '%' + bestNote + '</p>' +
+        '<p class="quiz-sub">' + quiz.questions.length + ' preguntas · Nota mínima ' + META.passScore + '%' + bestNote + '</p>' +
         '<div id="quiz-result"></div>' +
         '<form id="quiz-form">' + qHtml + '</form>' +
         '<div class="lesson-nav">' +
           '<a class="btn ghost" href="#/lesson/' + mid + "/" + lid + '">← Releer la lección</a>' +
-          '<button class="btn" id="btn-submit">Enviar respuestas</button>' +
+          '<button class="btn" id="btn-submit">Enviar respuestas →</button>' +
         '</div>' +
       '</div>'
     );
@@ -347,15 +356,15 @@
       var nextBtn;
       if (passed) {
         if (li < mod.lessons.length - 1) {
-          nextBtn = '<a class="btn green" href="#/lesson/' + mid + "/" + mod.lessons[li + 1].id + '">Siguiente lección →</a>';
+          nextBtn = '<a class="btn" href="#/lesson/' + mid + "/" + mod.lessons[li + 1].id + '">Siguiente lección →</a>';
         } else {
           var nextMod = MODULES[idx + 1];
-          nextBtn = '<a class="btn ghost" href="#/flashcards/' + mid + '" style="margin-right:8px">Repasar con tarjetas 🃏</a>' +
+          nextBtn = '<a class="btn ghost" href="#/flashcards/' + mid + '" style="margin-right:8px">Repasar con tarjetas</a>' +
             (nextMod
-              ? '<a class="btn green" href="#/module/' + nextMod.id + '">Siguiente módulo →</a>'
+              ? '<a class="btn" href="#/module/' + nextMod.id + '">Siguiente módulo →</a>'
               : (courseComplete()
-                  ? '<a class="btn green" href="#/certificate">Ver mi certificado 🎓</a>'
-                  : '<a class="btn green" href="#/">Volver al programa</a>'));
+                  ? '<a class="btn" href="#/certificate">Ver mi certificado →</a>'
+                  : '<a class="btn" href="#/">Volver al programa</a>'));
         }
       } else {
         nextBtn = '<button class="btn" onclick="location.reload()">Intentar de nuevo</button>';
@@ -365,9 +374,9 @@
         '<div class="quiz-result ' + (passed ? "pass" : "fail") + '">' +
           '<div class="score">' + pct + '%</div>' +
           '<p>' + (passed
-            ? "¡Aprobada! Acertaste " + score + " de " + quiz.questions.length + "."
+            ? "Aprobada. Acertaste " + score + " de " + quiz.questions.length + "."
             : "Acertaste " + score + " de " + quiz.questions.length + ". Necesitas " + META.passScore + "% — revisa las explicaciones y vuelve a intentarlo.") + '</p>' +
-          '<p style="margin-top:14px">' + nextBtn + '</p>' +
+          '<p style="margin-top:16px">' + nextBtn + '</p>' +
         '</div>';
       document.getElementById("btn-submit").style.display = "none";
       updateTopbar();
@@ -384,10 +393,10 @@
     var pos = 0, flipped = false;
 
     render(
-      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + (idx + 1) + '</a><span class="sep">›</span>Tarjetas</div>' +
-      '<div class="fc-shell narrow" style="margin:0 auto">' +
-        '<h1>🃏 Tarjetas de repaso · Módulo ' + (idx + 1) + '</h1>' +
-        '<p class="quiz-sub">Haz clic en la tarjeta para girarla. Primero intenta responder en voz alta.</p>' +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Tarjetas</div>' +
+      '<div class="fc-shell narrow">' +
+        '<h1>Tarjetas de repaso · Módulo ' + num2(idx + 1) + '</h1>' +
+        '<p class="quiz-sub">Haz clic en la tarjeta para girarla</p>' +
         '<div class="flashcard" id="fc-card" role="button" tabindex="0" aria-label="Tarjeta de repaso, haz clic para girar">' +
           '<div class="fc-inner" id="fc-inner">' +
             '<div class="fc-face fc-front"><div class="fc-label">PT · ¿Cómo se dice?</div><div class="fc-text" id="fc-front"></div></div>' +
@@ -400,7 +409,7 @@
           '<button class="btn ghost" id="fc-next">Siguiente →</button>' +
         '</div>' +
         '<div class="fc-controls">' +
-          '<button class="btn ghost" id="fc-shuffle">🔀 Mezclar</button>' +
+          '<button class="btn ghost" id="fc-shuffle">Mezclar</button>' +
           '<a class="btn" href="#/module/' + mid + '">Volver al módulo</a>' +
         '</div>' +
       '</div>'
@@ -449,13 +458,13 @@
           var quizzesLeft = mod.lessons.length - s.quizzesPassed;
           if (lessonsLeft) parts.push(lessonsLeft + (lessonsLeft === 1 ? " lección" : " lecciones"));
           if (quizzesLeft) parts.push(quizzesLeft + (quizzesLeft === 1 ? " evaluación" : " evaluaciones"));
-          missing.push("<li><a href=\"#/module/" + mod.id + "\">Módulo " + (i + 1) + " · " + esc(mod.title) + "</a> — falta: " + parts.join(" y ") + "</li>");
+          missing.push("<li><a href=\"#/module/" + mod.id + "\">Módulo " + num2(i + 1) + " · " + esc(mod.title) + "</a> — falta: " + parts.join(" y ") + "</li>");
         }
       });
       render(
         '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Certificado</div>' +
         '<div class="locked-box">' +
-          '<h2>🔒 Tu certificado te está esperando</h2>' +
+          '<h2>Tu certificado te está esperando</h2>' +
           '<p>Para desbloquearlo, completa todas las lecciones y aprueba todas las evaluaciones (≥ ' + META.passScore + '%):</p>' +
           '<ul>' + missing.join("") + '</ul>' +
         '</div>'
@@ -475,13 +484,13 @@
       '</div>' +
       '<div class="certificate">' +
         '<div class="cert-kicker">Certificado de finalización</div>' +
-        '<h1>' + esc(META.title) + '<br><small style="font-size:.65em">' + esc(META.subtitle) + '</small></h1>' +
+        '<h1>' + esc(META.title) + '<br><small>' + esc(META.subtitle) + '</small></h1>' +
         '<p>Se certifica que</p>' +
         '<div class="cert-name" id="cert-display">' + (name ? esc(name) : "________________") + '</div>' +
         '<p>completó con éxito los ' + MODULES.length + ' módulos y las ' + lessonsTotal + ' evaluaciones del curso contrastivo de español para hablantes de portugués brasileño, con nota mínima de ' + META.passScore + '% en cada una.</p>' +
-        '<p class="cert-date">' + dateStr + ' · ¡Enhorabuena! 🎓</p>' +
+        '<p class="cert-date">' + dateStr + '</p>' +
       '</div>' +
-      '<p style="text-align:center;margin-top:22px"><button class="btn ghost" onclick="window.print()">Imprimir / guardar PDF</button></p>'
+      '<p style="text-align:center;margin-top:26px"><button class="btn ghost" onclick="window.print()">Imprimir / guardar PDF</button></p>'
     );
 
     document.getElementById("btn-name").addEventListener("click", function () {
