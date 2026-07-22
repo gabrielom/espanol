@@ -24,6 +24,16 @@ despliega automáticamente en cada push a `main`).
 El progreso (lecciones completadas, notas de las evaluaciones y el nombre del certificado)
 se guarda en el `localStorage` del navegador.
 
+### Sincronización entre dispositivos (opcional)
+
+Para continuar en el iPhone, iPad y Mac, la app puede sincronizar el progreso a través de
+un **gist secreto de GitHub** — sin servidores ni cuentas nuevas, y opt-in (nada sale a la
+red hasta que te conectas). Entra en **Sincronizar** (barra superior), pega un token de
+GitHub con permiso `gist` y repite con el mismo token en tus otros dispositivos. La fusión
+es *grow-only* (las lecciones se unen y de cada evaluación se conserva la mejor nota), así
+que dos dispositivos avanzan por separado y se reconcilian sin perder progreso. El token
+vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
+
 ## Tres formas de estudiar
 
 1. **Lecciones** — 42 lecciones contrastivas (6 por módulo) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
