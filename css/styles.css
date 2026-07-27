@@ -90,9 +90,12 @@ a:hover { color: var(--accent-hover); }
 .appbar-left { display: flex; align-items: center; gap: 20px; min-width: 0; }
 .appbar-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
 
-/* Hueco para los semáforos de macOS: solo en Tauri/macOS (los dibuja el SO) */
+/* Hueco para los controles que dibuja el SO encima de la app.
+   macOS + Tauri: semáforos. iPadOS instalada en ventana: píldora de controles.
+   En el navegador y en Windows/Linux no existe ese hueco. */
 .traffic-space { display: none; width: 64px; flex: none; }
 .is-mac-overlay .traffic-space { display: block; }
+.is-ipad-window .traffic-space { display: block; width: 44px; }
 
 .brand {
   font-weight: 600;
