@@ -126,6 +126,21 @@
     window.scrollTo(0, 0);
   }
 
+  // Botón "atrás" de la barra: visible en todo lo que no sea Inicio.
+  // En iPhone se oculta por CSS y se usa el enlace dentro del contenido.
+  function setBack(href, label) {
+    var btn = document.getElementById("back-btn");
+    if (!btn) return;
+    if (!href) { btn.hidden = true; return; }
+    btn.hidden = false;
+    btn.setAttribute("href", href);
+    document.getElementById("back-label").textContent = label;
+  }
+  // Enlace "atrás" dentro del contenido (visible solo en iPhone).
+  function backLink(href, label) {
+    return '<a class="back-link" href="' + href + '"><span aria-hidden="true">\u2190</span>' + esc(label) + '</a>';
+  }
+
   /* ---------- Vista: inicio ---------- */
   function viewHome() {
     var pct = overallPct();
@@ -161,6 +176,7 @@
       );
     }).join("");
 
+    setBack(null);
     render(
       '<div class="hero">' +
         '<div class="kicker eyebrow">Curso contrastivo · PT-BR → ES · Nivel ' + esc(META.level) + '</div>' +
@@ -246,8 +262,10 @@
         '</div>';
     }
 
+    setBack("#/", "Inicio");
     render(
       '<div class="col-760">' +
+      backLink("#/", "Inicio") +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Módulo ' + num2(idx + 1) + '</div>' +
       '<div class="module-head">' +
         '<h1>Módulo ' + num2(idx + 1) + ' · ' + esc(mod.title) + '</h1>' +
@@ -268,8 +286,10 @@
     var lesson = mod.lessons[li];
     var idx = MODULES.indexOf(mod);
 
+    setBack("#/module/" + mid, "Módulo " + num2(idx + 1));
     render(
       '<div class="col-680">' +
+      backLink("#/module/" + mid, "Módulo " + num2(idx + 1)) +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Lección ' + (li + 1) + '</div>' +
       '<div class="lesson-shell">' +
         '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Lección ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
@@ -324,8 +344,10 @@
       ? ' · Mejor nota: <strong>' + best.pct + '%</strong>' + (best.passed ? " ✓" : "")
       : "";
 
+    setBack("#/module/" + mid, "Módulo " + num2(idx + 1));
     render(
       '<div class="col-680">' +
+      backLink("#/module/" + mid, "Módulo " + num2(idx + 1)) +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Evaluación ' + (li + 1) + '</div>' +
       '<div class="quiz-shell">' +
         '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Evaluación ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
@@ -418,8 +440,10 @@
     var cards = mod.flashcards.slice();
     var pos = 0, flipped = false;
 
+    setBack("#/module/" + mid, "Módulo " + num2(idx + 1));
     render(
       '<div class="col-680">' +
+      backLink("#/module/" + mid, "Módulo " + num2(idx + 1)) +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Tarjetas</div>' +
       '<div class="fc-shell">' +
         '<h1>Tarjetas de repaso · Módulo ' + num2(idx + 1) + '</h1>' +
@@ -489,8 +513,10 @@
           missing.push("<li><a href=\"#/module/" + mod.id + "\">Módulo " + num2(i + 1) + " · " + esc(mod.title) + "</a> — falta: " + parts.join(" y ") + "</li>");
         }
       });
+      setBack("#/", "Inicio");
       render(
         '<div class="col-680">' +
+        backLink("#/", "Inicio") +
         '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Certificado</div>' +
         '<div class="locked-box">' +
           '<h2>Tu certificado te está esperando</h2>' +
@@ -506,8 +532,10 @@
     var dateStr = new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
     var lessonsTotal = MODULES.reduce(function (n, m) { return n + m.lessons.length; }, 0);
 
+    setBack("#/", "Inicio");
     render(
       '<div class="col-680">' +
+      backLink("#/", "Inicio") +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Certificado</div>' +
       '<div class="cert-form">' +
         '<input type="text" id="cert-name" placeholder="Escribe tu nombre completo" value="' + esc(name) + '">' +
@@ -570,11 +598,14 @@
     var gistId = Sync.getGistId();
     var tokenUrl = "https://github.com/settings/tokens/new?scopes=gist&description=Espanol%20para%20brasilenos%20sync";
 
+    setBack("#/", "Inicio");
     render(
       '<div class="col-680">' +
-      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Sincronización</div>' +
+      backLink("#/", "Inicio") +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Ajustes</div>' +
       '<div class="sync-view">' +
-        '<h1>Sincronizar dispositivos</h1>' +
+        '<h1>Ajustes</h1>' +
+        '<h2 class="settings-h2">Sincronizar dispositivos</h2>' +
         '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
         (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl)) +
       '</div>' +
@@ -612,7 +643,7 @@
     if (parts[0] === "quiz" && parts[1] && parts[2]) return viewQuiz(parts[1], parts[2]);
     if (parts[0] === "flashcards" && parts[1]) return viewFlashcards(parts[1]);
     if (parts[0] === "certificate") return viewCertificate();
-    if (parts[0] === "sync") return viewSync();
+    if (parts[0] === "sync" || parts[0] === "ajustes") return viewSync();
     viewHome();
   }
 
@@ -622,13 +653,14 @@
 
   // Sincronización opcional (GitHub Gist) — reflejar estado en la barra y arrancar.
   if (window.Sync) {
-    var syncLink = document.getElementById("sync-link");
+    var gear = document.getElementById("gear-btn");
     Sync.onState(function (st) {
-      if (!syncLink) return;
-      if (!Sync.isConfigured()) { syncLink.textContent = "Sincronizar"; syncLink.className = "sync-link"; return; }
-      if (st.status === "syncing") { syncLink.textContent = "Sincronizando…"; syncLink.className = "sync-link syncing"; }
-      else if (st.status === "error") { syncLink.textContent = "Error de sync"; syncLink.className = "sync-link err"; }
-      else { syncLink.textContent = "Sincronizado"; syncLink.className = "sync-link ok"; }
+      if (!gear) return;
+      gear.classList.remove("ok", "syncing", "err");
+      if (!Sync.isConfigured()) { gear.title = "Ajustes · sincronización desactivada"; return; }
+      if (st.status === "syncing") { gear.classList.add("syncing"); gear.title = "Sincronizando…"; }
+      else if (st.status === "error") { gear.classList.add("err"); gear.title = "Ajustes · " + st.detail; }
+      else { gear.classList.add("ok"); gear.title = "Ajustes · " + (st.detail || "sincronizado"); }
     });
     if (Sync.isConfigured()) pullAndMerge();
     window.addEventListener("focus", function () {

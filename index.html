@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Español para brasileños — Del portuñol al dominio</title>
   <meta name="description" content="Curso contrastivo de español para hablantes de portugués brasileño de nivel avanzado: falsos amigos, pronunciación, gramática contrastiva y registro.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%234a5fd0'/><text x='50' y='68' font-size='52' font-family='monospace' fill='white' text-anchor='middle'>ES</text></svg>">
@@ -16,16 +16,25 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand" id="brand">Español para brasileños<small>PT → ES</small></div>
-      <div class="topbar-progress">
-        <a class="sync-link" id="sync-link" href="#/sync">Sincronizar</a>
-        <span class="sync-sep" aria-hidden="true">·</span>
-        <span class="plabel">Progreso</span>
-        <div class="bar"><span id="topbar-bar" style="width:0%"></span></div>
-        <span id="topbar-pct">0%</span>
+  <header class="appbar" id="appbar" data-tauri-drag-region>
+    <div class="appbar-left" data-tauri-drag-region>
+      <span class="traffic-space" aria-hidden="true"></span>
+      <a class="toolbtn back-btn" id="back-btn" href="#/" hidden>
+        <span class="back-arrow" aria-hidden="true">←</span><span class="back-label" id="back-label">Inicio</span>
+      </a>
+      <div class="brand" id="brand" data-tauri-drag-region>
+        <span class="brand-full">Español para brasileños</span>
+        <span class="brand-short">Español</span>
+        <span class="brand-tag">PT → ES</span>
       </div>
+    </div>
+    <div class="appbar-right">
+      <span class="plabel">Progreso</span>
+      <div class="bar"><span id="topbar-bar" style="width:0%"></span></div>
+      <span id="topbar-pct">0%</span>
+      <a class="toolbtn gear" id="gear-btn" href="#/ajustes" aria-label="Ajustes y sincronización" title="Ajustes">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
     </div>
   </header>
 
@@ -35,6 +44,22 @@
     Curso contrastivo PT-BR → ES · 7 módulos · 42 lecciones · Progreso guardado en tu navegador
   </footer>
 
+  <script>
+    // Marca la plataforma antes del render: solo macOS-Tauri reserva sitio
+    // para los semáforos; el resto de builds no debe tener ese hueco.
+    (function () {
+      var isTauri = !!(window.__TAURI__ || window.__TAURI_INTERNALS__ ||
+        (navigator.userAgent || "").indexOf("Tauri") !== -1);
+      var isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || "") ||
+        /Mac OS X/.test(navigator.userAgent || "");
+      var isTouch = /iPhone|iPad|iPod|Android/.test(navigator.userAgent || "");
+      var cls = document.documentElement.classList;
+      if (isTauri) cls.add("is-tauri");
+      if (isTauri && isMac && !isTouch) cls.add("is-mac-overlay");
+      if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) cls.add("is-standalone");
+      if (window.navigator.standalone === true) cls.add("is-standalone");
+    })();
+  </script>
   <script src="js/sync.js"></script>
   <script src="js/course.js"></script>
   <script src="js/modules/module1.js"></script>

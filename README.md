@@ -28,8 +28,8 @@ se guarda en el `localStorage` del navegador.
 
 Para continuar en el iPhone, iPad y Mac, la app puede sincronizar el progreso a través de
 un **gist secreto de GitHub** — sin servidores ni cuentas nuevas, y opt-in (nada sale a la
-red hasta que te conectas). Entra en **Sincronizar** (barra superior), pega un token de
-GitHub con permiso `gist` y repite con el mismo token en tus otros dispositivos. La fusión
+red hasta que te conectas). Entra en **Ajustes** (el engranaje de la barra
+superior), pega un token de GitHub con permiso `gist` y repite con el mismo token en tus otros dispositivos. La fusión
 es *grow-only* (las lecciones se unen y de cada evaluación se conserva la mejor nota), así
 que dos dispositivos avanzan por separado y se reconcilian sin perder progreso. El token
 vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
@@ -54,12 +54,28 @@ Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea 
 | 6 🧭 | **Preposiciones y conectores** — la "a" personal, regencias que cambian, hace/desde hace/dentro de, por y para a fondo, pero/sino y conectores cultos, preposiciones espaciales (debajo de, doblar a la izquierda) | 6 + 6 |
 | 7 🏆 | **Del avanzado al nativo** — hay vs. tener, el mapa completo de "ficar", ser y estar finos (está casado, estar aburrido), expresiones idiomáticas y saudade, muletillas y cortesía por país, léxico regional coherente | 6 + 6 |
 
+## App de escritorio en macOS (Tauri)
+
+`src-tauri/` envuelve la misma app web en una ventana nativa **sin barra de título**:
+los semáforos de macOS quedan integrados dentro de la propia barra de la app
+(`titleBarStyle: "Overlay"` + `hiddenTitle: true`). La barra es la región de arrastre y
+el hueco de los semáforos solo se reserva en macOS. Ver `src-tauri/README.md`.
+
+```bash
+cargo tauri dev     # desarrollo
+cargo tauri build   # .app / .dmg
+```
+
 ## Estructura del código
 
 ```
 index.html            página única (SPA con router por hash)
 css/styles.css        sistema visual minimalista (tokens tinta/acento, JetBrains Mono)
 fonts/                JetBrains Mono servida localmente (sin CDNs: la app es 100% autocontenida)
+js/sync.js            sincronización opcional entre dispositivos (gist secreto)
+sw.js + manifest      PWA instalable y offline
+icons/                iconos de la app (PWA + Tauri)
+src-tauri/            envoltorio nativo de macOS (ventana sin barra de título)
 js/course.js          metadatos del curso
 js/app.js             motor: router, progreso, evaluaciones, tarjetas, certificado
 js/modules/module*.js contenido de cada módulo:
