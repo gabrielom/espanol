@@ -73,15 +73,22 @@ Cada lección acompaña <strong>un capítulo</strong> del libro. Lee primero el 
 <div class="callout warn"><span class="callout-title">El punto que sí se separa del portugués</span>
 Con <strong>sujeto idéntico</strong>, el español prefiere el infinitivo y el portugués puede flexionarlo: <span class="pt">"é necessário perseverarmos"</span> → <span class="es">"es necesario que perseveremos"</span> o <span class="es">"necesitamos perseverar"</span>. El infinitivo flexionado no existe (módulo 5) — aquí lo verás una y otra vez.</div>
 
-<div class="callout task"><span class="callout-title">Tarea escrita 1 · para corregir con tu profesora</span>
-Escribe <strong>un párrafo de 80–100 palabras</strong> presentando un libro que te haya marcado, imitando el tono expositivo del capítulo I.<br><br>
-<strong>Debe contener obligatoriamente:</strong><br>
-· dos construcciones impersonales distintas (una con <em>se</em>, otra con <em>debe ser + participio</em>);<br>
-· la estructura <em>llevar de… a…</em>;<br>
-· una oración con <em>es necesario que</em> o <em>para que</em> + subjuntivo;<br>
-· al menos tres palabras de la tabla de léxico.<br><br>
-<strong>Evita:</strong> empezar frases con "yo creo que". Es un texto expositivo, no una opinión personal.</div>
+<div class="callout task"><span class="callout-title">Redacción de esta lección</span>
+<strong>Presentar un libro en tono expositivo</strong> · 80–100 palabras. Se escribe <strong>dentro de la app</strong>, en la evaluación escrita que sigue a esta lección: ahí tienes el enunciado completo, la lista de elementos obligatorios y el contador de palabras. Cuando la termines, podrás copiarla o imprimirla para tu profesora. Cuenta para el progreso del módulo igual que el test.</div>
 `,
+      essay: {
+        title: "Presentar un libro en tono expositivo",
+        prompt: "Escribe un párrafo presentando un libro que te haya marcado, imitando el tono expositivo del capítulo I.",
+        minWords: 80,
+        maxWords: 100,
+        checklist: [
+            "Dos construcciones impersonales distintas (una con <em>se</em>, otra con <em>debe ser</em> + participio)",
+            "La estructura <em>llevar de… a…</em>",
+            "Una oración con <em>es necesario que</em> o <em>para que</em> + subjuntivo",
+            "Al menos tres palabras de la tabla de léxico"
+        ],
+        avoid: "Empezar frases con «yo creo que»: es un texto expositivo, no una opinión personal."
+      },
       quiz: {
         questions: [
           {
@@ -234,14 +241,22 @@ El texto convierte la angustia en patología: <strong>la enfermedad del engaño<
 <div class="callout warn"><span class="callout-title">El diptongo que el portugués no tiene</span>
 <span class="es">poder → pueda</span>, <span class="es">querer → quiera</span>, <span class="es">tener → tenga</span> (sin diptongo), <span class="es">venir → venga</span>. Pero en <strong>nosotros</strong> el diptongo desaparece: <span class="es">podamos, queramos</span> — nunca "puedamos". Es el error de conjugación más común en este nivel.</div>
 
-<div class="callout task"><span class="callout-title">Tarea escrita 2 · para corregir con tu profesora</span>
-Escribe <strong>100–120 palabras</strong> describiendo un momento de duda o bloqueo (propio o ajeno) usando el registro clínico del capítulo.<br><br>
-<strong>Debe contener obligatoriamente:</strong><br>
-· una comparación con <em>Así como…</em> o <em>Del mismo modo que…</em>;<br>
-· una oración con <em>como si</em> + imperfecto de subjuntivo;<br>
-· tres participios con su preposición correcta (abrumado por, dotado de, librado de…);<br>
-· dos formas irregulares del presente de subjuntivo de la tabla.</div>
+<div class="callout task"><span class="callout-title">Redacción de esta lección</span>
+<strong>Describir un bloqueo en registro clínico</strong> · 100–120 palabras. Se escribe <strong>dentro de la app</strong>, en la evaluación escrita que sigue a esta lección: ahí tienes el enunciado completo, la lista de elementos obligatorios y el contador de palabras. Cuando la termines, podrás copiarla o imprimirla para tu profesora. Cuenta para el progreso del módulo igual que el test.</div>
 `,
+      essay: {
+        title: "Describir un bloqueo en registro clínico",
+        prompt: "Describe un momento de duda o bloqueo (propio o ajeno) usando el registro clínico del capítulo: el problema como enfermedad, diagnóstico y cura.",
+        minWords: 100,
+        maxWords: 120,
+        checklist: [
+            "Una comparación con <em>Así como…</em> o <em>Del mismo modo que…</em>",
+            "Una oración con <em>como si</em> + imperfecto de subjuntivo",
+            "Tres participios con su preposición correcta (abrumado por, dotado de, librado de…)",
+            "Dos formas irregulares del presente de subjuntivo de la tabla"
+        ],
+        avoid: "Traducir «com» automáticamente: revisa cada preposición."
+      },
       quiz: {
         questions: [
           {
@@ -384,14 +399,22 @@ Escribe <strong>100–120 palabras</strong> describiendo un momento de duda o bl
 <strong>¿Hablo de cualquiera que cumpla la condición?</strong> → subjuntivo: "El estudiante que <em>haga</em> esto progresará."<br>
 El portugués resuelve esta diferencia con el futuro de subjuntivo, que en español está muerto (módulo 5). Por eso este es el error que más sobrevive.</div>
 
-<div class="callout task"><span class="callout-title">Tarea escrita 3 · para corregir con tu profesora</span>
-Escribe <strong>100–120 palabras</strong> definiendo qué caracteriza a un buen lector (o un buen estudiante de idiomas).<br><br>
-<strong>Debe contener obligatoriamente:</strong><br>
-· <strong>tres</strong> relativas con antecedente inespecífico + subjuntivo (<em>quien busque…, el que dedique…, todos los que estén…</em>);<br>
-· una definición por contraste con <em>no… sino…</em>;<br>
-· la colocación <em>estar más allá del alcance de</em> o <em>alcanzar un estado de</em>;<br>
-· el verbo <em>advertir</em> en su sentido de "darse cuenta".</div>
+<div class="callout task"><span class="callout-title">Redacción de esta lección</span>
+<strong>Definir a un buen lector</strong> · 100–120 palabras. Se escribe <strong>dentro de la app</strong>, en la evaluación escrita que sigue a esta lección: ahí tienes el enunciado completo, la lista de elementos obligatorios y el contador de palabras. Cuando la termines, podrás copiarla o imprimirla para tu profesora. Cuenta para el progreso del módulo igual que el test.</div>
 `,
+      essay: {
+        title: "Definir a un buen lector",
+        prompt: "Define qué caracteriza a un buen lector (o a un buen estudiante de idiomas), usando definiciones generales, no ejemplos concretos.",
+        minWords: 100,
+        maxWords: 120,
+        checklist: [
+            "<strong>Tres</strong> relativas con antecedente inespecífico + subjuntivo (<em>quien busque…, el que dedique…, todos los que estén…</em>)",
+            "Una definición por contraste con <em>no… sino…</em>",
+            "La colocación <em>estar más allá del alcance de</em> o <em>alcanzar un estado de</em>",
+            "El verbo <em>advertir</em> en su sentido de «darse cuenta»"
+        ],
+        avoid: "Usar el indicativo en las relativas: si hablas de cualquiera que cumpla la condición, va subjuntivo."
+      },
       quiz: {
         questions: [
           {
@@ -539,14 +562,22 @@ Escribe <strong>100–120 palabras</strong> definiendo qué caracteriza a un bue
 <div class="callout warn"><span class="callout-title">Cómo se forma (y por qué te falla)</span>
 Se saca de la <strong>3.ª persona del plural del indefinido</strong>: dijeron → dije-<strong>ra</strong>; pudieron → pudie-<strong>ra</strong>; fueron → fue-<strong>ra</strong>. Si el indefinido es irregular, el imperfecto de subjuntivo hereda esa irregularidad. Al brasileño le sale natural la forma en <strong>-se</strong> (por <span class="pt">-sse</span>): úsala si quieres, pero entrena la <strong>-ra</strong>, que domina en el habla.</div>
 
-<div class="callout task"><span class="callout-title">Tarea escrita 4 · para corregir con tu profesora</span>
-Escribe <strong>120–140 palabras</strong> refutando una objeción, imitando el método del capítulo (objeción → concesión → refutación).<br><br>
-<strong>Debe contener obligatoriamente:</strong><br>
-· una concesiva con <em>aunque + indicativo</em> y otra con <em>aunque + subjuntivo</em>, <strong>y una frase explicando por qué elegiste cada modo</strong>;<br>
-· un conector concesivo culto (<em>si bien</em>, <em>aun cuando</em>, <em>por más que</em>);<br>
-· dos imperfectos de subjuntivo en <em>-ra</em>;<br>
-· la colocación <em>traer a la memoria</em> o <em>entrar en contacto con</em>.</div>
+<div class="callout task"><span class="callout-title">Redacción de esta lección</span>
+<strong>Refutar una objeción</strong> · 120–140 palabras. Se escribe <strong>dentro de la app</strong>, en la evaluación escrita que sigue a esta lección: ahí tienes el enunciado completo, la lista de elementos obligatorios y el contador de palabras. Cuando la termines, podrás copiarla o imprimirla para tu profesora. Cuenta para el progreso del módulo igual que el test.</div>
 `,
+      essay: {
+        title: "Refutar una objeción",
+        prompt: "Refuta una objeción siguiendo el método del capítulo: objeción → concesión → refutación.",
+        minWords: 120,
+        maxWords: 140,
+        checklist: [
+            "Una concesiva con <em>aunque</em> + indicativo y otra con <em>aunque</em> + subjuntivo, <strong>y una frase explicando por qué elegiste cada modo</strong>",
+            "Un conector concesivo culto (<em>si bien</em>, <em>aun cuando</em>, <em>por más que</em>)",
+            "Dos imperfectos de subjuntivo en <em>-ra</em>",
+            "La colocación <em>traer a la memoria</em> o <em>entrar en contacto con</em>"
+        ],
+        avoid: "Traducir «embora» siempre por subjuntivo: si el hecho es real y lo reconoces, va indicativo."
+      },
       quiz: {
         questions: [
           {
@@ -689,14 +720,22 @@ Escribe <strong>120–140 palabras</strong> refutando una objeción, imitando el
 <div class="callout warn"><span class="callout-title">Detalle que suena nativo</span>
 En la apódosis (la segunda parte), el español admite también <span class="es">hubiera</span>: "Si hubiera leído, lo <strong>hubiera</strong> entendido" — perfectamente correcto y muy frecuente. Lo que no admite es "habría" en la prótasis (tras <em>si</em>).</div>
 
-<div class="callout task"><span class="callout-title">Tarea escrita 5 · para corregir con tu profesora</span>
-Escribe <strong>120–150 palabras</strong> sobre una decisión del pasado y sus alternativas.<br><br>
-<strong>Debe contener obligatoriamente:</strong><br>
-· <strong>un condicional de cada tipo</strong> (real, irreal presente, irreal pasado);<br>
-· una alternativa culta a "si" (<em>de + infinitivo</em>, <em>en caso de que</em>, <em>siempre que</em>);<br>
-· una construcción <em>verse + participio</em>;<br>
-· la colocación <em>tener la mirada puesta en</em> o <em>renunciar a</em>.</div>
+<div class="callout task"><span class="callout-title">Redacción de esta lección</span>
+<strong>Una decisión del pasado y sus alternativas</strong> · 120–150 palabras. Se escribe <strong>dentro de la app</strong>, en la evaluación escrita que sigue a esta lección: ahí tienes el enunciado completo, la lista de elementos obligatorios y el contador de palabras. Cuando la termines, podrás copiarla o imprimirla para tu profesora. Cuenta para el progreso del módulo igual que el test.</div>
 `,
+      essay: {
+        title: "Una decisión del pasado y sus alternativas",
+        prompt: "Escribe sobre una decisión del pasado y las alternativas que no tomaste.",
+        minWords: 120,
+        maxWords: 150,
+        checklist: [
+            "<strong>Un condicional de cada tipo</strong>: real, irreal del presente e irreal del pasado",
+            "Una alternativa culta a «si» (<em>de</em> + infinitivo, <em>en caso de que</em>, <em>siempre que</em>)",
+            "Una construcción <em>verse</em> + participio",
+            "La colocación <em>tener la mirada puesta en</em> o <em>renunciar a</em>"
+        ],
+        avoid: "Escribir «si habría…»: tras «si» nunca va el condicional."
+      },
       quiz: {
         questions: [
           {
@@ -848,17 +887,24 @@ La <strong>rueda</strong> vuelve: apareció en el capítulo I ("la inexorable ru
 <span class="es">"Aunque el aspirante <strong>quisiera</strong> eludirlo, no hay quien <strong>se libre</strong> del deber: de ahí que <strong>convenga</strong> asumir el que a cada uno le <strong>corresponda</strong>, sin que ello <strong>signifique</strong> apegarse al fruto."</span><br>
 Concesiva + relativa negada + <em>de ahí que</em> + relativa inespecífica + <em>sin que</em>. Cinco subjuntivos, cinco motivos distintos. Si puedes explicar cada uno, el módulo está dominado.</div>
 
-<div class="callout task"><span class="callout-title">Tarea escrita 6 · final · para corregir con tu profesora</span>
-Escribe un <strong>texto argumentativo de 200–250 palabras</strong>: <em>"¿Puede alguien desentenderse por completo de sus obligaciones con la comunidad en que vive?"</em> Usa el capítulo VI como punto de partida, pero argumenta con tus propias ideas y ejemplos.<br><br>
-<strong>Debe contener obligatoriamente:</strong><br>
-· una introducción impersonal (sin "yo creo"), un desarrollo y una conclusión;<br>
-· <em>de ahí que</em> + subjuntivo, y <em>sin que</em> + subjuntivo;<br>
-· un indefinido en <em>-quiera</em> (quienquiera, cualquiera, dondequiera);<br>
-· una concesiva y una hipótesis (del tipo que elijas);<br>
-· <strong>una metáfora sostenida</strong> a lo largo del texto (como la rueda del libro);<br>
-· al menos seis palabras o colocaciones de los seis capítulos.<br><br>
-<strong>Antes de entregar</strong>, subraya cada elemento de la lista en tu propio texto: es la mejor forma de comprobar que están todos.</div>
+<div class="callout task"><span class="callout-title">Redacción de esta lección</span>
+<strong>Texto argumentativo final</strong> · 200–250 palabras. Se escribe <strong>dentro de la app</strong>, en la evaluación escrita que sigue a esta lección: ahí tienes el enunciado completo, la lista de elementos obligatorios y el contador de palabras. Cuando la termines, podrás copiarla o imprimirla para tu profesora. Cuenta para el progreso del módulo igual que el test.</div>
 `,
+      essay: {
+        title: "Texto argumentativo final",
+        prompt: "¿Puede alguien desentenderse por completo de sus obligaciones con la comunidad en que vive? Usa el capítulo VI como punto de partida, pero argumenta con tus propias ideas y ejemplos.",
+        minWords: 200,
+        maxWords: 250,
+        checklist: [
+            "Introducción impersonal (sin «yo creo»), desarrollo y conclusión",
+            "<em>De ahí que</em> + subjuntivo, y <em>sin que</em> + subjuntivo",
+            "Un indefinido en <em>-quiera</em> (quienquiera, cualquiera, dondequiera)",
+            "Una concesiva y una hipótesis (del tipo que elijas)",
+            "<strong>Una metáfora sostenida</strong> a lo largo del texto (como la rueda del libro)",
+            "Al menos seis palabras o colocaciones de los seis capítulos"
+        ],
+        avoid: "Entregar sin releer: subraya cada elemento de la lista en tu propio texto antes de darla por terminada."
+      },
       quiz: {
         questions: [
           {

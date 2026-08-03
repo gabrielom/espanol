@@ -70,9 +70,9 @@
 
   /* ---- Fusión grow-only ---- */
   function merge(a, b) {
-    a = a || { lessons: {}, quizzes: {}, name: "" };
-    b = b || { lessons: {}, quizzes: {}, name: "" };
-    var out = { lessons: {}, quizzes: {}, name: a.name || b.name || "" };
+    a = a || { lessons: {}, quizzes: {}, essays: {}, name: "" };
+    b = b || { lessons: {}, quizzes: {}, essays: {}, name: "" };
+    var out = { lessons: {}, quizzes: {}, essays: {}, name: a.name || b.name || "" };
     var k;
     for (k in a.lessons) if (a.lessons[k]) out.lessons[k] = true;
     for (k in b.lessons) if (b.lessons[k]) out.lessons[k] = true;
@@ -85,6 +85,20 @@
       best = { score: best.score, total: best.total, pct: best.pct, passed: !!best.passed };
       best.passed = (qa && qa.passed) || (qb && qb.passed) || false;
       out.quizzes[k] = best;
+    }
+    // Redacciones: gana la edición más reciente (documento de un solo autor).
+    // A igualdad de fecha, el texto más largo, para no perder trabajo.
+    var ekeys = {};
+    for (k in a.essays || {}) ekeys[k] = 1;
+    for (k in b.essays || {}) ekeys[k] = 1;
+    for (k in ekeys) {
+      var ea = (a.essays || {})[k], eb = (b.essays || {})[k];
+      if (!ea) { out.essays[k] = eb; continue; }
+      if (!eb) { out.essays[k] = ea; continue; }
+      var ta = ea.updatedAt || 0, tb = eb.updatedAt || 0;
+      var win = tb > ta ? eb : (ta > tb ? ea : ((eb.text || "").length > (ea.text || "").length ? eb : ea));
+      win = { text: win.text, words: win.words, done: !!(ea.done || eb.done), updatedAt: Math.max(ta, tb) };
+      out.essays[k] = win;
     }
     return out;
   }
@@ -99,7 +113,7 @@
       })[0];
       if (found) { setGistId(found.id); return found.id; }
       var files = {};
-      files[GIST_FILE] = { content: JSON.stringify({ lessons: {}, quizzes: {}, name: "" }, null, 2) };
+      files[GIST_FILE] = { content: JSON.stringify({ lessons: {}, quizzes: {}, essays: {}, name: "" }, null, 2) };
       return api("POST", "/gists", token, { description: GIST_DESC, "public": false, files: files })
         .then(function (g) { setGistId(g.id); return g.id; });
     });
