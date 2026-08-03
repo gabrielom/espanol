@@ -543,6 +543,14 @@ a:hover { color: var(--accent-hover); }
   border-radius: 0;
 }
 .callout.warn { border-left-color: var(--error); }
+/* Tarea escrita: se corrige con la profesora, no la evalúa la app */
+.callout.task {
+  border-left-color: var(--ink);
+  background: #fff;
+  border-color: var(--ink);
+}
+.callout.task .callout-title { color: var(--ink); }
+.callout.task ul { margin: 8px 0 0 18px; }
 .callout .callout-title {
   display: block;
   font-family: var(--mono);
