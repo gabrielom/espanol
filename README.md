@@ -36,9 +36,9 @@ vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
 
 ## Tres formas de estudiar
 
-1. **Lecciones** — 42 lecciones contrastivas (6 por módulo) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
-2. **Evaluaciones** — una por lección (42 en total, 270 preguntas), corregidas con explicación en cada pregunta; se aprueban con **70 %**.
-3. **Tarjetas de repaso** — un mazo por módulo (142 tarjetas) con volteo y mezcla, para repaso espaciado.
+1. **Lecciones** — 48 lecciones contrastivas (6 por módulo) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
+2. **Evaluaciones** — una por lección (48 en total, 313 preguntas), corregidas con explicación en cada pregunta; se aprueban con **70 %**.
+3. **Tarjetas de repaso** — un mazo por módulo (172 tarjetas) con volteo y mezcla, para repaso espaciado.
 
 Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea un **certificado imprimible**.
 
@@ -53,6 +53,7 @@ Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea 
 | 5 ⏳ | **Tiempos verbales** — he comido ≠ tenho comido, futuro de subjuntivo muerto (cuando vaya / si puedo), infinitivo personal inexistente, subjuntivo fino (aunque, ojalá, a lo mejor), imperativo completo, perífrasis (soler, volver a, llevar + gerundio) | 6 + 6 |
 | 6 🧭 | **Preposiciones y conectores** — la "a" personal, regencias que cambian, hace/desde hace/dentro de, por y para a fondo, pero/sino y conectores cultos, preposiciones espaciales (debajo de, doblar a la izquierda) | 6 + 6 |
 | 7 🏆 | **Del avanzado al nativo** — hay vs. tener, el mapa completo de "ficar", ser y estar finos (está casado, estar aburrido), expresiones idiomáticas y saudade, muletillas y cortesía por país, léxico regional coherente | 6 + 6 |
+| 8 📖 | **Lectura guiada I** (*El Gita, un torrente de sabiduría*, cap. I–VI) — una lección por capítulo, con cuatro frentes en paralelo: léxico culto cognado, colocaciones y metáforas del texto, estructuras expositivas (impersonalidad, comparación, concesivas, condicionales, conectores) y subjuntivo contrastivo (relativas de antecedente inespecífico, imperfecto, pluscuamperfecto, *de ahí que*). Incluye **tarea escrita** por lección para corregir con la profesora | 6 + 6 |
 
 ## App de escritorio en macOS (Tauri)
 
