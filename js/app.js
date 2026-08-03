@@ -14,9 +14,10 @@
   /* ---------- Progreso ---------- */
   function loadProgress() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { lessons: {}, quizzes: {}, name: "" };
+      var p = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      return { lessons: p.lessons || {}, quizzes: p.quizzes || {}, essays: p.essays || {}, name: p.name || "" };
     } catch (e) {
-      return { lessons: {}, quizzes: {}, name: "" };
+      return { lessons: {}, quizzes: {}, essays: {}, name: "" };
     }
   }
   function saveLocal(p) {
@@ -63,18 +64,45 @@
     saveProgress(progress);
   }
 
+  /* ---------- Redacciones ---------- */
+  function essayData(mid, lid) { return progress.essays[lessonKey(mid, lid)] || null; }
+  function countWords(t) {
+    var m = String(t || "").trim().match(/[\wÁÉÍÓÚÜÑáéíóúüñ'’-]+/g);
+    return m ? m.length : 0;
+  }
+  function saveEssay(mid, lid, text, done) {
+    var key = lessonKey(mid, lid);
+    var prev = progress.essays[key] || {};
+    progress.essays[key] = {
+      text: text,
+      words: countWords(text),
+      done: done === undefined ? !!prev.done : !!done,
+      updatedAt: Date.now()
+    };
+    saveProgress(progress);
+  }
+  function isEssayDone(mid, lid) {
+    var e = essayData(mid, lid);
+    return !!(e && e.done);
+  }
+
+  // Ítems de una lección: contenido + test (+ redacción si la lección la tiene)
+  function lessonItemCount(l) { return l.essay ? 3 : 2; }
+
   function moduleStats(mod) {
-    var lessonsDone = 0, quizzesPassed = 0;
+    var lessonsDone = 0, quizzesPassed = 0, essaysDone = 0, totalItems = 0;
     mod.lessons.forEach(function (l) {
+      totalItems += lessonItemCount(l);
       if (isLessonDone(mod.id, l.id)) lessonsDone++;
       var q = quizResult(mod.id, l.id);
       if (q && q.passed) quizzesPassed++;
+      if (l.essay && isEssayDone(mod.id, l.id)) essaysDone++;
     });
-    var totalItems = mod.lessons.length * 2;
-    var doneItems = lessonsDone + quizzesPassed;
+    var doneItems = lessonsDone + quizzesPassed + essaysDone;
     return {
       lessonsDone: lessonsDone,
       quizzesPassed: quizzesPassed,
+      essaysDone: essaysDone,
       pct: totalItems ? Math.round((doneItems / totalItems) * 100) : 0,
       complete: doneItems === totalItems
     };
@@ -83,9 +111,9 @@
   function overallPct() {
     var total = 0, done = 0;
     MODULES.forEach(function (mod) {
-      total += mod.lessons.length * 2;
+      mod.lessons.forEach(function (l) { total += lessonItemCount(l); });
       var s = moduleStats(mod);
-      done += s.lessonsDone + s.quizzesPassed;
+      done += s.lessonsDone + s.quizzesPassed + s.essaysDone;
     });
     return total ? Math.round((done / total) * 100) : 0;
   }
@@ -199,9 +227,31 @@
         if (!isLessonDone(mod.id, l.id)) return "#/lesson/" + mod.id + "/" + l.id;
         var q = quizResult(mod.id, l.id);
         if (!q || !q.passed) return "#/quiz/" + mod.id + "/" + l.id;
+        if (l.essay && !isEssayDone(mod.id, l.id)) return "#/redaccion/" + mod.id + "/" + l.id;
       }
     }
     return "#/";
+  }
+
+  // Fila de la redacción dentro de la lista del módulo
+  function essayRow(mid, l, i) {
+    var e = essayData(mid, l.id);
+    var done = !!(e && e.done);
+    var meta = done
+      ? '<span class="lrow-meta accent">Entregada · ' + e.words + ' palabras</span>'
+      : (e && e.words
+          ? '<span class="lrow-meta">Borrador · ' + e.words + ' palabras</span>'
+          : '<span class="lrow-meta muted">Sin empezar</span>');
+    return (
+      '<div class="lrow sub" onclick="location.hash=\'#/redaccion/' + mid + "/" + l.id + '\'">' +
+        '<div class="mark essay' + (done ? " passed" : "") + '">\u270e</div>' +
+        '<div class="lrow-body">' +
+          '<span class="eyebrow">Redacci\u00f3n ' + (i + 1) + '</span>' +
+          '<h4>Escrita: ' + esc(l.essay.title) + '</h4>' +
+        '</div>' +
+        meta +
+      '</div>'
+    );
   }
 
   /* ---------- Vista: módulo ---------- */
@@ -241,10 +291,11 @@
             '<div class="mark eval' + (qPassed ? " passed" : "") + '">✓</div>' +
             '<div class="lrow-body">' +
               '<span class="eyebrow">Evaluación ' + (i + 1) + '</span>' +
-              '<h4>Evaluación: ' + esc(l.title) + '</h4>' +
+              '<h4>Test: ' + esc(l.title) + '</h4>' +
             '</div>' +
             quizMeta +
           '</div>' +
+          (l.essay ? essayRow(mod.id, l, i) : "") +
         '</div>';
     });
 
@@ -298,7 +349,7 @@
         '<div class="lesson-content">' + lesson.content + '</div>' +
         '<div class="lesson-nav">' +
           '<a class="btn ghost" href="#/module/' + mid + '">← Volver al módulo</a>' +
-          '<button class="btn" id="btn-complete">Completar e ir a la evaluación →</button>' +
+          '<button class="btn" id="btn-complete">Completar e ir al test →</button>' +
         '</div>' +
       '</div>' +
       '</div>'
@@ -403,7 +454,9 @@
 
       var nextBtn;
       if (passed) {
-        if (li < mod.lessons.length - 1) {
+        if (lesson.essay && !isEssayDone(mid, lid)) {
+          nextBtn = '<a class="btn" href="#/redaccion/' + mid + "/" + lid + '">Ir a la redacción →</a>';
+        } else if (li < mod.lessons.length - 1) {
           nextBtn = '<a class="btn" href="#/lesson/' + mid + "/" + mod.lessons[li + 1].id + '">Siguiente lección →</a>';
         } else {
           var nextMod = MODULES[idx + 1];
@@ -498,6 +551,109 @@
     show();
   }
 
+  /* ---------- Vista: redacción (evaluación escrita) ---------- */
+  function viewEssay(mid, lid) {
+    var mod = findModule(mid);
+    if (!mod) return viewHome();
+    var li = findLessonIndex(mod, lid);
+    if (li < 0) return viewModule(mid);
+    var lesson = mod.lessons[li];
+    if (!lesson.essay) return viewModule(mid);
+    var idx = MODULES.indexOf(mod);
+    var e = lesson.essay;
+    var saved = essayData(mid, lid) || { text: "", words: 0, done: false };
+
+    var checklist = e.checklist.map(function (c) {
+      return '<li>' + c + '</li>';
+    }).join("");
+
+    setBack("#/module/" + mid, "Módulo " + num2(idx + 1));
+    render(
+      '<div class="col-680">' +
+      backLink("#/module/" + mid, "Módulo " + num2(idx + 1)) +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Redacción ' + (li + 1) + '</div>' +
+      '<div class="essay-shell">' +
+        '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Redacción ' + (li + 1) + ' de ' + mod.lessons.length + '</div>' +
+        '<h1>' + esc(e.title) + '</h1>' +
+        '<p class="quiz-sub">' + e.minWords + '–' + e.maxWords + ' palabras · Evaluación escrita · La corrige tu profesora</p>' +
+
+        '<div class="essay-prompt"><span class="callout-title">Enunciado</span>' + esc(e.prompt) + '</div>' +
+
+        '<div class="essay-check"><span class="callout-title">Debe contener obligatoriamente</span><ul>' + checklist + '</ul></div>' +
+        (e.avoid ? '<div class="essay-avoid"><span class="callout-title">Evita</span>' + esc(e.avoid) + '</div>' : "") +
+
+        '<div class="essay-editor">' +
+          '<div class="essay-bar">' +
+            '<span class="essay-count" id="essay-count"></span>' +
+            '<span class="essay-saved" id="essay-saved"></span>' +
+          '</div>' +
+          '<textarea id="essay-text" class="essay-text" spellcheck="true" lang="es" placeholder="Escribe aquí tu redacción…">' + esc(saved.text) + '</textarea>' +
+        '</div>' +
+
+        '<div class="essay-actions">' +
+          '<button class="btn" id="essay-done">' + (saved.done ? "Marcar como borrador" : "Marcar como entregada") + '</button>' +
+          '<button class="btn ghost" id="essay-copy">Copiar texto</button>' +
+          '<button class="btn ghost" id="essay-print">Imprimir / PDF</button>' +
+        '</div>' +
+        '<p class="essay-note">Se guarda sola en este dispositivo mientras escribes y, si tienes la sincronización activada, viaja a tus otros dispositivos. Para entregarla, cópiala o imprímela y mándasela a tu profesora.</p>' +
+      '</div>' +
+      '</div>'
+    );
+
+    var ta = document.getElementById("essay-text");
+    var countEl = document.getElementById("essay-count");
+    var savedEl = document.getElementById("essay-saved");
+    var doneBtn = document.getElementById("essay-done");
+    var timer = null;
+
+    function refreshCount() {
+      var w = countWords(ta.value);
+      var cls = w === 0 ? "" : (w < e.minWords ? " short" : (w > e.maxWords ? " over" : " ok"));
+      countEl.className = "essay-count" + cls;
+      countEl.textContent = w + " / " + e.minWords + "–" + e.maxWords + " palabras" +
+        (w === 0 ? "" : (w < e.minWords ? " · faltan " + (e.minWords - w) : (w > e.maxWords ? " · sobran " + (w - e.maxWords) : " · en rango ✓")));
+    }
+    function flushSave(done) {
+      saveEssay(mid, lid, ta.value, done);
+      savedEl.textContent = "Guardado " + new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+    }
+    refreshCount();
+    if (saved.text) savedEl.textContent = "Guardado";
+
+    ta.addEventListener("input", function () {
+      refreshCount();
+      savedEl.textContent = "Escribiendo…";
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () { timer = null; flushSave(); }, 800);
+    });
+    window.addEventListener("beforeunload", function () { if (timer) { clearTimeout(timer); flushSave(); } });
+
+    doneBtn.addEventListener("click", function () {
+      var w = countWords(ta.value);
+      var nowDone = !isEssayDone(mid, lid);
+      if (nowDone && w < e.minWords) {
+        alert("Te faltan palabras: llevas " + w + " y el mínimo son " + e.minWords + ".");
+        return;
+      }
+      if (timer) { clearTimeout(timer); timer = null; }
+      flushSave(nowDone);
+      viewEssay(mid, lid);
+    });
+
+    document.getElementById("essay-copy").addEventListener("click", function () {
+      var txt = e.title + "\n\n" + ta.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function () {
+          savedEl.textContent = "Texto copiado ✓";
+        }).catch(function () { ta.select(); });
+      } else { ta.select(); document.execCommand && document.execCommand("copy"); }
+    });
+    document.getElementById("essay-print").addEventListener("click", function () {
+      if (timer) { clearTimeout(timer); timer = null; flushSave(); }
+      window.print();
+    });
+  }
+
   /* ---------- Vista: certificado ---------- */
   function viewCertificate() {
     if (!courseComplete()) {
@@ -508,8 +664,11 @@
           var parts = [];
           var lessonsLeft = mod.lessons.length - s.lessonsDone;
           var quizzesLeft = mod.lessons.length - s.quizzesPassed;
+          var essaysTotal = mod.lessons.filter(function (l) { return !!l.essay; }).length;
+          var essaysLeft = essaysTotal - s.essaysDone;
           if (lessonsLeft) parts.push(lessonsLeft + (lessonsLeft === 1 ? " lección" : " lecciones"));
-          if (quizzesLeft) parts.push(quizzesLeft + (quizzesLeft === 1 ? " evaluación" : " evaluaciones"));
+          if (quizzesLeft) parts.push(quizzesLeft + (quizzesLeft === 1 ? " test" : " tests"));
+          if (essaysLeft > 0) parts.push(essaysLeft + (essaysLeft === 1 ? " redacción" : " redacciones"));
           missing.push("<li><a href=\"#/module/" + mod.id + "\">Módulo " + num2(i + 1) + " · " + esc(mod.title) + "</a> — falta: " + parts.join(" y ") + "</li>");
         }
       });
@@ -642,6 +801,7 @@
     if (parts[0] === "lesson" && parts[1] && parts[2]) return viewLesson(parts[1], parts[2]);
     if (parts[0] === "quiz" && parts[1] && parts[2]) return viewQuiz(parts[1], parts[2]);
     if (parts[0] === "flashcards" && parts[1]) return viewFlashcards(parts[1]);
+    if ((parts[0] === "redaccion" || parts[0] === "essay") && parts[1] && parts[2]) return viewEssay(parts[1], parts[2]);
     if (parts[0] === "certificate") return viewCertificate();
     if (parts[0] === "sync" || parts[0] === "ajustes") return viewSync();
     viewHome();

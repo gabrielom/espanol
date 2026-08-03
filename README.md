@@ -34,11 +34,12 @@ es *grow-only* (las lecciones se unen y de cada evaluación se conserva la mejor
 que dos dispositivos avanzan por separado y se reconcilian sin perder progreso. El token
 vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
 
-## Tres formas de estudiar
+## Cuatro formas de estudiar
 
 1. **Lecciones** — 48 lecciones contrastivas (6 por módulo) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
-2. **Evaluaciones** — una por lección (48 en total, 313 preguntas), corregidas con explicación en cada pregunta; se aprueban con **70 %**.
-3. **Tarjetas de repaso** — un mazo por módulo (172 tarjetas) con volteo y mezcla, para repaso espaciado.
+2. **Tests** — uno por lección (48 en total, 313 preguntas), corregidos con explicación en cada pregunta; se aprueban con **70 %**.
+3. **Redacciones** — evaluación escrita dentro de la app (módulo 8): enunciado, lista de elementos obligatorios, editor con contador de palabras y guardado automático. Cuentan para el progreso igual que los tests; la corrección la hace la profesora (se copian o se imprimen).
+4. **Tarjetas de repaso** — un mazo por módulo (172 tarjetas) con volteo y mezcla, para repaso espaciado.
 
 Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea un **certificado imprimible**.
 
