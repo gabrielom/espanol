@@ -244,7 +244,7 @@
           : '<span class="lrow-meta muted">Sin empezar</span>');
     return (
       '<div class="lrow sub" onclick="location.hash=\'#/redaccion/' + mid + "/" + l.id + '\'">' +
-        '<div class="mark essay' + (done ? " passed" : "") + '">\u270e</div>' +
+        '<div class="mark eval' + (done ? " passed" : "") + '">✓</div>' +
         '<div class="lrow-body">' +
           '<span class="eyebrow">Redacci\u00f3n ' + (i + 1) + '</span>' +
           '<h4>Escrita: ' + esc(l.essay.title) + '</h4>' +
