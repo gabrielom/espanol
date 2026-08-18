@@ -1008,6 +1008,43 @@ a:hover { color: var(--accent-hover); }
   .essay-text { min-height: 0; padding: 0; font-size: 12pt; }
 }
 
+/* Fragmento del artículo dentro de la lección (módulo 9) */
+.reading {
+  border-left: 2px solid var(--card-border);
+  padding-left: 20px;
+  margin: 18px 0 24px;
+}
+.reading p { font-size: 15px; line-height: 1.8; color: var(--mut-1); margin-bottom: 14px; }
+.reading .reading-src {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.6;
+  letter-spacing: .04em;
+  color: var(--faint-2);
+  margin-top: 14px;
+}
+.reading .reading-src em { font-style: normal; }
+
+/* Transformaciones con modelo desplegable (módulo 9) */
+.ex .prompt { display: block; color: var(--body); margin-bottom: 8px; }
+.ex details { margin-top: 6px; }
+.ex details > summary {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--accent);
+  cursor: pointer;
+  list-style: none;
+  padding: 2px 0;
+}
+.ex details > summary::-webkit-details-marker { display: none; }
+.ex details > summary::before { content: "▸ "; }
+.ex details[open] > summary::before { content: "▾ "; }
+.ex details > summary:hover { color: var(--accent-hover); }
+.ex details .right { margin-top: 8px; }
+.pending-note { font-size: 13px; color: var(--faint-1); margin-bottom: 16px; }
+
 /* ---------- Footer ---------- */
 .site-foot {
   font-family: var(--mono);

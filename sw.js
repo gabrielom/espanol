@@ -3,7 +3,7 @@
    - Navigations: network-first, fall back to cached shell offline.
    - Cross-origin (e.g. api.github.com sync) and non-GET: never intercepted.
    Bump CACHE to force-drop old caches on the next activate. */
-var CACHE = "espanol-cache-v2";
+var CACHE = "espanol-cache-v3";
 var SHELL = [
   "./",
   "./index.html",
@@ -19,6 +19,7 @@ var SHELL = [
   "./js/modules/module6.js",
   "./js/modules/module7.js",
   "./js/modules/module8.js",
+  "./js/modules/module9.js",
   "./fonts/jetbrains-mono-latin.woff2",
   "./fonts/jetbrains-mono-latin-ext.woff2",
   "./manifest.webmanifest",

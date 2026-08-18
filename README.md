@@ -36,10 +36,10 @@ vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
 
 ## Cuatro formas de estudiar
 
-1. **Lecciones** — 48 lecciones contrastivas (6 por módulo) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
-2. **Tests** — uno por lección (48 en total, 313 preguntas), corregidos con explicación en cada pregunta; se aprueban con **70 %**.
-3. **Redacciones** — evaluación escrita dentro de la app (módulo 8): enunciado, lista de elementos obligatorios, editor con contador de palabras y guardado automático. Cuentan para el progreso igual que los tests; la corrección la hace la profesora (se copian o se imprimen).
-4. **Tarjetas de repaso** — un mazo por módulo (172 tarjetas) con volteo y mezcla, para repaso espaciado.
+1. **Lecciones** — 56 lecciones (6 por módulo; 8 en el módulo 9) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
+2. **Tests** — uno por lección (56 en total, 448 preguntas), corregidos con explicación en cada pregunta; se aprueban con **70 %**.
+3. **Redacciones** — evaluación escrita dentro de la app (módulos 8 y 9, 14 en total): enunciado, lista de elementos obligatorios, editor con contador de palabras y guardado automático. Cuentan para el progreso igual que los tests; la corrección la hace la profesora (se copian o se imprimen).
+4. **Tarjetas de repaso** — un mazo por módulo (240 tarjetas) con volteo y mezcla, para repaso espaciado.
 
 Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea un **certificado imprimible**.
 
@@ -55,6 +55,7 @@ Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea 
 | 6 🧭 | **Preposiciones y conectores** — la "a" personal, regencias que cambian, hace/desde hace/dentro de, por y para a fondo, pero/sino y conectores cultos, preposiciones espaciales (debajo de, doblar a la izquierda) | 6 + 6 |
 | 7 🏆 | **Del avanzado al nativo** — hay vs. tener, el mapa completo de "ficar", ser y estar finos (está casado, estar aburrido), expresiones idiomáticas y saudade, muletillas y cortesía por país, léxico regional coherente | 6 + 6 |
 | 8 📖 | **Lectura guiada I** (*El Gita, un torrente de sabiduría*, cap. I–VI) — una lección por capítulo, con cuatro frentes en paralelo: léxico culto cognado, colocaciones y metáforas del texto, estructuras expositivas (impersonalidad, comparación, concesivas, condicionales, conectores) y subjuntivo contrastivo (relativas de antecedente inespecífico, imperfecto, pluscuamperfecto, *de ahí que*). Incluye **tarea escrita** por lección para corregir con la profesora | 6 + 6 |
+| 9 🫧 | **¿Superinteligencia o nueva burbuja?** — cuaderno de trabajo de 8 sesiones sobre el artículo de Cédric Durand (*Nueva Sociedad*): relativas complejas, concesivas, verbos de atribución, modalización, contraste, contraargumentación y condicionales. Cada sesión escribe una pieza de un texto argumentativo final de 500-650 palabras. Material original de la profesora, **en español rioplatense** | 8 + 8 + 8 redacciones |
 
 ## App de escritorio en macOS (Tauri)
 
