@@ -87,15 +87,17 @@
   }
 
   // Ítems de una lección: contenido + test (+ redacción si la lección la tiene)
-  function lessonItemCount(l) { return l.essay ? 3 : 2; }
+  function lessonItemCount(l) { return 1 + (l.quiz ? 1 : 0) + (l.essay ? 1 : 0); }
 
   function moduleStats(mod) {
     var lessonsDone = 0, quizzesPassed = 0, essaysDone = 0, totalItems = 0;
     mod.lessons.forEach(function (l) {
       totalItems += lessonItemCount(l);
       if (isLessonDone(mod.id, l.id)) lessonsDone++;
-      var q = quizResult(mod.id, l.id);
-      if (q && q.passed) quizzesPassed++;
+      if (l.quiz) {
+        var q = quizResult(mod.id, l.id);
+        if (q && q.passed) quizzesPassed++;
+      }
       if (l.essay && isEssayDone(mod.id, l.id)) essaysDone++;
     });
     var doneItems = lessonsDone + quizzesPassed + essaysDone;
@@ -175,7 +177,7 @@
     var lessonsTotal = 0, questionsTotal = 0;
     MODULES.forEach(function (m) {
       lessonsTotal += m.lessons.length;
-      m.lessons.forEach(function (l) { questionsTotal += l.quiz.questions.length; });
+      m.lessons.forEach(function (l) { if (l.quiz) questionsTotal += l.quiz.questions.length; });
     });
     var cta;
     if (pct === 0) {
@@ -225,8 +227,10 @@
       for (var j = 0; j < mod.lessons.length; j++) {
         var l = mod.lessons[j];
         if (!isLessonDone(mod.id, l.id)) return "#/lesson/" + mod.id + "/" + l.id;
-        var q = quizResult(mod.id, l.id);
-        if (!q || !q.passed) return "#/quiz/" + mod.id + "/" + l.id;
+        if (l.quiz) {
+          var q = quizResult(mod.id, l.id);
+          if (!q || !q.passed) return "#/quiz/" + mod.id + "/" + l.id;
+        }
         if (l.essay && !isEssayDone(mod.id, l.id)) return "#/redaccion/" + mod.id + "/" + l.id;
       }
     }
@@ -270,13 +274,22 @@
     var rows = "";
     mod.lessons.forEach(function (l, i) {
       var done = isLessonDone(mod.id, l.id);
-      var q = quizResult(mod.id, l.id);
+      var q = l.quiz ? quizResult(mod.id, l.id) : null;
       var qPassed = !!(q && q.passed);
       var quizMeta = q
         ? (qPassed
             ? '<span class="lrow-meta accent">Aprobada · ' + q.pct + '%</span>'
             : '<span class="lrow-meta">Último intento · ' + q.pct + '%</span>')
         : '<span class="lrow-meta muted">Sin intentos</span>';
+      var quizRow = !l.quiz ? "" : (
+          '<div class="lrow sub" onclick="location.hash=\'#/quiz/' + mod.id + "/" + l.id + '\'">' +
+            '<div class="mark eval' + (qPassed ? " passed" : "") + '">✓</div>' +
+            '<div class="lrow-body">' +
+              '<span class="eyebrow">Evaluación ' + (i + 1) + '</span>' +
+              '<h4>Test: ' + esc(l.title) + '</h4>' +
+            '</div>' +
+            quizMeta +
+          '</div>');
       rows +=
         '<div class="lgroup">' +
           '<div class="lrow" onclick="location.hash=\'#/lesson/' + mod.id + "/" + l.id + '\'">' +
@@ -287,14 +300,7 @@
             '</div>' +
             '<span class="lrow-meta">' + esc(l.duration) + '</span>' +
           '</div>' +
-          '<div class="lrow sub" onclick="location.hash=\'#/quiz/' + mod.id + "/" + l.id + '\'">' +
-            '<div class="mark eval' + (qPassed ? " passed" : "") + '">✓</div>' +
-            '<div class="lrow-body">' +
-              '<span class="eyebrow">Evaluación ' + (i + 1) + '</span>' +
-              '<h4>Test: ' + esc(l.title) + '</h4>' +
-            '</div>' +
-            quizMeta +
-          '</div>' +
+          quizRow +
           (l.essay ? essayRow(mod.id, l, i) : "") +
         '</div>';
     });
@@ -349,15 +355,26 @@
         '<div class="lesson-content">' + lesson.content + '</div>' +
         '<div class="lesson-nav">' +
           '<a class="btn ghost" href="#/module/' + mid + '">← Volver al módulo</a>' +
-          '<button class="btn" id="btn-complete">Completar e ir al test →</button>' +
+          '<button class="btn" id="btn-complete">' +
+            (lesson.quiz ? 'Completar e ir al test →'
+              : lesson.essay ? 'Completar e ir a la escritura →'
+              : 'Marcar como completada →') +
+          '</button>' +
         '</div>' +
       '</div>' +
       '</div>'
     );
 
+    // Ejercicios del cuaderno (módulo 9): se montan sobre el contenido ya pintado
+    if (lesson.exercises && window.Exercises) {
+      Exercises.mount(app.querySelector("#ex-host"), lesson.exercises);
+    }
+
     document.getElementById("btn-complete").addEventListener("click", function () {
       markLessonDone(mid, lid);
-      location.hash = "#/quiz/" + mid + "/" + lid;
+      if (lesson.quiz) location.hash = "#/quiz/" + mid + "/" + lid;
+      else if (lesson.essay) location.hash = "#/redaccion/" + mid + "/" + lid;
+      else location.hash = "#/module/" + mid;
     });
   }
 
@@ -663,11 +680,12 @@
         if (!s.complete) {
           var parts = [];
           var lessonsLeft = mod.lessons.length - s.lessonsDone;
-          var quizzesLeft = mod.lessons.length - s.quizzesPassed;
+          var quizzesTotal = mod.lessons.filter(function (l) { return !!l.quiz; }).length;
+          var quizzesLeft = quizzesTotal - s.quizzesPassed;
           var essaysTotal = mod.lessons.filter(function (l) { return !!l.essay; }).length;
           var essaysLeft = essaysTotal - s.essaysDone;
           if (lessonsLeft) parts.push(lessonsLeft + (lessonsLeft === 1 ? " lección" : " lecciones"));
-          if (quizzesLeft) parts.push(quizzesLeft + (quizzesLeft === 1 ? " test" : " tests"));
+          if (quizzesLeft > 0) parts.push(quizzesLeft + (quizzesLeft === 1 ? " test" : " tests"));
           if (essaysLeft > 0) parts.push(essaysLeft + (essaysLeft === 1 ? " redacción" : " redacciones"));
           missing.push("<li><a href=\"#/module/" + mod.id + "\">Módulo " + num2(i + 1) + " · " + esc(mod.title) + "</a> — falta: " + parts.join(" y ") + "</li>");
         }
