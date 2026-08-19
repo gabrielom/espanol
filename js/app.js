@@ -198,8 +198,8 @@
       return (
         '<div class="card" role="link" tabindex="0" onclick="location.hash=\'#/module/' + mod.id + '\'" onkeydown="if(event.key===\'Enter\')location.hash=\'#/module/' + mod.id + '\'">' +
           '<div class="card-top"><span class="eyebrow">Módulo ' + num2(i + 1) + '</span>' + status + '</div>' +
-          '<h3>' + esc(mod.title) + '</h3>' +
-          '<p>' + esc(mod.description) + '</p>' +
+          '<h3>' + (mod.eyebrow ? mod.title : esc(mod.title)) + '</h3>' +
+          '<p>' + (mod.eyebrow ? mod.description : esc(mod.description)) + '</p>' +
           '<div class="card-meta">' + mod.lessons.length + ' lecciones · ' + mod.lessons.length + ' evaluaciones · tarjetas</div>' +
           '<div class="bar"><span style="width:' + s.pct + '%"></span></div>' +
         '</div>'
@@ -295,10 +295,10 @@
           '<div class="lrow" onclick="location.hash=\'#/lesson/' + mod.id + "/" + l.id + '\'">' +
             '<div class="mark' + (done ? " done" : "") + '">✓</div>' +
             '<div class="lrow-body">' +
-              '<span class="eyebrow">Lección ' + (i + 1) + '</span>' +
+              '<span class="eyebrow">' + (l.n ? 'Sesión ' + num2(l.n) : 'Lección ' + (i + 1)) + '</span>' +
               '<h4>' + esc(l.title) + '</h4>' +
             '</div>' +
-            '<span class="lrow-meta">' + esc(l.duration) + '</span>' +
+            (l.duration ? '<span class="lrow-meta">' + esc(l.duration) + '</span>' : '<span class="lrow-meta"></span>') +
           '</div>' +
           quizRow +
           (l.essay ? essayRow(mod.id, l, i) : "") +
@@ -319,17 +319,39 @@
         '</div>';
     }
 
+    // Los módulos con encabezado propio (p. ej. el cuaderno) lo pintan tal cual;
+    // el resto conserva la cabecera estándar del curso.
+    var head;
+    if (mod.eyebrow) {
+      head =
+        '<div class="module-head wb-head">' +
+          '<div class="kicker eyebrow">' + mod.eyebrow + '</div>' +
+          '<h1>' + mod.title + '</h1>' +
+          '<p class="wb-lede">' + mod.description + '</p>' +
+          (mod.heroLink ? '<p class="wb-link"><a href="' + mod.heroLinkUrl + '" target="_blank" rel="noopener">' + mod.heroLink + '</a></p>' : '') +
+          (mod.legend ? '<div class="wb-legend">' + mod.legend.map(function (t, i) {
+            return '<span><i class="dot ' + (i === 0 ? 'c' : 'h') + '"></i>' + t + '</span>';
+          }).join('') + '</div>' : '') +
+          '<div class="mod-status">' + statusLabel + '<span class="thinbar"><span style="width:' + s.pct + '%"></span></span></div>' +
+        '</div>';
+    } else {
+      head =
+        '<div class="module-head">' +
+          '<h1>Módulo ' + num2(idx + 1) + ' · ' + esc(mod.title) + '</h1>' +
+          '<p>' + esc(mod.description) + '</p>' +
+          '<div class="mod-status">' + statusLabel + '<span class="thinbar"><span style="width:' + s.pct + '%"></span></span></div>' +
+        '</div>';
+    }
+
     setBack("#/", "Inicio");
     render(
       '<div class="col-760">' +
       backLink("#/", "Inicio") +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Módulo ' + num2(idx + 1) + '</div>' +
-      '<div class="module-head">' +
-        '<h1>Módulo ' + num2(idx + 1) + ' · ' + esc(mod.title) + '</h1>' +
-        '<p>' + esc(mod.description) + '</p>' +
-        '<div class="mod-status">' + statusLabel + '<span class="thinbar"><span style="width:' + s.pct + '%"></span></span></div>' +
-      '</div>' +
+      head +
+      (mod.navTitle ? '<h2 class="section-title">' + mod.navTitle + '</h2>' : '') +
       '<div class="lesson-list">' + rows + '</div>' +
+      (mod.annex ? '<div class="annex">' + mod.annex + '</div>' : '') +
       '</div>'
     );
   }
@@ -351,7 +373,9 @@
       '<div class="lesson-shell">' +
         '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Lección ' + (li + 1) + " de " + mod.lessons.length + '</div>' +
         '<h1>' + esc(lesson.title) + '</h1>' +
-        '<div class="dur">' + esc(lesson.duration) + " de lectura" + (isLessonDone(mid, lid) ? ' · <span class="done-flag">Completada ✓</span>' : "") + '</div>' +
+        (lesson.duration
+          ? '<div class="dur">' + esc(lesson.duration) + " de lectura" + (isLessonDone(mid, lid) ? ' · <span class="done-flag">Completada ✓</span>' : "") + '</div>'
+          : (isLessonDone(mid, lid) ? '<div class="dur"><span class="done-flag">Completada ✓</span></div>' : '<div class="dur"></div>')) +
         '<div class="lesson-content">' + lesson.content + '</div>' +
         '<div class="lesson-nav">' +
           '<a class="btn ghost" href="#/module/' + mid + '">← Volver al módulo</a>' +
@@ -365,9 +389,17 @@
       '</div>'
     );
 
-    // Ejercicios del cuaderno (módulo 9): se montan sobre el contenido ya pintado
-    if (lesson.exercises && window.Exercises) {
-      Exercises.mount(app.querySelector("#ex-host"), lesson.exercises);
+    // Cuaderno (módulo 9): ejercicios y taller sobre el contenido ya pintado.
+    // El taller lee cada pieza de la redacción de su sesión.
+    if (lesson.exercises && window.Cuaderno) {
+      Cuaderno.mount(app.querySelector("#ex-host"), lesson, {
+        pieceText: function (sessionN) {
+          var target = mod.lessons.filter(function (x) { return x.n === sessionN; })[0];
+          if (!target) return "";
+          var e = essayData(mid, target.id);
+          return e && e.text ? e.text : "";
+        }
+      });
     }
 
     document.getElementById("btn-complete").addEventListener("click", function () {
@@ -590,9 +622,9 @@
       backLink("#/module/" + mid, "Módulo " + num2(idx + 1)) +
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span><a href="#/module/' + mid + '">Módulo ' + num2(idx + 1) + '</a><span class="sep">›</span>Redacción ' + (li + 1) + '</div>' +
       '<div class="essay-shell">' +
-        '<div class="lesson-kicker eyebrow">Módulo ' + num2(idx + 1) + ' · Redacción ' + (li + 1) + ' de ' + mod.lessons.length + '</div>' +
+        '<div class="lesson-kicker eyebrow">' + (e.tag ? esc(e.tag) : 'Módulo ' + num2(idx + 1) + ' · Redacción ' + (li + 1) + ' de ' + mod.lessons.length) + '</div>' +
         '<h1>' + esc(e.title) + '</h1>' +
-        '<p class="quiz-sub">' + e.minWords + '–' + e.maxWords + ' palabras · Evaluación escrita · La corrige tu profesora</p>' +
+        '<p class="quiz-sub">' + (e.tag ? 'Objetivo: ' + e.minWords + '–' + e.maxWords + ' palabras' : e.minWords + '–' + e.maxWords + ' palabras · Evaluación escrita · La corrige tu profesora') + '</p>' +
 
         '<div class="essay-prompt"><span class="callout-title">Enunciado</span>' + esc(e.prompt) + '</div>' +
 

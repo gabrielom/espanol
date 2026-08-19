@@ -1,26 +1,26 @@
 /* ============================================================
-   Ejercicios interactivos del cuaderno (módulo 9).
-   Replica el comportamiento del material original:
-     · gap    — banco de palabras + huecos para escribir, con
-                corrección tolerante a tildes ("casi — revisá las tildes")
-     · opcion — botones de opción; al comprobar marca acierto y error
-     · modelo — se escribe la versión propia y se revelan las modelo
-     · check  — lista de verificación
-   Las respuestas se guardan en localStorage por ejercicio.
+   Cuaderno de trabajo (módulo 9) — puerto fiel del material
+   original de la profesora. Replica sus cuatro tipos de
+   ejercicio y su taller.
+   Ningún texto de esta pantalla se escribe aquí: todo viene
+   del contenido del módulo.
    ============================================================ */
 (function () {
   "use strict";
 
-  var KEY = "espanol-ejercicios-v1";
+  var KEY = "espanol-cuaderno-v1";
 
-  function load() {
-    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+  function loadState() {
+    try {
+      var p = JSON.parse(localStorage.getItem(KEY)) || {};
+      return { R: p.R || {}, W: p.W || {}, CH: p.CH || {} };
+    } catch (e) { return { R: {}, W: {}, CH: {} }; }
   }
-  function save(st) {
+  function persist() {
     try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
   }
-  var state = load();
-  function box(id) { return (state[id] = state[id] || {}); }
+  var st = loadState();
+  function rbox(id) { return (st.R[id] = st.R[id] || {}); }
 
   // Normalización idéntica a la del cuaderno original
   function norm(s) {
@@ -29,10 +29,11 @@
   function strip(s) {
     return norm(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
-  function esc(s) {
-    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function words(s) {
+    return (s || "").trim().split(/\s+/).filter(Boolean).length;
   }
 
+  /* ---------------- Ejercicios ---------------- */
   function exHTML(x) {
     var h = '<div class="ex-box" data-ex="' + x.id + '">';
     h += '<h4>' + x.t + '</h4>';
@@ -74,40 +75,58 @@
     return h + '</div>';
   }
 
+  /* ---------------- Taller ---------------- */
+  function tallerHTML(t) {
+    return '<div class="taller">' +
+      '<div class="th"><span class="k">' + t.k + '</span><h3>' + t.title + '</h3>' +
+      '<p>' + t.text + '</p></div>' +
+      '<div class="tbar"><i id="barfill"></i></div>' +
+      '<div class="slots" id="slots">' + t.piezas.map(function (p) {
+        return '<div class="slot" data-p="' + p.id + '">' +
+          '<span class="n">' + p.n + '</span>' +
+          '<span class="nm">' + p.t + '<small>Sesión ' + p.s + '</small></span>' +
+          '<span class="stt">pendiente</span></div>';
+      }).join('') +
+      '<div class="ex-btns"><button type="button" class="btn" id="btnEns">' + t.btn + '</button>' +
+      '<span class="ex-score" id="totw"></span></div>' +
+      '</div><div id="ensamblado"></div></div>';
+  }
+
+  /* ---------------- Restaurar / comprobar ---------------- */
   function restore(root, x) {
-    var st = box(x.id);
+    var box = rbox(x.id);
     var el = root.querySelector('[data-ex="' + x.id + '"]');
     if (!el) return;
     if (x.tipo === "gap") {
       el.querySelectorAll('input.gap').forEach(function (inp) {
-        var v = st[inp.dataset.i];
+        var v = box[inp.dataset.i];
         if (typeof v === "string") inp.value = v;
       });
     } else if (x.tipo === "opcion") {
       el.querySelectorAll('.opt-btn').forEach(function (b) {
-        if (st[b.dataset.i] === +b.dataset.j) b.dataset.s = 'sel';
+        if (box[b.dataset.i] === +b.dataset.j) b.dataset.s = 'sel';
       });
     } else if (x.tipo === "modelo") {
       el.querySelectorAll('textarea.mini').forEach(function (t) {
-        var v = st[t.dataset.i];
+        var v = box[t.dataset.i];
         if (typeof v === "string") t.value = v;
       });
     } else if (x.tipo === "check") {
       el.querySelectorAll('input[type="checkbox"]').forEach(function (c) {
-        c.checked = !!st[c.dataset.i];
+        c.checked = !!st.CH[x.id + ':' + c.dataset.i];
       });
     }
   }
 
   function check(el, x) {
-    var st = box(x.id), ok = 0, tot = x.items.length;
+    var box = rbox(x.id), ok = 0, tot = x.items.length;
     if (x.tipo === "gap") {
       el.querySelectorAll('input.gap').forEach(function (inp) {
         var i = +inp.dataset.i,
             sol = el.querySelector('[data-sol="' + i + '"]'),
             acc = x.items[i].a,
             v = inp.value;
-        st[i] = v;
+        box[i] = v;
         if (!v.trim()) {
           inp.className = 'gap'; sol.className = 'sol err'; sol.textContent = '→ ' + acc[0]; return;
         }
@@ -122,7 +141,7 @@
       });
     } else {
       x.items.forEach(function (it, i) {
-        var sel = st[i];
+        var sel = box[i];
         el.querySelectorAll('.opt-btn[data-i="' + i + '"]').forEach(function (b) {
           var j = +b.dataset.j;
           if (j === it.a) b.dataset.s = 'ok';
@@ -133,23 +152,50 @@
       });
     }
     el.querySelector('.ex-score').textContent = ok + ' de ' + tot;
-    save(state);
+    persist();
   }
 
   function clear(el, x) {
-    state[x.id] = {};
+    st.R[x.id] = {};
     el.querySelectorAll('input.gap').forEach(function (i) { i.value = ''; i.className = 'gap'; });
     el.querySelectorAll('.sol').forEach(function (s) { s.textContent = ''; s.className = 'sol'; });
     el.querySelectorAll('.opt-btn').forEach(function (o) { o.dataset.s = ''; });
     var sc = el.querySelector('.ex-score'); if (sc) sc.textContent = '';
-    save(state);
+    persist();
   }
 
-  /* Monta los ejercicios de una lección dentro de `host` */
-  function mount(host, exercises) {
-    if (!host || !exercises || !exercises.length) return;
-    host.innerHTML = exercises.map(exHTML).join('');
-    exercises.forEach(function (x) { restore(host, x); });
+  /* ---------------- Montaje ---------------- */
+  var mounted = null;   // { exercises, w, taller }
+
+  function updateTaller(root, taller, pieceText) {
+    if (!taller) return;
+    var done = 0, tot = 0;
+    taller.piezas.forEach(function (p) {
+      var n = words(pieceText ? pieceText(p.s) : "");
+      var el = root.querySelector('.slot[data-p="' + p.id + '"]');
+      if (!el) return;
+      var okp = n >= 60;
+      el.classList.toggle('done', okp);
+      el.querySelector('.stt').textContent = n ? n + ' palabras' : 'pendiente';
+      if (okp) { done++; tot += n; }
+    });
+    var fill = root.querySelector('#barfill');
+    if (fill) fill.style.width = (done / taller.piezas.length * 100) + '%';
+    var tw = root.querySelector('#totw');
+    if (tw) tw.textContent = done ? done + ' de ' + taller.piezas.length + ' · ' + tot + ' palabras acumuladas' : '';
+  }
+
+  function mount(host, lesson, opts) {
+    if (!host) return;
+    opts = opts || {};
+    var ex = lesson.exercises || [];
+    var html = ex.map(exHTML).join('');
+    if (lesson.taller) html += tallerHTML(lesson.taller);
+    host.innerHTML = html;
+    mounted = lesson;
+
+    ex.forEach(function (x) { restore(host, x); });
+    updateTaller(host, lesson.taller, opts.pieceText);
 
     host.addEventListener('click', function (e) {
       var opt = e.target.closest('.opt-btn');
@@ -157,14 +203,28 @@
         var ob = opt.closest('[data-ex]'), oid = ob.dataset.ex, i = +opt.dataset.i;
         ob.querySelectorAll('.opt-btn[data-i="' + i + '"]').forEach(function (o) { o.dataset.s = ''; });
         opt.dataset.s = 'sel';
-        box(oid)[i] = +opt.dataset.j;
-        save(state);
+        rbox(oid)[i] = +opt.dataset.j;
+        persist();
+        return;
+      }
+      if (e.target.id === 'btnEns') {
+        var box = host.querySelector('#ensamblado');
+        var txt = lesson.taller.piezas.map(function (p) {
+          return (opts.pieceText ? opts.pieceText(p.s) : "").trim();
+        }).filter(Boolean).join('\n\n');
+        if (!txt) {
+          box.classList.add('show');
+          box.textContent = lesson.taller.empty;
+          return;
+        }
+        box.classList.toggle('show');
+        if (box.classList.contains('show')) box.textContent = txt;
         return;
       }
       var act = e.target.closest('[data-act]');
       if (!act) return;
-      var el = act.closest('[data-ex]'), id = el.dataset.ex;
-      var x = exercises.filter(function (q) { return q.id === id; })[0];
+      var el = act.closest('[data-ex]'); if (!el) return;
+      var x = ex.filter(function (q) { return q.id === el.dataset.ex; })[0];
       if (!x) return;
       if (act.dataset.act === 'models') {
         var on = el.querySelector('.modelo.show');
@@ -178,21 +238,20 @@
 
     host.addEventListener('input', function (e) {
       var el = e.target.closest('[data-ex]');
-      if (!el) return;
-      if (e.target.tagName === 'TEXTAREA' || e.target.classList.contains('gap')) {
-        box(el.dataset.ex)[e.target.dataset.i] = e.target.value;
-        save(state);
+      if (el && (e.target.tagName === 'TEXTAREA' || e.target.classList.contains('gap'))) {
+        rbox(el.dataset.ex)[e.target.dataset.i] = e.target.value;
+        persist();
       }
     });
 
     host.addEventListener('change', function (e) {
       if (e.target.type !== 'checkbox') return;
-      var el = e.target.closest('[data-ex]');
-      if (!el) return;
-      box(el.dataset.ex)[e.target.dataset.i] = e.target.checked;
-      save(state);
+      var exEl = e.target.closest('[data-ex]');
+      if (!exEl) return;
+      st.CH[exEl.dataset.ex + ':' + e.target.dataset.i] = e.target.checked;
+      persist();
     });
   }
 
-  window.Exercises = { mount: mount };
+  window.Cuaderno = { mount: mount };
 })();
