@@ -39,7 +39,7 @@ vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
 1. **Lecciones** — 56 lecciones (6 por módulo; 8 en el módulo 9) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
 2. **Tests** — uno por lección en los módulos 1-8 (48 en total, 313 preguntas), corregidos con explicación en cada pregunta; se aprueban con **70 %**.
 3. **Redacciones** — evaluación escrita dentro de la app (módulos 8 y 9, 14 en total): enunciado, lista de elementos obligatorios, editor con contador de palabras y guardado automático. Cuentan para el progreso igual que los tests; la corrección la hace la profesora (se copian o se imprimen).
-4. **Tarjetas de repaso** — un mazo por módulo (240 tarjetas) con volteo y mezcla, para repaso espaciado.
+4. **Tarjetas de repaso** — un mazo por módulo (172 tarjetas) con volteo y mezcla, para repaso espaciado.
 
 Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea un **certificado imprimible**.
 
@@ -55,7 +55,7 @@ Al completar todas las lecciones y aprobar todas las evaluaciones se desbloquea 
 | 6 🧭 | **Preposiciones y conectores** — la "a" personal, regencias que cambian, hace/desde hace/dentro de, por y para a fondo, pero/sino y conectores cultos, preposiciones espaciales (debajo de, doblar a la izquierda) | 6 + 6 |
 | 7 🏆 | **Del avanzado al nativo** — hay vs. tener, el mapa completo de "ficar", ser y estar finos (está casado, estar aburrido), expresiones idiomáticas y saudade, muletillas y cortesía por país, léxico regional coherente | 6 + 6 |
 | 8 📖 | **Lectura guiada I** (*El Gita, un torrente de sabiduría*, cap. I–VI) — una lección por capítulo, con cuatro frentes en paralelo: léxico culto cognado, colocaciones y metáforas del texto, estructuras expositivas (impersonalidad, comparación, concesivas, condicionales, conectores) y subjuntivo contrastivo (relativas de antecedente inespecífico, imperfecto, pluscuamperfecto, *de ahí que*). Incluye **tarea escrita** por lección para corregir con la profesora | 6 + 6 |
-| 9 🫧 | **¿Superinteligencia o nueva burbuja?** — cuaderno de trabajo de 8 sesiones sobre el artículo de Cédric Durand (*Nueva Sociedad*): relativas complejas, concesivas, verbos de atribución, modalización, contraste, contraargumentación y condicionales. **Puerto fiel del material de la profesora**: sus textos y sus 23 ejercicios (completar con banco, opción, transformación con modelo, lista de revisión) sin reescribir nada, solo con nuestro diseño. Cada sesión escribe una pieza de un texto argumentativo final | 8 lecciones + 8 escrituras |
+| 9 🫧 | **¿La inversión en IA es una transformación real o una burbuja?** — cuaderno de trabajo de la profesora sobre el ensayo de Cédric Durand, portado literalmente: sus ocho sesiones con los carriles *En clase* / *En casa*, sus 23 ejercicios (completar con banco, opción, transformación con modelo, lista de revisión), su taller «Tu texto se arma solo» y su glosario del recorrido. En español rioplatense | 8 sesiones + 8 escrituras |
 
 ## App de escritorio en macOS (Tauri)
 
@@ -76,7 +76,7 @@ index.html            página única (SPA con router por hash)
 css/styles.css        sistema visual minimalista (tokens tinta/acento, JetBrains Mono)
 fonts/                JetBrains Mono servida localmente (sin CDNs: la app es 100% autocontenida)
 js/sync.js            sincronización opcional entre dispositivos (gist secreto)
-js/exercises.js       ejercicios interactivos del cuaderno (módulo 9)
+js/exercises.js       cuaderno interactivo: ejercicios y taller (módulo 9)
 sw.js + manifest      PWA instalable y offline
 icons/                iconos de la app (PWA + Tauri)
 src-tauri/            envoltorio nativo de macOS (ventana sin barra de título)

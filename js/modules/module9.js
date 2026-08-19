@@ -1,18 +1,28 @@
-/* Módulo 9 — Cuaderno de trabajo: «¿Superinteligencia o nueva burbuja?»
-   Puerto fiel del material de la profesora: sus textos y sus ejercicios,
-   sin reescribir nada. Solo cambia el diseño. */
+/* Módulo 9 — Cuaderno de trabajo (material de la profesora).
+   Puerto fiel: todos los textos son los del HTML original, sin añadir
+   ni quitar nada. Solo cambia el diseño. */
 window.COURSE_MODULES = window.COURSE_MODULES || [];
 window.COURSE_MODULES.push({
   "id": "m9",
   "icon": "🫧",
-  "title": "¿Superinteligencia o nueva burbuja?",
-  "description": "Cuaderno de trabajo en ocho sesiones sobre el artículo de Cédric Durand. Cada sesión: lectura y trabajo oral en clase, ejercicios en casa con soluciones, y una pieza del texto argumentativo final.",
+  "eyebrow": "Español B2 · Ocho sesiones",
+  "title": "¿La inversión en IA es una transformación real o <em>una burbuja</em>?",
+  "description": "Vas a leer un ensayo argumentativo de Cédric Durand, <strong>«¿Superinteligencia o nueva burbuja capitalista?»</strong> (<i>Nueva Sociedad</i>, febrero 2026), en ocho tramos. Al final vas a escribir tu propio texto argumentativo respondiendo esa pregunta. No lo escribís de una sola vez: lo armás en cinco piezas, una por semana.",
+  "heroLink": "Abrir el artículo ↗",
+  "heroLinkUrl": "https://nuso.org/articulo/inteligencia-artificial-capitalismo-burbuja-financiera/",
+  "legend": [
+    "En clase — oral, con tu profesora",
+    "En casa — solo, con solución"
+  ],
+  "navTitle": "Recorrido",
+  "annexTitle": "Glosario del recorrido",
+  "annex": "<div class=\"shead\"><div class=\"stag\">Anexo</div><div class=\"smeta\"><span class=\"chip\">Todo el léxico de las ocho sesiones</span></div></div>\n<p class=\"notice\">Este vocabulario no es para memorizar sino para usar. Antes de cada clase, elegí cinco palabras de acá que todavía no hayas dicho en voz alta y proponete meterlas en la conversación.</p>\n<div class=\"gsec\">Financiación y mercados</div>\n<div class=\"gloss\">\n  <div class=\"gitem\"><b>valor de mercado</b><span>lo que vale una empresa según su cotización</span></div>\n  <div class=\"gitem\"><b>inversión fija</b><span>capital puesto en instalaciones y equipos</span></div>\n  <div class=\"gitem\"><b>desembolso</b><span>el dinero que efectivamente se pone</span></div>\n  <div class=\"gitem\"><b>flujo de caja</b><span>el dinero que entra y sale de la operación</span></div>\n  <div class=\"gitem\"><b>capital accionario</b><span>financiación a cambio de participación en la empresa</span></div>\n  <div class=\"gitem\"><b>endeudamiento</b><span>financiarse pidiendo prestado</span></div>\n  <div class=\"gitem\"><b>apalancamiento</b><span>operar con dinero prestado para amplificar el resultado</span></div>\n  <div class=\"gitem\"><b>rentabilidad</b><span>la ganancia en relación con lo invertido</span></div>\n  <div class=\"gitem\"><b>redituable</b><span>que da ganancia</span></div>\n  <div class=\"gitem\"><b>solvencia crediticia</b><span>la capacidad de una empresa de responder por sus deudas</span></div>\n  <div class=\"gitem\"><b>balance patrimonial</b><span>el estado de lo que una empresa tiene y debe</span></div>\n  <div class=\"gitem\"><b>tenedores de bonos</b><span>quienes prestaron dinero comprando deuda</span></div>\n  <div class=\"gitem\"><b>amortizar</b><span>ir pagando el capital de un préstamo, no solo los intereses</span></div>\n  <div class=\"gitem\"><b>refinanciar</b><span>reemplazar una deuda que vence por otra nueva</span></div>\n  <div class=\"gitem\"><b>saldo</b><span>lo que todavía falta pagar</span></div>\n  <div class=\"gitem\"><b>riesgo residual</b><span>el riesgo que queda y que alguien tiene que asumir</span></div>\n  <div class=\"gitem\"><b>capital privado</b><span>fondos que invierten fuera de la bolsa</span></div>\n  <div class=\"gitem\"><b>empresa conjunta</b><span>sociedad entre dos compañías para un proyecto</span></div>\n  <div class=\"gitem\"><b>arrendamiento</b><span>alquiler de larga duración</span></div>\n  <div class=\"gitem\"><b>garantía</b><span>el compromiso que respalda una operación</span></div>\n  <div class=\"gitem\"><b>ingeniería financiera</b><span>el diseño de estructuras complejas para repartir riesgo</span></div>\n  <div class=\"gitem\"><b>apuesta especulativa</b><span>inversión que depende de que el precio siga subiendo</span></div>\n  <div class=\"gitem\"><b>sobrevaluado</b><span>que cotiza por encima de lo que vale</span></div>\n  <div class=\"gitem\"><b>corrección del mercado</b><span>caída brusca que ajusta precios inflados</span></div>\n  <div class=\"gitem\"><b>desplome</b><span>caída violenta</span></div>\n  <div class=\"gitem\"><b>estallar</b><span>reventar, dicho de una burbuja</span></div>\n</div>\n<div class=\"gsec\">Infraestructura y cómputo</div>\n<div class=\"gloss\">\n  <div class=\"gitem\"><b>centros de datos</b><span>las instalaciones donde corre el cómputo</span></div>\n  <div class=\"gitem\"><b>capacidad de cómputo</b><span>cuánto se puede procesar</span></div>\n  <div class=\"gitem\"><b>hiperescaladores</b><span>las grandes empresas que operan la nube a escala global</span></div>\n  <div class=\"gitem\"><b>escalar</b><span>ampliar capacidad</span></div>\n  <div class=\"gitem\"><b>obsolescencia</b><span>el hecho de quedar viejo y perder valor</span></div>\n  <div class=\"gitem\"><b>depreciarse</b><span>perder valor con el tiempo</span></div>\n  <div class=\"gitem\"><b>activo perpetuo</b><span>un bien que se supone que no pierde valor</span></div>\n  <div class=\"gitem\"><b>legado</b><span>lo que queda de un ciclo cuando termina</span></div>\n  <div class=\"gitem\"><b>achicamiento</b><span>reducción de la oferta disponible</span></div>\n  <div class=\"gitem\"><b>consumo energético</b><span>la energía que demanda una instalación</span></div>\n  <div class=\"gitem\"><b>huella hídrica</b><span>el agua que consume</span></div>\n  <div class=\"gitem\"><b>estrés ecológico</b><span>la presión sobre agua, tierra y energía</span></div>\n</div>\n<div class=\"gsec\">Trabajo y productividad</div>\n<div class=\"gloss\">\n  <div class=\"gitem\"><b>fuerza laboral</b><span>el conjunto de trabajadores</span></div>\n  <div class=\"gitem\"><b>desfase</b><span>el retraso entre la inversión y el resultado</span></div>\n  <div class=\"gitem\"><b>cosechar (beneficios)</b><span>recoger el resultado de algo sembrado antes</span></div>\n  <div class=\"gitem\"><b>disrupción</b><span>cambio brusco que reordena un sector</span></div>\n  <div class=\"gitem\"><b>desmoralización</b><span>pérdida de sentido y de motivación en el trabajo</span></div>\n  <div class=\"gitem\"><b>descalificante</b><span>que hace perder oficio a quien lo hace</span></div>\n  <div class=\"gitem\"><b>despidos</b><span>desvinculaciones de personal</span></div>\n  <div class=\"gitem\"><b>fidelizar</b><span>lograr que el cliente no se vaya</span></div>\n  <div class=\"gitem\"><b>costos de salida</b><span>lo que cuesta abandonar un servicio</span></div>\n  <div class=\"gitem\"><b>base de clientes</b><span>el conjunto de usuarios de una empresa</span></div>\n</div>\n<div class=\"gsec\">Geopolítica y Sur global</div>\n<div class=\"gloss\">\n  <div class=\"gitem\"><b>cadenas de suministro</b><span>la red de proveedores de la que depende una industria</span></div>\n  <div class=\"gitem\"><b>tierras raras</b><span>minerales críticos para la electrónica</span></div>\n  <div class=\"gitem\"><b>extractivismo</b><span>modelo económico basado en sacar recursos y exportarlos</span></div>\n  <div class=\"gitem\"><b>desposesión</b><span>despojo; quitar a alguien lo que tenía</span></div>\n  <div class=\"gitem\"><b>contrapartidas</b><span>lo que se exige a cambio de una concesión</span></div>\n  <div class=\"gitem\"><b>marco regulatorio</b><span>el conjunto de reglas que ordenan una actividad</span></div>\n  <div class=\"gitem\"><b>reinversión</b><span>volver a poner en el lugar las ganancias obtenidas</span></div>\n  <div class=\"gitem\"><b>impacto socioambiental</b><span>los efectos sobre la población y el ambiente</span></div>\n  <div class=\"gitem\"><b>planificación</b><span>organizar la inversión desde una decisión central</span></div>\n  <div class=\"gitem\"><b>coordinación</b><span>hacer que las partes no vayan cada una por su lado</span></div>\n</div>\n<div class=\"gsec\">Valorar y argumentar</div>\n<div class=\"gloss\">\n  <div class=\"gitem\"><b>sintomático</b><span>que revela algo más grande</span></div>\n  <div class=\"gitem\"><b>aleccionador</b><span>que enseña algo, a menudo incómodo</span></div>\n  <div class=\"gitem\"><b>elocuente</b><span>que habla por sí solo</span></div>\n  <div class=\"gitem\"><b>quimérico</b><span>imposible, fantasioso</span></div>\n  <div class=\"gitem\"><b>insostenible</b><span>que no se puede mantener</span></div>\n  <div class=\"gitem\"><b>exorbitante</b><span>desmedido, fuera de toda escala</span></div>\n  <div class=\"gitem\"><b>a perpetuidad</b><span>para siempre, sin plazo</span></div>\n  <div class=\"gitem\"><b>artificialmente</b><span>de forma no natural, sostenido a propósito</span></div>\n  <div class=\"gitem\"><b>matizar</b><span>bajar la fuerza de lo que se afirmó</span></div>\n  <div class=\"gitem\"><b>descartar</b><span>rechazar una posibilidad</span></div>\n</div>\n",
   "lessons": [
     {
       "id": "l1",
-      "title": "Sesión 01 — La magnitud y el circuito",
-      "duration": "Relativas complejas",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Bloques 1–2</span><span class=\"chip\"><b>Foco:</b> Relativas complejas</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> Desde el comienzo del artículo hasta el final del pasaje sobre OpenAI y Azure.</p>\n  <div class=\"reading\">\n    <p>El valor de mercado de las empresas ligadas a la inteligencia artificial (IA) se ha incrementado diez veces en la última década. Como remarcó recientemente John Lanchester, todas excepto una de las más grandes firmas en el mundo están conectadas al valor futuro de la IA. Todas salvo una son estadounidenses, y en conjunto su valor es igual a bastante más de la mitad del valor de la economía de Estados Unidos. A lo largo de los últimos años, la expectativa de una «revolución» de la IA ha impulsado el crecimiento de la inversión en estas empresas tecnológicas estadounidenses. Las promesas de un avance radical en la inteligencia posthumana y aumentos milagrosos de la productividad han atrapado el espíritu animal de los inversores hasta un punto en el que, como lo expresó Ruchir Sharma en el Financial Times, «Estados Unidos está apostando fuerte por la IA». La inversión fija en el sector es tan grande que fue el principal motor del crecimiento de Estados Unidos en 2025. El entrenamiento y la operación de modelos de IA requieren un enorme incremento físico de centros de datos, equipos informáticos, sistemas de refrigeración, hardware de red, conexiones a la red eléctrica y suministro de energía. Se espera que las empresas tecnológicas gasten la asombrosa cifra de cinco billones de dólares en esta costosa infraestructura –que sigue concentrándose principalmente en Estados Unidos– para satisfacer la demanda desde ahora hasta 2030.</p>\n    <p>El problema es que los números no cuadran. Para satisfacer sus necesidades colosales, el sector ha pasado de un modelo dominado por la financiación mediante el flujo de caja y el capital accionario a uno basado en la financiación por deuda. En principio, este giro al endeudamiento podría simplemente reflejar una creciente oportunidad de ganancias y la expectativa de prosperidad futura. Los acuerdos financieros cada vez más exóticos sugieren otra cosa. Una gran parte del entusiasmo se alimenta de los bucles financieros por los cuales los proveedores invierten en sus clientes y viceversa. OpenAI es un ejemplo. Su principal proveedor de chips, Nvidia –la empresa más valiosa del mundo–, está planeando invertir 100.000 millones de dólares en OpenAI, financiando de hecho la demanda de sus propios productos. OpenAI, mientras tanto, está gastando el doble de lo que gana en Azure, la plataforma en la nube de Microsoft, que ofrece la potencia computacional necesaria para ejecutar sus servicios, enriqueciendo de ese modo a su principal patrocinador al tiempo que acumula deuda.</p>\n    <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>. Publicado originalmente en <em>Sidecar</em> (New Left Review).</p>\n  </div>\n  <ol class=\"clase-list\">\n    <li>Leés los dos primeros tramos: la magnitud de la inversión y el circuito de financiación entre Nvidia, OpenAI y Microsoft Azure.</li>\n    <li>Explicás ese circuito con tus palabras, como si tu interlocutora no conociera el sector: quién le pone dinero a quién y en qué momento se vuelve riesgoso.</li>\n    <li>Trabajamos las oraciones relativas que usa el autor para encadenar información técnica sin cortar la frase.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 1,
+      "title": "La magnitud y el circuito",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 01</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Bloques 1–2</span><span class=\"chip\"><b>Foco:</b> Relativas complejas</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> Desde el comienzo del artículo hasta el final del pasaje sobre OpenAI y Azure.</p>\n    <div class=\"reading\">\n      <p>El valor de mercado de las empresas ligadas a la inteligencia artificial (IA) se ha incrementado diez veces en la última década. Como remarcó recientemente John Lanchester, todas excepto una de las más grandes firmas en el mundo están conectadas al valor futuro de la IA. Todas salvo una son estadounidenses, y en conjunto su valor es igual a bastante más de la mitad del valor de la economía de Estados Unidos. A lo largo de los últimos años, la expectativa de una «revolución» de la IA ha impulsado el crecimiento de la inversión en estas empresas tecnológicas estadounidenses. Las promesas de un avance radical en la inteligencia posthumana y aumentos milagrosos de la productividad han atrapado el espíritu animal de los inversores hasta un punto en el que, como lo expresó Ruchir Sharma en el Financial Times, «Estados Unidos está apostando fuerte por la IA». La inversión fija en el sector es tan grande que fue el principal motor del crecimiento de Estados Unidos en 2025. El entrenamiento y la operación de modelos de IA requieren un enorme incremento físico de centros de datos, equipos informáticos, sistemas de refrigeración, hardware de red, conexiones a la red eléctrica y suministro de energía. Se espera que las empresas tecnológicas gasten la asombrosa cifra de cinco billones de dólares en esta costosa infraestructura –que sigue concentrándose principalmente en Estados Unidos– para satisfacer la demanda desde ahora hasta 2030.</p>\n      <p>El problema es que los números no cuadran. Para satisfacer sus necesidades colosales, el sector ha pasado de un modelo dominado por la financiación mediante el flujo de caja y el capital accionario a uno basado en la financiación por deuda. En principio, este giro al endeudamiento podría simplemente reflejar una creciente oportunidad de ganancias y la expectativa de prosperidad futura. Los acuerdos financieros cada vez más exóticos sugieren otra cosa. Una gran parte del entusiasmo se alimenta de los bucles financieros por los cuales los proveedores invierten en sus clientes y viceversa. OpenAI es un ejemplo. Su principal proveedor de chips, Nvidia –la empresa más valiosa del mundo–, está planeando invertir 100.000 millones de dólares en OpenAI, financiando de hecho la demanda de sus propios productos. OpenAI, mientras tanto, está gastando el doble de lo que gana en Azure, la plataforma en la nube de Microsoft, que ofrece la potencia computacional necesaria para ejecutar sus servicios, enriqueciendo de ese modo a su principal patrocinador al tiempo que acumula deuda.</p>\n      <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>.</p>\n    </div>\n    <ol class=\"clase-list\">\n      <li>Leés los dos primeros tramos: la magnitud de la inversión y el circuito de financiación entre Nvidia, OpenAI y Microsoft Azure.</li>\n      <li>Explicás ese circuito con tus palabras, como si tu interlocutora no conociera el sector: quién le pone dinero a quién y en qué momento se vuelve riesgoso.</li>\n      <li>Trabajamos las oraciones relativas que usa el autor para encadenar información técnica sin cortar la frase.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "gap",
@@ -190,8 +200,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "Explicar un mecanismo",
+        "id": "w1",
         "tag": "Escritura preparatoria 1",
+        "title": "Explicar un mecanismo",
         "prompt": "Explicale a alguien que no trabaja en tu sector un mecanismo de financiación que conozcas bien. Contá quién pone el dinero, quién lo recibe y en qué momento se vuelve riesgoso.",
         "minWords": 140,
         "maxWords": 180,
@@ -200,13 +211,14 @@ window.COURSE_MODULES.push({
           "Presente de indicativo como tiempo base.",
           "Ninguna palabra en inglés."
         ]
-      }
+      },
+      "taller": null
     },
     {
       "id": "l2",
-      "title": "Sesión 02 — La ingeniería financiera",
-      "duration": "Concesivas",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Bloque 3</span><span class=\"chip\"><b>Foco:</b> Concesivas</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> El pasaje sobre el centro de datos de Luisiana, desde «Hay mucho financiamiento creativo» hasta la advertencia del analista.</p>\n  <div class=\"reading\">\n    <p>Hay mucho financiamiento creativo en curso. Tomemos como ejemplo los planes de Meta de construir un centro de datos monumental en Luisiana. Las instalaciones, valuadas en 30.000 millones de dólares, serán propiedad de Beignet Investor LLC, una empresa conjunta entre Meta y una firma de capital privado llamada Blue Owl. No obstante, ni los clientes de Blue Owl ni Meta proporcionarán la mayor parte de la financiación, que provendrá de una amplio grupo de tenedores de bonos. Meta se está comprometiendo fundamentalmente a un contrato de alquiler a largo plazo para utilizar las instalaciones. Como señala el blog FT Alphaville del Financial Times, «la estructuración ingeniosa permite a Beignet beneficiarse de la solvencia crediticia de Meta, pero la solvencia crediticia de Meta, mágicamente, no se ve afectada por la responsabilidad financiera que supone su garantía de arrendamiento a largo plazo».</p>\n    <p>Sin embargo, debajo de esta inventiva ingeniería financiera, la conclusión es que Meta está dispuesta a pagar alrededor de 1% de su balance patrimonial para financiar la construcción del centro de datos. Y la razón es que, contrariamente a los argumentos que repite como loro a los bonistas, busca una protección en caso de que la promesa futura de superinteligencia y superabundancia no llegue a concretarse. El acuerdo por el centro de datos de Meta es sintomático de la coyuntura del mercado, que un analista financiero describió como «la convergencia entre una necesidad inmensa de capital, emisores menos dispuestos a sostener el riesgo residual (…) y dinero en reserva», es decir, efectivo disponible. En estas circunstancias, el trabajo de los bancos de inversión es convencer a los prestamistas de asumir riesgos que no entienden realmente. «Hemos visto esta historia un millón de veces», advierte el analista, por empezar, en el periodo previo a la crisis financiera de 2008.</p>\n    <p>Mirando en detalle los sólidos balances de los principales hiperescaladores –Amazon, Meta, Microsoft, Alphabet–, la explosión de la IA puede parecer sostenible. Pero mientras aparecen fisuras en los jugadores más débiles, como Oracle, y en algunos rincones del negocio de desarrollo de IA, crece el temor de que pueda no haber suficiente rentabilidad para sostener la tendencia en la totalidad del ecosistema. La fiebre por la IA llega tras años de auge del mercado bursátil estadounidense y décadas de un superciclo de capital ficticio, que conlleva sus propias fragilidades. De ahí la creciente preocupación que se detecta debajo del lenguaje burocrático del Banco de Pagos Internacionales: «Si se produjera un declive en las inversiones en IA con una corrección significativa del mercado bursátil, los efectos indirectos negativos podrían ser mayores que lo que sugieren auges previos. Los inversores han preferido las acciones estadounidenses para ganar exposición a las empresas de IA, y el apalancamiento oculto puede conducir a efectos indirectos en el mercado crediticio».</p>\n    <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>. Publicado originalmente en <em>Sidecar</em> (New Left Review).</p>\n  </div>\n  <ol class=\"clase-list\">\n    <li>Leés el caso del centro de datos: quién es dueño de las instalaciones, quién aporta el dinero y quién termina asumiendo el riesgo.</li>\n    <li>Reconstruís el esquema en voz alta, sin mirar el texto.</li>\n    <li>Trabajamos las concesivas: cómo el autor concede algo al lector antes de volver a su propia posición.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 2,
+      "title": "La ingeniería financiera",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 02</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Bloque 3</span><span class=\"chip\"><b>Foco:</b> Concesivas</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> El pasaje sobre el centro de datos de Luisiana, desde «Hay mucho financiamiento creativo» hasta la advertencia del analista.</p>\n    <div class=\"reading\">\n      <p>Hay mucho financiamiento creativo en curso. Tomemos como ejemplo los planes de Meta de construir un centro de datos monumental en Luisiana. Las instalaciones, valuadas en 30.000 millones de dólares, serán propiedad de Beignet Investor LLC, una empresa conjunta entre Meta y una firma de capital privado llamada Blue Owl. No obstante, ni los clientes de Blue Owl ni Meta proporcionarán la mayor parte de la financiación, que provendrá de una amplio grupo de tenedores de bonos. Meta se está comprometiendo fundamentalmente a un contrato de alquiler a largo plazo para utilizar las instalaciones. Como señala el blog FT Alphaville del Financial Times, «la estructuración ingeniosa permite a Beignet beneficiarse de la solvencia crediticia de Meta, pero la solvencia crediticia de Meta, mágicamente, no se ve afectada por la responsabilidad financiera que supone su garantía de arrendamiento a largo plazo».</p>\n      <p>Sin embargo, debajo de esta inventiva ingeniería financiera, la conclusión es que Meta está dispuesta a pagar alrededor de 1% de su balance patrimonial para financiar la construcción del centro de datos. Y la razón es que, contrariamente a los argumentos que repite como loro a los bonistas, busca una protección en caso de que la promesa futura de superinteligencia y superabundancia no llegue a concretarse. El acuerdo por el centro de datos de Meta es sintomático de la coyuntura del mercado, que un analista financiero describió como «la convergencia entre una necesidad inmensa de capital, emisores menos dispuestos a sostener el riesgo residual (…) y dinero en reserva», es decir, efectivo disponible. En estas circunstancias, el trabajo de los bancos de inversión es convencer a los prestamistas de asumir riesgos que no entienden realmente. «Hemos visto esta historia un millón de veces», advierte el analista, por empezar, en el periodo previo a la crisis financiera de 2008.</p>\n      <p>Mirando en detalle los sólidos balances de los principales hiperescaladores –Amazon, Meta, Microsoft, Alphabet–, la explosión de la IA puede parecer sostenible. Pero mientras aparecen fisuras en los jugadores más débiles, como Oracle, y en algunos rincones del negocio de desarrollo de IA, crece el temor de que pueda no haber suficiente rentabilidad para sostener la tendencia en la totalidad del ecosistema. La fiebre por la IA llega tras años de auge del mercado bursátil estadounidense y décadas de un superciclo de capital ficticio, que conlleva sus propias fragilidades. De ahí la creciente preocupación que se detecta debajo del lenguaje burocrático del Banco de Pagos Internacionales: «Si se produjera un declive en las inversiones en IA con una corrección significativa del mercado bursátil, los efectos indirectos negativos podrían ser mayores que lo que sugieren auges previos. Los inversores han preferido las acciones estadounidenses para ganar exposición a las empresas de IA, y el apalancamiento oculto puede conducir a efectos indirectos en el mercado crediticio».</p>\n      <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>.</p>\n    </div>\n    <ol class=\"clase-list\">\n      <li>Leés el caso del centro de datos: quién es dueño de las instalaciones, quién aporta el dinero y quién termina asumiendo el riesgo.</li>\n      <li>Reconstruís el esquema en voz alta, sin mirar el texto.</li>\n      <li>Trabajamos las concesivas: cómo el autor concede algo al lector antes de volver a su propia posición.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "gap",
@@ -376,8 +388,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "Conceder y marcar el límite",
+        "id": "w2",
         "tag": "Escritura preparatoria 2",
+        "title": "Conceder y marcar el límite",
         "prompt": "Escribí un párrafo que le conceda algo a la posición contraria a la tuya sobre la inversión en IA, y que después marque el límite de esa concesión. El movimiento es: «es verdad que X…, pero eso no significa que Y».",
         "minWords": 140,
         "maxWords": 180,
@@ -386,13 +399,14 @@ window.COURSE_MODULES.push({
           "Una relativa con cuyo o con preposición + el cual.",
           "Ninguna palabra en inglés."
         ]
-      }
+      },
+      "taller": null
     },
     {
       "id": "l3",
-      "title": "Sesión 03 — La apuesta",
-      "duration": "Verbos de atribución",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Bloque 4</span><span class=\"chip\"><b>Foco:</b> Verbos de atribución</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> Desde «La limitada evidencia de los estudios de campo» hasta el final del párrafo sobre las big tech.</p>\n  <div class=\"reading\">\n    <p>La limitada evidencia de los estudios de campo sugiere que se producen aumentos significativos de la productividad en tareas como la escritura, la codificación y la asistencia a clientes en centros de atención. Hay un desfase inicial, ya que las firmas se hacen cargo del costo de aprender cómo se usa la tecnología, pero con el tiempo, quienes la adoptan cosechan beneficios. Dado que se espera que la tecnología sea ampliamente utilizada y que conduzca a una continua innovación y mejora, incluso en los procesos de investigación y desarrollo, las expectativas de beneficios económicos son altas. Si la IA incrementa la productividad según lo prometido, los usuarios estarán dispuestos a pagar mucho más para acceder a ella. De acuerdo con JP Morgan, dado el volumen del gasto de capital previsto, los proveedores de IA «necesitarían ~650.000 millones de dólares en ingresos anuales a perpetuidad» para obtener una ganancia de 10% –«una cifra exorbitante»–. Esto equivale aproximadamente a 35 dólares por mes por cada uno de los 1.500 millones de usuarios activos de iPhone, o 0,55% del PIB global. Por el momento, los precios se mantienen artificialmente bajos, ya que las empresas de IA esconden los costos económicos reales para fidelizar a los clientes. Si los incrementos en eficiencia se materializan, no habrá ningún problema; los negocios florecientes tendrán gran cantidad de recursos para pagar la cuenta. Aun si se mantienen en silencio, los inversores en IA podrían seguir saliendo con los bolsillos repletos. En un par de años, cuando la IA haya infiltrado los procesos de trabajo a punto tal que los costos de salida sean prohibitivos, la base de clientes no podrá escapar y se verá obligada a pagar. El mundo se habrá vuelto adicto a la IA, y las firmas tecnológicas recogerán ganancias considerables.</p>\n    <p>Nadie debería dudar de que esa es la estrategia de las big tech (las grandes empresas tecnológicas), y de que ni siquiera una cascada de fracasos en el negocio de IA las hará desviarse de ella. La historia del capitalismo está llena de fases de crisis seguidas de momentos dramáticos de consolidación, y las principales empresas de tecnología podrían incluso beneficiarse de una sacudida en la industria. Además, dada la tremenda influencia política de los multimillonarios de Silicon Valley que están en el gobierno, se puede esperar que peleen con uñas y dientes para conseguir apoyo político para alcanzar sus objetivos. De ser necesario, siempre pueden reforzar el argumento prometeico con uno geopolítico, ofreciendo la victoria en la carrera por la IA contra China como un desafío existencial para el país y obteniendo jugosos contratos militares.</p>\n    <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>. Publicado originalmente en <em>Sidecar</em> (New Left Review).</p>\n  </div>\n  <ol class=\"clase-list\">\n    <li>Leés el tramo donde el autor expone la apuesta del sector: los aumentos de productividad, el cálculo de JP Morgan y la estrategia de precios bajos.</li>\n    <li>Identificás a quién cita el autor en cada caso y para qué lo cita: ¿para apoyarse, para refutar o para matizar?</li>\n    <li>Trabajamos los verbos de atribución, que son el instrumento con el que un texto argumentativo usa voces ajenas para construir la propia.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 3,
+      "title": "La apuesta",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 03</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Bloque 4</span><span class=\"chip\"><b>Foco:</b> Verbos de atribución</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> Desde «La limitada evidencia de los estudios de campo» hasta el final del párrafo sobre las big tech.</p>\n    <div class=\"reading\">\n      <p>La limitada evidencia de los estudios de campo sugiere que se producen aumentos significativos de la productividad en tareas como la escritura, la codificación y la asistencia a clientes en centros de atención. Hay un desfase inicial, ya que las firmas se hacen cargo del costo de aprender cómo se usa la tecnología, pero con el tiempo, quienes la adoptan cosechan beneficios. Dado que se espera que la tecnología sea ampliamente utilizada y que conduzca a una continua innovación y mejora, incluso en los procesos de investigación y desarrollo, las expectativas de beneficios económicos son altas. Si la IA incrementa la productividad según lo prometido, los usuarios estarán dispuestos a pagar mucho más para acceder a ella. De acuerdo con JP Morgan, dado el volumen del gasto de capital previsto, los proveedores de IA «necesitarían ~650.000 millones de dólares en ingresos anuales a perpetuidad» para obtener una ganancia de 10% –«una cifra exorbitante»–. Esto equivale aproximadamente a 35 dólares por mes por cada uno de los 1.500 millones de usuarios activos de iPhone, o 0,55% del PIB global. Por el momento, los precios se mantienen artificialmente bajos, ya que las empresas de IA esconden los costos económicos reales para fidelizar a los clientes. Si los incrementos en eficiencia se materializan, no habrá ningún problema; los negocios florecientes tendrán gran cantidad de recursos para pagar la cuenta. Aun si se mantienen en silencio, los inversores en IA podrían seguir saliendo con los bolsillos repletos. En un par de años, cuando la IA haya infiltrado los procesos de trabajo a punto tal que los costos de salida sean prohibitivos, la base de clientes no podrá escapar y se verá obligada a pagar. El mundo se habrá vuelto adicto a la IA, y las firmas tecnológicas recogerán ganancias considerables.</p>\n      <p>Nadie debería dudar de que esa es la estrategia de las big tech (las grandes empresas tecnológicas), y de que ni siquiera una cascada de fracasos en el negocio de IA las hará desviarse de ella. La historia del capitalismo está llena de fases de crisis seguidas de momentos dramáticos de consolidación, y las principales empresas de tecnología podrían incluso beneficiarse de una sacudida en la industria. Además, dada la tremenda influencia política de los multimillonarios de Silicon Valley que están en el gobierno, se puede esperar que peleen con uñas y dientes para conseguir apoyo político para alcanzar sus objetivos. De ser necesario, siempre pueden reforzar el argumento prometeico con uno geopolítico, ofreciendo la victoria en la carrera por la IA contra China como un desafío existencial para el país y obteniendo jugosos contratos militares.</p>\n      <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>.</p>\n    </div>\n    <ol class=\"clase-list\">\n      <li>Leés el tramo donde el autor expone la apuesta del sector: los aumentos de productividad, el cálculo de JP Morgan y la estrategia de precios bajos.</li>\n      <li>Identificás a quién cita el autor en cada caso y para qué lo cita: ¿para apoyarse, para refutar o para matizar?</li>\n      <li>Trabajamos los verbos de atribución, que son el instrumento con el que un texto argumentativo usa voces ajenas para construir la propia.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "gap",
@@ -585,8 +599,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "Introducción y tesis",
+        "id": "w3",
         "tag": "Pieza 1 del texto final",
+        "title": "Introducción y tesis",
         "prompt": "Escribí el primer párrafo de tu texto. Tiene que hacer tres cosas, en este orden: presentar el fenómeno con un dato concreto, mencionar la posición que vas a discutir y enunciar tu tesis en una sola oración clara.",
         "minWords": 120,
         "maxWords": 160,
@@ -595,13 +610,14 @@ window.COURSE_MODULES.push({
           "Tu tesis en una sola oración, al final del párrafo.",
           "Ninguna palabra en inglés."
         ]
-      }
+      },
+      "taller": null
     },
     {
       "id": "l4",
-      "title": "Sesión 04 — Los vientos en contra",
-      "duration": "Modalización y opinión",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Bloque 5</span><span class=\"chip\"><b>Foco:</b> Modalización y opinión</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> Desde «Aun así, se están intensificando los vientos en contra» hasta el final del párrafo sobre la curva en J inversa.</p>\n  <div class=\"reading\">\n    <p>Aun así, se están intensificando los vientos en contra. La adopción de la IA se volvió viral luego del lanzamiento de ChatGPT el 30 de noviembre de 2022 y el valor de las empresas ha tenido un aumento sideral. Pero la aceptación por parte de las empresas no ha sido tan alta como se anticipaba. A pesar del entusiasmo, el uso de la IA en el trabajo no está aumentando vertiginosamente, sino que hasta podría estar ralentizándose, e involucra solo a una pequeña fracción de la fuerza laboral. La evidencia reciente indica que el uso de la IA no implica un inmediato impulso de la productividad. En síntesis, a pesar de que está en marcha algún tipo de automatización, no hay evidencia de una disrupción inminente de la IA capaz de generar las enormes ganancias económicas previstas.</p>\n    <p>Como bien lo saben los críticos radicales y como han argumentado con vehemencia Daron Acemoğlu y Simon Johnson, no hay tal cosa como un desarrollo capitalista impulsado por la eficiencia; el incremento de la eficiencia técnica es un producto macroeconómico que depende del contexto institucional. Las tecnologías poderosas pueden no resultar redituables y no llegar a implementarse si la estructura del mercado impide que los inversores obtengan beneficios; y pueden empobrecer a los trabajadores si conducen a despidos masivos. Con la IA, el peligro más inmediato parece ser una epidemia de desmoralización laboral. La investigación sugiere que el uso intensivo de IA es desmotivante y descalificante, impulsa el aburrimiento y la mediocridad. Podríamos hasta llegar a ver una «curva en J de productividad» inversa: aumentos de productividad a corto plazo rápidamente superados por un deterioro en la calidad del trabajo.</p>\n    <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>. Publicado originalmente en <em>Sidecar</em> (New Left Review).</p>\n  </div>\n  <ol class=\"clase-list\">\n    <li>Leés el tramo donde el autor presenta la evidencia que juega en contra de la apuesta del sector.</li>\n    <li>Buscás los puntos donde el autor baja deliberadamente la fuerza de sus propias afirmaciones, y con qué recursos lo hace.</li>\n    <li>Trabajamos la modalización: cómo decir algo sin comprometerte del todo, que es la mitad del oficio en un texto argumentativo.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 4,
+      "title": "Los vientos en contra",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 04</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Bloque 5</span><span class=\"chip\"><b>Foco:</b> Modalización y opinión</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> Desde «Aun así, se están intensificando los vientos en contra» hasta el final del párrafo sobre la curva en J inversa.</p>\n    <div class=\"reading\">\n      <p>Aun así, se están intensificando los vientos en contra. La adopción de la IA se volvió viral luego del lanzamiento de ChatGPT el 30 de noviembre de 2022 y el valor de las empresas ha tenido un aumento sideral. Pero la aceptación por parte de las empresas no ha sido tan alta como se anticipaba. A pesar del entusiasmo, el uso de la IA en el trabajo no está aumentando vertiginosamente, sino que hasta podría estar ralentizándose, e involucra solo a una pequeña fracción de la fuerza laboral. La evidencia reciente indica que el uso de la IA no implica un inmediato impulso de la productividad. En síntesis, a pesar de que está en marcha algún tipo de automatización, no hay evidencia de una disrupción inminente de la IA capaz de generar las enormes ganancias económicas previstas.</p>\n      <p>Como bien lo saben los críticos radicales y como han argumentado con vehemencia Daron Acemoğlu y Simon Johnson, no hay tal cosa como un desarrollo capitalista impulsado por la eficiencia; el incremento de la eficiencia técnica es un producto macroeconómico que depende del contexto institucional. Las tecnologías poderosas pueden no resultar redituables y no llegar a implementarse si la estructura del mercado impide que los inversores obtengan beneficios; y pueden empobrecer a los trabajadores si conducen a despidos masivos. Con la IA, el peligro más inmediato parece ser una epidemia de desmoralización laboral. La investigación sugiere que el uso intensivo de IA es desmotivante y descalificante, impulsa el aburrimiento y la mediocridad. Podríamos hasta llegar a ver una «curva en J de productividad» inversa: aumentos de productividad a corto plazo rápidamente superados por un deterioro en la calidad del trabajo.</p>\n      <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>.</p>\n    </div>\n    <ol class=\"clase-list\">\n      <li>Leés el tramo donde el autor presenta la evidencia que juega en contra de la apuesta del sector.</li>\n      <li>Buscás los puntos donde el autor baja deliberadamente la fuerza de sus propias afirmaciones, y con qué recursos lo hace.</li>\n      <li>Trabajamos la modalización: cómo decir algo sin comprometerte del todo, que es la mitad del oficio en un texto argumentativo.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "gap",
@@ -782,8 +798,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "Tu argumento principal",
+        "id": "w4",
         "tag": "Pieza 2 del texto final",
+        "title": "Tu argumento principal",
         "prompt": "Desarrollá el argumento más fuerte a favor de tu tesis. Apoyate en un dato del artículo y en un ejemplo de tu propia experiencia profesional. El ejemplo tiene que ilustrar el argumento, no reemplazarlo.",
         "minWords": 150,
         "maxWords": 190,
@@ -792,13 +809,14 @@ window.COURSE_MODULES.push({
           "Dos recursos de modalización del ejercicio C.",
           "Una relativa con preposición + el cual."
         ]
-      }
+      },
+      "taller": null
     },
     {
       "id": "l5",
-      "title": "Sesión 05 — Dos modelos",
-      "duration": "Comparación y contraste",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Bloque 6</span><span class=\"chip\"><b>Foco:</b> Comparación y contraste</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> El párrafo sobre el contraste entre el enfoque estadounidense y el chino, y la cita de Michael Roberts.</p>\n  <div class=\"reading\">\n    <p>Otro problema es el desperdicio que puede resultar de la cuasirreligiosa apuesta por la IA por parte de las big tech, posibilitada por el liderazgo privado en la industria y mercados con tendencias maníacas. El contraste entre los enfoques estadounidense y chino sobre la IA es aleccionador. Las economías capitalistas enfrentan un grave problema de coordinación, como ha enfatizado Michael Roberts: «en China hay un plan para alcanzar objetivos claves en tecnología que impulsen la economía en su totalidad» pero «en las principales economías capitalistas, todos los huevos de la IA están puestos en una canasta que está en manos de los hiperescaladores privados y las megaempresas de medios tecnológicos conocidas como los Siete Magníficos, y para ellas lo fundamental es la rentabilidad, no los resultados tecnológicos».</p>\n    <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>. Publicado originalmente en <em>Sidecar</em> (New Left Review).</p>\n  </div>\n  <ol class=\"clase-list\">\n    <li>Leés el contraste que traza el autor entre la coordinación estatal china y la competencia privada estadounidense.</li>\n    <li>Comparás con lo que sabés de tu sector: ¿quién coordina la inversión ahí, si es que alguien lo hace?</li>\n    <li>Trabajamos las estructuras de comparación y contraste, que son el esqueleto de cualquier párrafo que oponga dos posiciones.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 5,
+      "title": "Dos modelos",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 05</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Bloque 6</span><span class=\"chip\"><b>Foco:</b> Comparación y contraste</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> El párrafo sobre el contraste entre el enfoque estadounidense y el chino, y la cita de Michael Roberts.</p>\n    <div class=\"reading\">\n      <p>Otro problema es el desperdicio que puede resultar de la cuasirreligiosa apuesta por la IA por parte de las big tech, posibilitada por el liderazgo privado en la industria y mercados con tendencias maníacas. El contraste entre los enfoques estadounidense y chino sobre la IA es aleccionador. Las economías capitalistas enfrentan un grave problema de coordinación, como ha enfatizado Michael Roberts: «en China hay un plan para alcanzar objetivos claves en tecnología que impulsen la economía en su totalidad» pero «en las principales economías capitalistas, todos los huevos de la IA están puestos en una canasta que está en manos de los hiperescaladores privados y las megaempresas de medios tecnológicos conocidas como los Siete Magníficos, y para ellas lo fundamental es la rentabilidad, no los resultados tecnológicos».</p>\n      <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>.</p>\n    </div>\n    <ol class=\"clase-list\">\n      <li>Leés el contraste que traza el autor entre la coordinación estatal china y la competencia privada estadounidense.</li>\n      <li>Comparás con lo que sabés de tu sector: ¿quién coordina la inversión ahí, si es que alguien lo hace?</li>\n      <li>Trabajamos las estructuras de comparación y contraste, que son el esqueleto de cualquier párrafo que oponga dos posiciones.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "gap",
@@ -990,8 +1008,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "La concesión",
+        "id": "w5",
         "tag": "Pieza 3 del texto final",
+        "title": "La concesión",
         "prompt": "Concedele a la posición contraria lo que hay que concederle. Reconocé lo más fuerte del argumento que vas a rechazar —formulalo con honestidad, no como un espantapájaros— y después marcá dónde está su límite.",
         "minWords": 130,
         "maxWords": 170,
@@ -1000,13 +1019,14 @@ window.COURSE_MODULES.push({
           "Un conector de contraste del ejercicio B.",
           "Ninguna palabra en inglés."
         ]
-      }
+      },
+      "taller": null
     },
     {
       "id": "l6",
-      "title": "Sesión 06 — Lo que queda después",
-      "duration": "Contraargumentación",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Bloque 7</span><span class=\"chip\"><b>Foco:</b> Contraargumentación</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> Desde «Más adelante, si la presión financiera en el sector se intensifica» hasta la pregunta sobre quién refinanciará el activo.</p>\n  <div class=\"reading\">\n    <p>Más adelante, si la presión financiera en el sector se intensifica, no está claro que el legado material del auge se compare al de burbujas anteriores. De hecho, la construcción y la infraestructura representan solo una parte mínima del gasto de instalar capacidad de procesamiento de datos; casi tres cuartos de las inversiones consisten en equipos de tecnología de la información, sobre todo chips avanzados (unidades de procesamiento de gráficos). A diferencia de los cables de fibra óptica de la era de las punto com o de los ferrocarriles del siglo XIX, los chips para IA deben ser reemplazados con frecuencia ya que su desempeño se degrada y la tecnología mejora. Si debido a temas de rentabilidad las inversiones repentinamente se estancan, el achicamiento de la disponibilidad de IA en relación con su abundancia presente es una posibilidad material. En teoría, si la reducción de los gastos de capital superara la reducción de costos derivada de las mejoras en los procesos de IA, el legado de la bonanza de la IA no duraría mucho tiempo y la potencia computacional disponible para las consultas de IA habituales podría disminuir.</p>\n    <p>Este problema de obsolescencia tiene consecuencias financieras cruciales. De hecho, los préstamos de los centros de datos «son casi siempre préstamos no amortizables: los pagos no se destinan a reducir el importe adeudado. En su lugar, son un financiamiento perpetuo por lo que se asume que son activos perpetuos. La presunción es que al final del plazo del préstamo –en general, cinco a siete años– se refinanciará todo el saldo». Pero si los chips han perdido prácticamente todo su valor después de cinco años, ¿quién refinanciará un activo cuyo componente clave se ha depreciado casi por completo?</p>\n    <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>. Publicado originalmente en <em>Sidecar</em> (New Left Review).</p>\n  </div>\n  <ol class=\"clase-list\">\n    <li>Leés el tramo sobre la obsolescencia de los chips y la comparación con los ferrocarriles y la fibra óptica.</li>\n    <li>Discutimos si esa analogía se sostiene: ¿qué deja realmente una burbuja cuando se va?</li>\n    <li>Trabajamos los conectores contraargumentativos y consecutivos, que es lo que te permite refutar sin sonar agresivo.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 6,
+      "title": "Lo que queda después",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 06</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Bloque 7</span><span class=\"chip\"><b>Foco:</b> Contraargumentación</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> Desde «Más adelante, si la presión financiera en el sector se intensifica» hasta la pregunta sobre quién refinanciará el activo.</p>\n    <div class=\"reading\">\n      <p>Más adelante, si la presión financiera en el sector se intensifica, no está claro que el legado material del auge se compare al de burbujas anteriores. De hecho, la construcción y la infraestructura representan solo una parte mínima del gasto de instalar capacidad de procesamiento de datos; casi tres cuartos de las inversiones consisten en equipos de tecnología de la información, sobre todo chips avanzados (unidades de procesamiento de gráficos). A diferencia de los cables de fibra óptica de la era de las punto com o de los ferrocarriles del siglo XIX, los chips para IA deben ser reemplazados con frecuencia ya que su desempeño se degrada y la tecnología mejora. Si debido a temas de rentabilidad las inversiones repentinamente se estancan, el achicamiento de la disponibilidad de IA en relación con su abundancia presente es una posibilidad material. En teoría, si la reducción de los gastos de capital superara la reducción de costos derivada de las mejoras en los procesos de IA, el legado de la bonanza de la IA no duraría mucho tiempo y la potencia computacional disponible para las consultas de IA habituales podría disminuir.</p>\n      <p>Este problema de obsolescencia tiene consecuencias financieras cruciales. De hecho, los préstamos de los centros de datos «son casi siempre préstamos no amortizables: los pagos no se destinan a reducir el importe adeudado. En su lugar, son un financiamiento perpetuo por lo que se asume que son activos perpetuos. La presunción es que al final del plazo del préstamo –en general, cinco a siete años– se refinanciará todo el saldo». Pero si los chips han perdido prácticamente todo su valor después de cinco años, ¿quién refinanciará un activo cuyo componente clave se ha depreciado casi por completo?</p>\n      <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>.</p>\n    </div>\n    <ol class=\"clase-list\">\n      <li>Leés el tramo sobre la obsolescencia de los chips y la comparación con los ferrocarriles y la fibra óptica.</li>\n      <li>Discutimos si esa analogía se sostiene: ¿qué deja realmente una burbuja cuando se va?</li>\n      <li>Trabajamos los conectores contraargumentativos y consecutivos, que es lo que te permite refutar sin sonar agresivo.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "gap",
@@ -1186,8 +1206,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "La refutación",
+        "id": "w6",
         "tag": "Pieza 4 del texto final",
+        "title": "La refutación",
         "prompt": "Refutá el argumento más fuerte de la posición contraria. Formulalo primero con honestidad —en sus mejores términos— y recién después mostrá dónde falla.",
         "minWords": 150,
         "maxWords": 190,
@@ -1196,13 +1217,14 @@ window.COURSE_MODULES.push({
           "Un verbo de atribución.",
           "Ninguna palabra en inglés."
         ]
-      }
+      },
+      "taller": null
     },
     {
       "id": "l7",
-      "title": "Sesión 07 — Quién paga la cuenta",
-      "duration": "Condicionales e hipótesis",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Bloque 8 + texto complementario</span><span class=\"chip\"><b>Foco:</b> Condicionales e hipótesis</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> El cierre del artículo (energía, agua, tierras raras, cadenas de suministro) y el artículo de Natalia Zuazo sobre los centros de datos en América Latina.</p>\n  <div class=\"reading\">\n    <p>Y ni hablemos del estrés ecológico causado por la creciente demanda de tierra, energía y agua para gestionar centros de datos, que pone la totalidad de la fiebre por la IA en una posición insostenible. En ese contexto, la función ideológica del discurso sobre la conquista del espacio de las big tech es darle credibilidad a la fantasía de un futuro completamente digital. Como explica el Proyecto Suncatcher de Google, «la demanda de computación de IA –y de energía– continuará creciendo» y «en la órbita correcta, un panel solar puede ser hasta ocho veces más productivo que en la Tierra, y generar energía en forma casi continua, lo que reduce la necesidad de baterías’; en consecuencia, «en el futuro, el espacio puede ser el mejor lugar para escalar la computación de IA».</p>\n    <p>Aquí en la Tierra, la demanda creciente de energía barata y tierras raras se materializa en un imperialismo a la vieja usanza. La nueva doctrina de seguridad estadounidense dice con claridad que quiere «un hemisferio (…) que apoye las cadenas de suministro críticas». La captura del petróleo venezolano por parte del gobierno de Donald Trump y las reivindicaciones expansionistas sobre Groenlandia para obtener minerales críticos codiciados por los multimillonarios tecnológicos demuestran la gravedad de la situación. Si la IA continúa defraudando, las aventuras imperialistas bien podrían intensificarse; la búsqueda digital de quiméricos aumentos de eficiencia sería reemplazada por una carrera predatoria para reducir los costos, en una nueva era de lo que con agudeza David Harvey llamó «acumulación por desposesión».</p>\n    <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>. Publicado originalmente en <em>Sidecar</em> (New Left Review).</p>\n  </div>\n  <p class=\"lectura-extra\">Natalia Zuazo · «Inteligencia artificial y extractivismo digital»</p>\n  <ol class=\"clase-list\">\n    <li>Leés el cierre del artículo: el estrés ecológico, la demanda de tierras raras y lo que el autor llama acumulación por desposesión.</li>\n    <li>Leés un segundo texto, más corto, de Natalia Zuazo, sobre quién gana con los centros de datos en América Latina.</li>\n    <li>Discutimos qué le pasa a un país como Brasil en cada uno de los dos escenarios posibles.</li>\n    <li>Trabajamos las condicionales hipotéticas, que es como se escribe una conclusión que proyecta hacia adelante.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 7,
+      "title": "Quién paga la cuenta",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 07</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Bloque 8 + texto complementario</span><span class=\"chip\"><b>Foco:</b> Condicionales e hipótesis</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> El cierre del artículo (energía, agua, tierras raras, cadenas de suministro) y el artículo de Natalia Zuazo sobre los centros de datos en América Latina.</p>\n    <p class=\"lectura-extra\">Natalia Zuazo · «Inteligencia artificial y extractivismo digital» ↗</p>\n    <div class=\"reading\">\n      <p>Y ni hablemos del estrés ecológico causado por la creciente demanda de tierra, energía y agua para gestionar centros de datos, que pone la totalidad de la fiebre por la IA en una posición insostenible. En ese contexto, la función ideológica del discurso sobre la conquista del espacio de las big tech es darle credibilidad a la fantasía de un futuro completamente digital. Como explica el Proyecto Suncatcher de Google, «la demanda de computación de IA –y de energía– continuará creciendo» y «en la órbita correcta, un panel solar puede ser hasta ocho veces más productivo que en la Tierra, y generar energía en forma casi continua, lo que reduce la necesidad de baterías’; en consecuencia, «en el futuro, el espacio puede ser el mejor lugar para escalar la computación de IA».</p>\n      <p>Aquí en la Tierra, la demanda creciente de energía barata y tierras raras se materializa en un imperialismo a la vieja usanza. La nueva doctrina de seguridad estadounidense dice con claridad que quiere «un hemisferio (…) que apoye las cadenas de suministro críticas». La captura del petróleo venezolano por parte del gobierno de Donald Trump y las reivindicaciones expansionistas sobre Groenlandia para obtener minerales críticos codiciados por los multimillonarios tecnológicos demuestran la gravedad de la situación. Si la IA continúa defraudando, las aventuras imperialistas bien podrían intensificarse; la búsqueda digital de quiméricos aumentos de eficiencia sería reemplazada por una carrera predatoria para reducir los costos, en una nueva era de lo que con agudeza David Harvey llamó «acumulación por desposesión».</p>\n      <p class=\"reading-src\">Cédric Durand, «¿Superinteligencia o nueva burbuja capitalista?», <em>Nueva Sociedad</em>.</p>\n    </div>\n    <ol class=\"clase-list\">\n      <li>Leés el cierre del artículo: el estrés ecológico, la demanda de tierras raras y lo que el autor llama acumulación por desposesión.</li>\n      <li>Leés un segundo texto, más corto, de Natalia Zuazo, sobre quién gana con los centros de datos en América Latina.</li>\n      <li>Discutimos qué le pasa a un país como Brasil en cada uno de los dos escenarios posibles.</li>\n      <li>Trabajamos las condicionales hipotéticas, que es como se escribe una conclusión que proyecta hacia adelante.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "gap",
@@ -1371,8 +1393,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "La conclusión",
+        "id": "w7",
         "tag": "Pieza 5 del texto final",
+        "title": "La conclusión",
         "prompt": "Cerrá tu texto proyectando hacia adelante: si tenés razón, ¿qué pasa? Y en concreto, ¿qué le pasa a un país como Brasil? No repitas tu tesis con las mismas palabras de la introducción: llevala un paso más lejos.",
         "minWords": 130,
         "maxWords": 170,
@@ -1381,13 +1404,14 @@ window.COURSE_MODULES.push({
           "Una relativa con cuyo o con preposición + el cual.",
           "Ninguna palabra en inglés."
         ]
-      }
+      },
+      "taller": null
     },
     {
       "id": "l8",
-      "title": "Sesión 08 — El texto completo",
-      "duration": "Revisión y defensa",
-      "content": "<div class=\"sess-meta\"><span class=\"chip\"><b>Texto:</b> Cierre del recorrido</span><span class=\"chip\"><b>Foco:</b> Revisión y defensa</span></div>\n\n<div class=\"lane lane-clase\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <p class=\"lectura\"><b>Lectura:</b> Tu propio texto.</p>\n  <ol class=\"clase-list\">\n    <li>Leés tu texto completo en voz alta y lo defendés: tu profesora va a hacer de lector escéptico.</li>\n    <li>Comparás tu tesis final con la frase que dijiste en la primera clase, antes de leer nada.</li>\n    <li>Revisamos juntos los puntos donde la lengua traiciona al argumento.</li>\n  </ol>\n</div>\n\n<div class=\"lane lane-casa\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"ex-host\" id=\"ex-host\"></div>\n</div>\n",
+      "n": 8,
+      "title": "El texto completo",
+      "content": "<div class=\"shead\">\n  <div class=\"stag\">Sesión 08</div>\n  <div class=\"smeta\"><span class=\"chip\"><b>Texto:</b> Cierre del recorrido</span><span class=\"chip\"><b>Foco:</b> Revisión y defensa</span></div>\n</div>\n<div class=\"lane lane-c\">\n  <div class=\"lane-head\"><span class=\"lbl\">En clase</span><span class=\"sub\">oral, con tu profesora</span></div>\n  <div class=\"lane-body\">\n    <p class=\"lectura\"><b>Lectura:</b> Tu propio texto.</p>\n    <ol class=\"clase-list\">\n      <li>Leés tu texto completo en voz alta y lo defendés: tu profesora va a hacer de lector escéptico.</li>\n      <li>Comparás tu tesis final con la frase que dijiste en la primera clase, antes de leer nada.</li>\n      <li>Revisamos juntos los puntos donde la lengua traiciona al argumento.</li>\n    </ol>\n  </div>\n</div>\n\n<div class=\"lane lane-h\">\n  <div class=\"lane-head\"><span class=\"lbl\">En casa</span><span class=\"sub\">solo · las soluciones están acá</span></div>\n  <div class=\"lane-body\"><div class=\"ex-host\" id=\"ex-host\"></div></div>\n</div>\n",
       "exercises": [
         {
           "tipo": "opcion",
@@ -1499,8 +1523,9 @@ window.COURSE_MODULES.push({
         }
       ],
       "essay": {
-        "title": "Tu texto argumentativo",
+        "id": "w8",
         "tag": "Versión final",
+        "title": "Tu texto argumentativo",
         "prompt": "Pegá acá las cinco piezas en orden, revisadas y con las costuras arregladas: hacen falta transiciones entre párrafo y párrafo. El botón «Ver texto ensamblado» del taller te las junta para que tengas de dónde partir.",
         "minWords": 500,
         "maxWords": 650,
@@ -1509,281 +1534,46 @@ window.COURSE_MODULES.push({
           "Transiciones explícitas entre los párrafos.",
           "La lista de revisión, entera."
         ]
+      },
+      "taller": {
+        "k": "Taller",
+        "title": "Tu texto se arma solo",
+        "text": "Cada pieza que escribís se suma acá. Cuando estén las cinco, el botón te las junta en orden y ya tenés el borrador completo del que partir.",
+        "btn": "Ver texto ensamblado",
+        "empty": "Todavía no hay ninguna pieza escrita. Empezá por la introducción, en la sesión 3.",
+        "piezas": [
+          {
+            "n": 1,
+            "id": "w3",
+            "t": "Introducción y tesis",
+            "s": 3
+          },
+          {
+            "n": 2,
+            "id": "w4",
+            "t": "Tu argumento principal",
+            "s": 4
+          },
+          {
+            "n": 3,
+            "id": "w5",
+            "t": "La concesión",
+            "s": 5
+          },
+          {
+            "n": 4,
+            "id": "w6",
+            "t": "La refutación",
+            "s": 6
+          },
+          {
+            "n": 5,
+            "id": "w7",
+            "t": "La conclusión",
+            "s": 7
+          }
+        ]
       }
-    }
-  ],
-  "flashcards": [
-    {
-      "front": "valor de mercado",
-      "back": "lo que vale una empresa según su cotización<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "inversión fija",
-      "back": "capital puesto en instalaciones y equipos<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "desembolso",
-      "back": "el dinero que efectivamente se pone<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "flujo de caja",
-      "back": "el dinero que entra y sale de la operación<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "capital accionario",
-      "back": "financiación a cambio de participación en la empresa<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "endeudamiento",
-      "back": "financiarse pidiendo prestado<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "apalancamiento",
-      "back": "operar con dinero prestado para amplificar el resultado<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "rentabilidad",
-      "back": "la ganancia en relación con lo invertido<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "redituable",
-      "back": "que da ganancia<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "solvencia crediticia",
-      "back": "la capacidad de una empresa de responder por sus deudas<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "balance patrimonial",
-      "back": "el estado de lo que una empresa tiene y debe<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "tenedores de bonos",
-      "back": "quienes prestaron dinero comprando deuda<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "amortizar",
-      "back": "ir pagando el capital de un préstamo, no solo los intereses<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "refinanciar",
-      "back": "reemplazar una deuda que vence por otra nueva<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "saldo",
-      "back": "lo que todavía falta pagar<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "riesgo residual",
-      "back": "el riesgo que queda y que alguien tiene que asumir<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "capital privado",
-      "back": "fondos que invierten fuera de la bolsa<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "empresa conjunta",
-      "back": "sociedad entre dos compañías para un proyecto<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "arrendamiento",
-      "back": "alquiler de larga duración<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "garantía",
-      "back": "el compromiso que respalda una operación<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "ingeniería financiera",
-      "back": "el diseño de estructuras complejas para repartir riesgo<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "apuesta especulativa",
-      "back": "inversión que depende de que el precio siga subiendo<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "sobrevaluado",
-      "back": "que cotiza por encima de lo que vale<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "corrección del mercado",
-      "back": "caída brusca que ajusta precios inflados<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "desplome",
-      "back": "caída violenta<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "estallar",
-      "back": "reventar, dicho de una burbuja<small>Financiación y mercados</small>"
-    },
-    {
-      "front": "centros de datos",
-      "back": "las instalaciones donde corre el cómputo<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "capacidad de cómputo",
-      "back": "cuánto se puede procesar<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "hiperescaladores",
-      "back": "las grandes empresas que operan la nube a escala global<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "escalar",
-      "back": "ampliar capacidad<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "obsolescencia",
-      "back": "el hecho de quedar viejo y perder valor<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "depreciarse",
-      "back": "perder valor con el tiempo<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "activo perpetuo",
-      "back": "un bien que se supone que no pierde valor<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "legado",
-      "back": "lo que queda de un ciclo cuando termina<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "achicamiento",
-      "back": "reducción de la oferta disponible<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "consumo energético",
-      "back": "la energía que demanda una instalación<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "huella hídrica",
-      "back": "el agua que consume<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "estrés ecológico",
-      "back": "la presión sobre agua, tierra y energía<small>Infraestructura y cómputo</small>"
-    },
-    {
-      "front": "fuerza laboral",
-      "back": "el conjunto de trabajadores<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "desfase",
-      "back": "el retraso entre la inversión y el resultado<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "cosechar (beneficios)",
-      "back": "recoger el resultado de algo sembrado antes<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "disrupción",
-      "back": "cambio brusco que reordena un sector<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "desmoralización",
-      "back": "pérdida de sentido y de motivación en el trabajo<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "descalificante",
-      "back": "que hace perder oficio a quien lo hace<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "despidos",
-      "back": "desvinculaciones de personal<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "fidelizar",
-      "back": "lograr que el cliente no se vaya<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "costos de salida",
-      "back": "lo que cuesta abandonar un servicio<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "base de clientes",
-      "back": "el conjunto de usuarios de una empresa<small>Trabajo y productividad</small>"
-    },
-    {
-      "front": "cadenas de suministro",
-      "back": "la red de proveedores de la que depende una industria<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "tierras raras",
-      "back": "minerales críticos para la electrónica<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "extractivismo",
-      "back": "modelo económico basado en sacar recursos y exportarlos<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "desposesión",
-      "back": "despojo; quitar a alguien lo que tenía<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "contrapartidas",
-      "back": "lo que se exige a cambio de una concesión<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "marco regulatorio",
-      "back": "el conjunto de reglas que ordenan una actividad<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "reinversión",
-      "back": "volver a poner en el lugar las ganancias obtenidas<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "impacto socioambiental",
-      "back": "los efectos sobre la población y el ambiente<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "planificación",
-      "back": "organizar la inversión desde una decisión central<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "coordinación",
-      "back": "hacer que las partes no vayan cada una por su lado<small>Geopolítica y Sur global</small>"
-    },
-    {
-      "front": "sintomático",
-      "back": "que revela algo más grande<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "aleccionador",
-      "back": "que enseña algo, a menudo incómodo<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "elocuente",
-      "back": "que habla por sí solo<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "quimérico",
-      "back": "imposible, fantasioso<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "insostenible",
-      "back": "que no se puede mantener<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "exorbitante",
-      "back": "desmedido, fuera de toda escala<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "a perpetuidad",
-      "back": "para siempre, sin plazo<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "artificialmente",
-      "back": "de forma no natural, sostenido a propósito<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "matizar",
-      "back": "bajar la fuerza de lo que se afirmó<small>Valorar y argumentar</small>"
-    },
-    {
-      "front": "descartar",
-      "back": "rechazar una posibilidad<small>Valorar y argumentar</small>"
     }
   ]
 });
