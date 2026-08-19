@@ -329,9 +329,6 @@
           '<h1>' + mod.title + '</h1>' +
           '<p class="wb-lede">' + mod.description + '</p>' +
           (mod.heroLink ? '<p class="wb-link"><a href="' + mod.heroLinkUrl + '" target="_blank" rel="noopener">' + mod.heroLink + '</a></p>' : '') +
-          (mod.legend ? '<div class="wb-legend">' + mod.legend.map(function (t, i) {
-            return '<span><i class="dot ' + (i === 0 ? 'c' : 'h') + '"></i>' + t + '</span>';
-          }).join('') + '</div>' : '') +
           '<div class="mod-status">' + statusLabel + '<span class="thinbar"><span style="width:' + s.pct + '%"></span></span></div>' +
         '</div>';
     } else {

@@ -1030,24 +1030,6 @@ a:hover { color: var(--accent-hover); }
 .wb-head h1 em { font-style: italic; color: var(--accent); }
 .wb-lede { color: var(--mut-1); line-height: 1.7; max-width: 62ch; }
 .wb-link { font-size: 14px; margin-top: 10px; }
-.wb-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 22px;
-  font-size: 12.5px;
-  color: var(--mut-1);
-  margin-top: 14px;
-}
-.wb-legend .dot {
-  display: inline-block;
-  width: 9px; height: 9px;
-  border-radius: 2px;
-  margin-right: 7px;
-  vertical-align: 1px;
-}
-.wb-legend .dot.c { background: var(--accent); }
-.wb-legend .dot.h { background: #95580f; }
-
 .shead { margin-bottom: 20px; }
 .shead .stag {
   font-family: var(--mono);
@@ -1092,9 +1074,9 @@ a:hover { color: var(--accent-hover); }
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: .14em;
+  color: var(--ink);
 }
 .lane-c .lane-head .lbl { color: var(--accent); }
-.lane-h .lane-head .lbl { color: #95580f; }
 .lane-head .sub { font-size: 12.5px; color: var(--faint-1); }
 
 .lectura { font-size: 15px; line-height: 1.7; color: var(--mut-1); margin-bottom: 12px; }
