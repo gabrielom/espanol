@@ -19,6 +19,7 @@
   <header class="appbar" id="appbar" data-tauri-drag-region>
     <div class="appbar-left" data-tauri-drag-region>
       <span class="traffic-space" aria-hidden="true"></span>
+      <button type="button" class="toolbtn burger" id="burger-btn" data-sb="open" aria-label="Contenido del curso" hidden>☰</button>
       <a class="toolbtn back-btn" id="back-btn" href="#/" hidden>
         <span class="back-arrow" aria-hidden="true">←</span><span class="back-label" id="back-label">Inicio</span>
       </a>
@@ -38,7 +39,11 @@
     </div>
   </header>
 
-  <main class="wrap" id="app"></main>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar" hidden></aside>
+    <div class="scrim" id="scrim" hidden></div>
+    <main class="wrap" id="app"></main>
+  </div>
 
   <footer class="site-foot">
     Curso contrastivo PT-BR → ES · 9 módulos · 56 lecciones · Progreso guardado en tu navegador
@@ -71,6 +76,7 @@
   </script>
   <script src="js/sync.js"></script>
   <script src="js/exercises.js"></script>
+  <script src="js/sidebar.js"></script>
   <script src="js/course.js"></script>
   <script src="js/modules/module1.js"></script>
   <script src="js/modules/module2.js"></script>

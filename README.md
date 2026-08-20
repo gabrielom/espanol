@@ -77,6 +77,7 @@ css/styles.css        sistema visual minimalista (tokens tinta/acento, JetBrains
 fonts/                JetBrains Mono servida localmente (sin CDNs: la app es 100% autocontenida)
 js/sync.js            sincronización opcional entre dispositivos (gist secreto)
 js/exercises.js       cuaderno interactivo: ejercicios y taller (módulo 9)
+js/sidebar.js         barra lateral del curso (expandida / raíl / cajón)
 sw.js + manifest      PWA instalable y offline
 icons/                iconos de la app (PWA + Tauri)
 src-tauri/            envoltorio nativo de macOS (ventana sin barra de título)

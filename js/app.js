@@ -153,6 +153,7 @@
   function render(html) {
     app.innerHTML = html;
     updateTopbar();
+    if (typeof notifySidebar === "function") notifySidebar();
     window.scrollTo(0, 0);
   }
 
@@ -852,6 +853,42 @@
     if (parts[0] === "certificate") return viewCertificate();
     if (parts[0] === "sync" || parts[0] === "ajustes") return viewSync();
     viewHome();
+  }
+
+  /* ---------- Barra lateral ---------- */
+  if (window.Sidebar) {
+    Sidebar.init({
+      modules: function () { return MODULES; },
+      stats: moduleStats,
+      overall: overallPct,
+      lessonDone: isLessonDone,
+      quiz: quizResult,
+      essay: essayData,
+      // El módulo 9 lleva el título del cuaderno en HTML: la barra lo quiere plano
+      plainTitle: function (mod) {
+        return String(mod.title).replace(/<[^>]+>/g, "");
+      },
+      lessonLabel: function (mod, l, li) {
+        return (l.n ? "Sesión " + num2(l.n) : "Lección " + (li + 1)) + ": " + l.title;
+      },
+      essayLabel: function (l, li) {
+        return "Redacción " + (li + 1) + ": " + l.essay.title;
+      }
+    });
+  }
+
+  function notifySidebar() {
+    if (!window.Sidebar) return;
+    var h = location.hash.replace(/^#\/?/, "");
+    var p = h.split("/").filter(Boolean);
+    var view = "home", mid = "", lid = "";
+    if (p[0] === "module") { view = "module"; mid = p[1] || ""; }
+    else if (p[0] === "lesson") { view = "lesson"; mid = p[1] || ""; lid = p[2] || ""; }
+    else if (p[0] === "quiz") { view = "quiz"; mid = p[1] || ""; lid = p[2] || ""; }
+    else if (p[0] === "redaccion" || p[0] === "essay") { view = "essay"; mid = p[1] || ""; lid = p[2] || ""; }
+    else if (p[0] === "flashcards") { view = "flashcards"; mid = p[1] || ""; }
+    else if (p[0] === "certificate" || p[0] === "sync" || p[0] === "ajustes") view = "other";
+    Sidebar.update({ view: view, mid: mid, lid: lid });
   }
 
   window.addEventListener("hashchange", route);
