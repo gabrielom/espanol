@@ -70,9 +70,9 @@
 
   /* ---- Fusión grow-only ---- */
   function merge(a, b) {
-    a = a || { lessons: {}, quizzes: {}, essays: {}, name: "" };
-    b = b || { lessons: {}, quizzes: {}, essays: {}, name: "" };
-    var out = { lessons: {}, quizzes: {}, essays: {}, name: a.name || b.name || "" };
+    a = a || { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: "" };
+    b = b || { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: "" };
+    var out = { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: a.name || b.name || "" };
     var k;
     for (k in a.lessons) if (a.lessons[k]) out.lessons[k] = true;
     for (k in b.lessons) if (b.lessons[k]) out.lessons[k] = true;
@@ -100,6 +100,25 @@
       win = { text: win.text, words: win.words, done: !!(ea.done || eb.done), updatedAt: Math.max(ta, tb) };
       out.essays[k] = win;
     }
+    // Correcciones: registro que solo crece. Se unen por fecha+contenido,
+    // así la profesora puede corregir en su dispositivo y el alumno las recibe
+    // sin que ninguna de las dos partes pise el trabajo de la otra.
+    var ckeys = {};
+    for (k in a.corrections || {}) ckeys[k] = 1;
+    for (k in b.corrections || {}) ckeys[k] = 1;
+    for (k in ckeys) {
+      var ca = (a.corrections || {})[k] || [], cb = (b.corrections || {})[k] || [];
+      var seen = {}, merged = [];
+      ca.concat(cb).forEach(function (c) {
+        if (!c) return;
+        var id = (c.at || 0) + "|" + (c.grade || "") + "|" + (c.comment || "");
+        if (seen[id]) return;
+        seen[id] = 1;
+        merged.push(c);
+      });
+      merged.sort(function (x, y) { return (x.at || 0) - (y.at || 0); });
+      out.corrections[k] = merged;
+    }
     return out;
   }
 
@@ -113,7 +132,7 @@
       })[0];
       if (found) { setGistId(found.id); return found.id; }
       var files = {};
-      files[GIST_FILE] = { content: JSON.stringify({ lessons: {}, quizzes: {}, essays: {}, name: "" }, null, 2) };
+      files[GIST_FILE] = { content: JSON.stringify({ lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: "" }, null, 2) };
       return api("POST", "/gists", token, { description: GIST_DESC, "public": false, files: files })
         .then(function (g) { setGistId(g.id); return g.id; });
     });
