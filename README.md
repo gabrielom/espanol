@@ -24,6 +24,20 @@ despliega automáticamente en cada push a `main`).
 El progreso (lecciones completadas, notas de las evaluaciones y el nombre del certificado)
 se guarda en el `localStorage` del navegador.
 
+### Dos perfiles: alumno y profesora
+
+En **Ajustes** se elige quién usa el dispositivo — sin contraseñas ni cuentas.
+
+- **Alumno** (por defecto): el curso completo, con su progreso.
+- **Profesora**: lee las redacciones, les pone **nota y comentario** y los guarda en un
+  **registro con fecha** que solo crece — cada corrección se suma, ninguna reemplaza a la
+  anterior. Sus clics **no** marcan lecciones ni tests: el progreso del alumno no se toca.
+  Tiene además un índice (`#/correcciones`) con las 14 redacciones y su estado.
+
+Los dos perfiles comparten los mismos datos, así que con la sincronización activada la
+profesora corrige en su dispositivo y las notas aparecen en el del alumno. El perfil
+elegido vive solo en cada dispositivo: no se sincroniza.
+
 ### Sincronización entre dispositivos (opcional)
 
 Para continuar en el iPhone, iPad y Mac, la app puede sincronizar el progreso a través de

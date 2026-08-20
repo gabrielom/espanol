@@ -15,9 +15,9 @@
   function loadProgress() {
     try {
       var p = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-      return { lessons: p.lessons || {}, quizzes: p.quizzes || {}, essays: p.essays || {}, name: p.name || "" };
+      return { lessons: p.lessons || {}, quizzes: p.quizzes || {}, essays: p.essays || {}, corrections: p.corrections || {}, name: p.name || "" };
     } catch (e) {
-      return { lessons: {}, quizzes: {}, essays: {}, name: "" };
+      return { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: "" };
     }
   }
   function saveLocal(p) {
@@ -48,11 +48,13 @@
   function lessonKey(mid, lid) { return mid + "-" + lid; }
   function isLessonDone(mid, lid) { return !!progress.lessons[lessonKey(mid, lid)]; }
   function markLessonDone(mid, lid) {
+    if (!canEditProgress()) return;
     progress.lessons[lessonKey(mid, lid)] = true;
     saveProgress(progress);
   }
   function quizResult(mid, lid) { return progress.quizzes[lessonKey(mid, lid)] || null; }
   function setQuizResult(mid, lid, score, total) {
+    if (!canEditProgress()) return;
     var key = lessonKey(mid, lid);
     var pct = Math.round((score / total) * 100);
     var prev = progress.quizzes[key];
@@ -64,6 +66,43 @@
     saveProgress(progress);
   }
 
+  /* ---------- Perfil: alumno o profesora ----------
+     Vive solo en este dispositivo (no se sincroniza): el iPad de la
+     profesora es "profesora" y el tuyo "alumno", cada uno el suyo. */
+  var ROLE_KEY = "espanol-perfil";
+  function role() {
+    try { return localStorage.getItem(ROLE_KEY) === "profesora" ? "profesora" : "alumno"; }
+    catch (e) { return "alumno"; }
+  }
+  function setRole(r) {
+    try { localStorage.setItem(ROLE_KEY, r === "profesora" ? "profesora" : "alumno"); } catch (e) {}
+    document.body.classList.toggle("is-teacher", role() === "profesora");
+  }
+  function isTeacher() { return role() === "profesora"; }
+  // La profesora no avanza el curso por el alumno: sus clics no marcan progreso.
+  function canEditProgress() { return !isTeacher(); }
+
+  /* ---------- Correcciones (registro, append-only) ---------- */
+  function corrections(mid, lid) {
+    var c = progress.corrections[lessonKey(mid, lid)];
+    return Array.isArray(c) ? c : [];
+  }
+  function addCorrection(mid, lid, grade, comment) {
+    var key = lessonKey(mid, lid);
+    var list = corrections(mid, lid).slice();
+    list.push({ grade: String(grade || "").trim(), comment: String(comment || "").trim(), at: Date.now() });
+    progress.corrections[key] = list;
+    saveProgress(progress);
+  }
+  function lastCorrection(mid, lid) {
+    var l = corrections(mid, lid);
+    return l.length ? l[l.length - 1] : null;
+  }
+  function fmtDate(ts) {
+    return new Date(ts).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) +
+      " · " + new Date(ts).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  }
+
   /* ---------- Redacciones ---------- */
   function essayData(mid, lid) { return progress.essays[lessonKey(mid, lid)] || null; }
   function countWords(t) {
@@ -71,6 +110,7 @@
     return m ? m.length : 0;
   }
   function saveEssay(mid, lid, text, done) {
+    if (!canEditProgress()) return;
     var key = lessonKey(mid, lid);
     var prev = progress.essays[key] || {};
     progress.essays[key] = {
@@ -634,24 +674,38 @@
             '<span class="essay-count" id="essay-count"></span>' +
             '<span class="essay-saved" id="essay-saved"></span>' +
           '</div>' +
-          '<textarea id="essay-text" class="essay-text" spellcheck="true" lang="es" placeholder="Escribe aquí tu redacción…">' + esc(saved.text) + '</textarea>' +
+          '<textarea id="essay-text" class="essay-text" spellcheck="true" lang="es"' +
+            (isTeacher() ? ' readonly' : '') +
+            ' placeholder="' + (isTeacher() ? 'El alumno todavía no ha escrito nada.' : 'Escribe aquí tu redacción…') + '">' + esc(saved.text) + '</textarea>' +
         '</div>' +
 
-        '<div class="essay-actions">' +
-          '<button class="btn" id="essay-done">' + (saved.done ? "Marcar como borrador" : "Marcar como entregada") + '</button>' +
-          '<button class="btn ghost" id="essay-copy">Copiar texto</button>' +
-          '<button class="btn ghost" id="essay-print">Imprimir / PDF</button>' +
-        '</div>' +
-        '<p class="essay-note">Se guarda sola en este dispositivo mientras escribes y, si tienes la sincronización activada, viaja a tus otros dispositivos. Para entregarla, cópiala o imprímela y mándasela a tu profesora.</p>' +
+        (isTeacher() ? '' :
+          '<div class="essay-actions">' +
+            '<button class="btn" id="essay-done">' + (saved.done ? "Marcar como borrador" : "Marcar como entregada") + '</button>' +
+            '<button class="btn ghost" id="essay-copy">Copiar texto</button>' +
+            '<button class="btn ghost" id="essay-print">Imprimir / PDF</button>' +
+          '</div>' +
+          '<p class="essay-note">Se guarda sola en este dispositivo mientras escribes y, si tienes la sincronización activada, viaja a tus otros dispositivos.</p>') +
+
+        correctionsHTML(mid, lid) +
       '</div>' +
       '</div>'
     );
+
+    wireCorrections(mid, lid);
 
     var ta = document.getElementById("essay-text");
     var countEl = document.getElementById("essay-count");
     var savedEl = document.getElementById("essay-saved");
     var doneBtn = document.getElementById("essay-done");
     var timer = null;
+
+    if (isTeacher()) {
+      var w0 = countWords(ta.value);
+      countEl.textContent = w0 + " / " + e.minWords + "–" + e.maxWords + " palabras";
+      savedEl.textContent = saved.done ? "Entregada" : (w0 ? "Borrador" : "Sin empezar");
+      return;
+    }
 
     function refreshCount() {
       var w = countWords(ta.value);
@@ -699,6 +753,102 @@
       if (timer) { clearTimeout(timer); timer = null; flushSave(); }
       window.print();
     });
+  }
+
+  /* ---------- Panel de correcciones ---------- */
+  function correctionsHTML(mid, lid) {
+    var list = corrections(mid, lid);
+    var h = '<div class="corr">';
+    h += '<h2 class="settings-h2">Correcciones</h2>';
+
+    if (!list.length) {
+      h += '<p class="corr-empty">' + (isTeacher()
+        ? 'Todavía no has corregido esta redacción.'
+        : 'Tu profesora todavía no ha corregido esta redacción.') + '</p>';
+    } else {
+      h += '<ol class="corr-list">';
+      list.slice().reverse().forEach(function (c) {
+        h += '<div class="corr-item">' +
+          '<div class="corr-top">' +
+            (c.grade ? '<span class="corr-grade">' + esc(c.grade) + '</span>' : '<span class="corr-grade none">sin nota</span>') +
+            '<span class="corr-date">' + fmtDate(c.at) + '</span>' +
+          '</div>' +
+          (c.comment ? '<p class="corr-comment">' + esc(c.comment) + '</p>' : '') +
+          '</div>';
+      });
+      h += '</ol>';
+    }
+
+    if (isTeacher()) {
+      h += '<div class="corr-form">' +
+        '<label class="sync-label" for="corr-grade">Nota</label>' +
+        '<input type="text" id="corr-grade" class="corr-grade-input" placeholder="p. ej. 8,5 o Aprobada" autocomplete="off">' +
+        '<label class="sync-label" for="corr-comment">Comentario</label>' +
+        '<textarea id="corr-comment" class="corr-textarea" placeholder="Qué está bien, qué corregir, qué practicar…"></textarea>' +
+        '<button class="btn" id="corr-save">Guardar corrección</button>' +
+        '<p class="corr-note">Cada corrección se guarda con su fecha y se suma al registro: las anteriores no se pierden.</p>' +
+        '</div>';
+    }
+    return h + '</div>';
+  }
+
+  function wireCorrections(mid, lid) {
+    var btn = document.getElementById("corr-save");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var g = document.getElementById("corr-grade").value;
+      var c = document.getElementById("corr-comment").value;
+      if (!g.trim() && !c.trim()) { alert("Pon al menos una nota o un comentario."); return; }
+      addCorrection(mid, lid, g, c);
+      viewEssay(mid, lid);
+    });
+  }
+
+  /* ---------- Vista: registro de correcciones (profesora) ---------- */
+  function viewCorrections() {
+    var rows = "";
+    var total = 0, corrected = 0;
+    MODULES.forEach(function (mod, mi) {
+      var items = mod.lessons.filter(function (l) { return !!l.essay; });
+      if (!items.length) return;
+      rows += '<div class="corr-mod"><h3>Módulo ' + num2(mi + 1) + ' · ' + esc(String(mod.title).replace(/<[^>]+>/g, "")) + '</h3>';
+      mod.lessons.forEach(function (l, li) {
+        if (!l.essay) return;
+        total++;
+        var e = essayData(mod.id, l.id);
+        var last = lastCorrection(mod.id, l.id);
+        if (last) corrected++;
+        var words = e && e.words ? e.words : 0;
+        var state = !words ? '<span class="lrow-meta muted">Sin empezar</span>'
+          : (e && e.done ? '<span class="lrow-meta accent">Entregada · ' + words + ' palabras</span>'
+                         : '<span class="lrow-meta">Borrador · ' + words + ' palabras</span>');
+        rows += '<a class="corr-row" href="#/redaccion/' + mod.id + '/' + l.id + '">' +
+          '<div class="corr-row-main">' +
+            '<span class="eyebrow">' + esc(l.essay.tag || ('Redacción ' + (li + 1))) + '</span>' +
+            '<h4>' + esc(l.essay.title) + '</h4>' +
+          '</div>' +
+          '<div class="corr-row-side">' + state +
+            (last
+              ? '<span class="corr-badge">' + (last.grade ? esc(last.grade) : 'corregida') + '</span>'
+              : '<span class="corr-badge pending">sin corregir</span>') +
+          '</div>' +
+        '</a>';
+      });
+      rows += '</div>';
+    });
+
+    setBack("#/", "Inicio");
+    render(
+      '<div class="col-760">' +
+      backLink("#/", "Inicio") +
+      '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Correcciones</div>' +
+      '<div class="module-head">' +
+        '<h1>Redacciones para corregir</h1>' +
+        '<p>' + corrected + ' de ' + total + ' con corrección. Al abrir una verás el texto del alumno y podrás ponerle nota y comentario.</p>' +
+      '</div>' +
+      '<div class="corr-index">' + rows + '</div>' +
+      '</div>'
+    );
   }
 
   /* ---------- Vista: certificado ---------- */
@@ -812,12 +962,31 @@
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Ajustes</div>' +
       '<div class="sync-view">' +
         '<h1>Ajustes</h1>' +
+        '<h2 class="settings-h2">¿Quién usa este dispositivo?</h2>' +
+        '<div class="role-pick">' +
+          '<button type="button" class="role-opt' + (isTeacher() ? '' : ' on') + '" data-role="alumno">' +
+            '<span class="role-name">Alumno</span>' +
+            '<span class="role-desc">Haces el curso: lecciones, tests y redacciones. Tu progreso se guarda y se sincroniza.</span>' +
+          '</button>' +
+          '<button type="button" class="role-opt' + (isTeacher() ? ' on' : '') + '" data-role="profesora">' +
+            '<span class="role-name">Profesora</span>' +
+            '<span class="role-desc">Lee las redacciones, las corrige y les pone nota. No marca lecciones ni tests: el progreso del alumno no se toca.</span>' +
+          '</button>' +
+        '</div>' +
+        (isTeacher() ? '<p class="role-note"><a href="#/correcciones">Ir a las redacciones para corregir →</a></p>' : '') +
         '<h2 class="settings-h2">Sincronizar dispositivos</h2>' +
         '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
         (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl)) +
       '</div>' +
       '</div>'
     );
+
+    app.querySelectorAll("[data-role]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        setRole(b.dataset.role);
+        viewSync();
+      });
+    });
 
     if (!configured) {
       document.getElementById("sync-connect").addEventListener("click", function () {
@@ -850,6 +1019,7 @@
     if (parts[0] === "quiz" && parts[1] && parts[2]) return viewQuiz(parts[1], parts[2]);
     if (parts[0] === "flashcards" && parts[1]) return viewFlashcards(parts[1]);
     if ((parts[0] === "redaccion" || parts[0] === "essay") && parts[1] && parts[2]) return viewEssay(parts[1], parts[2]);
+    if (parts[0] === "correcciones") return viewCorrections();
     if (parts[0] === "certificate") return viewCertificate();
     if (parts[0] === "sync" || parts[0] === "ajustes") return viewSync();
     viewHome();
@@ -890,6 +1060,8 @@
     else if (p[0] === "certificate" || p[0] === "sync" || p[0] === "ajustes") view = "other";
     Sidebar.update({ view: view, mid: mid, lid: lid });
   }
+
+  document.body.classList.toggle("is-teacher", isTeacher());
 
   window.addEventListener("hashchange", route);
   document.getElementById("brand").addEventListener("click", function () { location.hash = "#/"; });

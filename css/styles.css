@@ -1476,6 +1476,157 @@ body.sb-drawer .sb-row { min-height: 44px; align-items: center; }
   body.sb-drawer .sidebar, .scrim { transition: none; }
 }
 
+/* ---------- Perfil y correcciones ---------- */
+.role-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+.role-opt {
+  text-align: left;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background: #fff;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: border-color .12s ease, background .12s ease;
+}
+.role-opt:hover { border-color: var(--ink); }
+.role-opt.on { border-color: var(--accent); background: #fafbff; }
+.role-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.role-opt.on .role-name::after {
+  content: " ✓";
+  color: var(--accent);
+}
+.role-desc { display: block; font-size: 13px; line-height: 1.55; color: var(--mut-3); }
+.role-note { font-size: 14px; margin-bottom: 4px; }
+
+/* Cinta de perfil en la barra, para no corregir creyendo que estudias */
+body.is-teacher .appbar::after {
+  content: "PROFESORA";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -1px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .16em;
+  color: var(--accent);
+  background: #eef0fc;
+  border: 1px solid #d5d9f4;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  padding: 1px 8px;
+  pointer-events: none;
+}
+.appbar { position: sticky; }
+
+.corr { margin-top: 30px; padding-top: 6px; }
+.corr-empty { font-size: 14px; color: var(--faint-1); }
+.corr-list { list-style: none; margin: 0; }
+.corr-item {
+  border: 1px solid var(--hairline);
+  border-left: 2px solid var(--accent);
+  background: var(--callout-bg);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.corr-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.corr-grade {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent);
+}
+.corr-grade.none { font-size: 11px; color: var(--faint-2); text-transform: uppercase; letter-spacing: .1em; }
+.corr-date {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--faint-2);
+}
+.corr-comment { font-size: 14.5px; line-height: 1.7; color: var(--body); white-space: pre-wrap; }
+
+.corr-form {
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+.corr-grade-input {
+  font-family: var(--sans);
+  font-size: 15px;
+  padding: 9px 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 2px;
+  width: 220px;
+  max-width: 100%;
+  margin-bottom: 14px;
+  color: var(--ink);
+}
+.corr-grade-input:focus, .corr-textarea:focus { outline: none; border-color: var(--accent); }
+.corr-textarea {
+  display: block;
+  width: 100%;
+  min-height: 130px;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--body);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 11px 13px;
+  margin-bottom: 14px;
+  resize: vertical;
+}
+.corr-note { font-size: 12px; line-height: 1.6; color: var(--faint-1); margin-top: 12px; }
+
+/* Índice de correcciones */
+.corr-index { margin-top: 8px; }
+.corr-mod { margin-bottom: 30px; }
+.corr-mod h3 {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--faint-1);
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+.corr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--hairline);
+  color: inherit;
+}
+.corr-row:last-child { border-bottom: 1px solid var(--hairline); }
+.corr-row:hover h4 { color: var(--accent-hover); }
+.corr-row-main { min-width: 0; }
+.corr-row-main .eyebrow { display: block; margin-bottom: 3px; font-size: 10.5px; }
+.corr-row-main h4 { font-size: 15.5px; font-weight: 500; color: var(--ink-2); line-height: 1.35; }
+.corr-row-side { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+.corr-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  border: 1px solid #d5d9f4;
+  background: #f4f6fe;
+  border-radius: 3px;
+  padding: 3px 9px;
+}
+.corr-badge.pending { color: var(--faint-2); border-color: var(--hairline); background: #fff; }
+
+@media (max-width: 640px) {
+  .role-pick { grid-template-columns: 1fr; }
+  .corr-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
 /* ---------- Footer ---------- */
 .site-foot {
   font-family: var(--mono);
