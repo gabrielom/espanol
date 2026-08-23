@@ -52,21 +52,27 @@ jobs:
         run: |
           set -eu
           bundle=src-tauri/target/universal-apple-darwin/release/bundle
-          app="$bundle/macos/Español para brasileños.app"
+          # El .app lleva el productName (con tildes) y el ejecutable de dentro
+          # lleva el nombre del paquete de Cargo: se descubren, no se adivinan.
+          app=$(find "$bundle/macos" -maxdepth 1 -name '*.app' -print -quit)
+          exe=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")
+          echo "── bundle: $app (ejecutable: $exe)"
           echo "── arquitecturas"
-          lipo -info "$app/Contents/MacOS/Español para brasileños"
+          lipo -info "$app/Contents/MacOS/$exe"
           echo "── firma"
-          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign --verify --strict --verbose=2 "$app"
+          echo "── icono"
+          test -s "$app/Contents/Resources/icon.icns" && echo "icon.icns presente"
           echo "── tamaño"
           du -sh "$app" "$bundle"/dmg/*.dmg
 
       - name: Comprimir el .app
         run: |
+          set -eu
           bundle=src-tauri/target/universal-apple-darwin/release/bundle
+          app=$(find "$bundle/macos" -maxdepth 1 -name '*.app' -print -quit)
           mkdir -p out
-          ditto -c -k --sequesterRsrc --keepParent \
-            "$bundle/macos/Español para brasileños.app" \
-            "out/Espanol-para-brasilenos.app.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$app" "out/Espanol-para-brasilenos.app.zip"
           cp "$bundle"/dmg/*.dmg "out/Espanol-para-brasilenos.dmg"
           ls -lh out
 
