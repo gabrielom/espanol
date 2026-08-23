@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Lo mínimo para que la barra de la app pueda mover la ventana. Sin este archivo Tauri no concede ningún permiso, y arrastrar por data-tauri-drag-region falla en silencio.",
+  "windows": ["main"],
+  "permissions": [
+    "core:window:allow-start-dragging",
+    "core:window:allow-internal-toggle-maximize"
+  ]
+}

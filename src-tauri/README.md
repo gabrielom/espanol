@@ -122,7 +122,32 @@ En el lado web:
   Linux y en el navegador ese hueco **no** existe.
 ## Arrastrar la ventana
 
-Lo decide `data-tauri-drag-region` en el HTML — **no el CSS**. `-webkit-app-region`
+Hacen falta **dos cosas**, y sin cualquiera de ellas no pasa nada al arrastrar.
+
+### 1. El permiso (`capabilities/default.json`)
+
+`data-tauri-drag-region` no mueve la ventana por su cuenta: llama a un comando
+de Tauri, y en Tauri v2 los comandos están cerrados por defecto. Si no hay
+carpeta `capabilities/`, **no se concede ningún permiso** y el arrastre falla
+en silencio — sin error, sin nada en la consola.
+
+Y no basta con el conjunto por defecto: `core:window:default` solo trae
+lectores (`allow-title`, `allow-is-maximized`…) y `allow-internal-toggle-maximize`;
+**`allow-start-dragging` no está incluido**. Hay que pedirlo a mano:
+
+```json
+"permissions": [
+  "core:window:allow-start-dragging",
+  "core:window:allow-internal-toggle-maximize"
+]
+```
+
+El segundo es el que hace que doble clic en la barra maximice, como en
+cualquier ventana de macOS. La capacidad apunta a `"windows": ["main"]`, que es
+la etiqueta de nuestra ventana (fijada explícitamente en `tauri.conf.json`;
+es también el valor por defecto de Tauri).
+
+### 2. El atributo en el HTML — **no el CSS** `-webkit-app-region`
 es cosa de Chromium y en macOS la app corre sobre WKWebView, donde esa propiedad
 sencillamente no existe: ponerla no hace nada.
 
