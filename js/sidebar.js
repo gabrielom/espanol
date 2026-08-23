@@ -13,6 +13,7 @@
 
   var KEY_EXPANDED = "sidebar:expanded";
   var KEY_OPEN = "sidebar:open-modules";
+  var KEY_SCROLL = "sidebar:scroll";
 
   var api = null;          // funciones de estado que inyecta app.js
   var ctx = { view: "", mid: "", lid: "" };
@@ -32,6 +33,34 @@
   }
   function saveOpen(o) {
     try { localStorage.setItem(KEY_OPEN, JSON.stringify(o)); } catch (e) {}
+  }
+
+  /* ---------- Posición de la lista ----------
+     Cada render rehace el HTML de la barra, y con él se perdía el scroll:
+     cambiar de lección te devolvía al principio de la lista. Se anota
+     mientras el usuario hace scroll y se repone después de cada render, así
+     que la barra solo se mueve cuando lo decides tú.
+     Se guarda por modo (lista expandida y raíl tienen alturas muy distintas)
+     y en sessionStorage, para que un recargado no la mueva tampoco. */
+  var scrollAt = { list: 0, rail: 0 };
+  try {
+    var saved = JSON.parse(sessionStorage.getItem(KEY_SCROLL));
+    if (saved && typeof saved === "object") {
+      scrollAt.list = +saved.list || 0;
+      scrollAt.rail = +saved.rail || 0;
+    }
+  } catch (e) {}
+
+  function rememberScroll(el) {
+    var box = el.querySelector(".sb-list") || el.querySelector(".sb-rail");
+    if (!box) return;
+    var key = box.classList.contains("sb-list") ? "list" : "rail";
+    // El navegador recorta solo si la lista es más corta que la posición.
+    box.scrollTop = scrollAt[key];
+    box.addEventListener("scroll", function () {
+      scrollAt[key] = box.scrollTop;
+      try { sessionStorage.setItem(KEY_SCROLL, JSON.stringify(scrollAt)); } catch (e) {}
+    });
   }
 
   function isTouchTablet() {
@@ -201,6 +230,7 @@
     } else {
       el.innerHTML = exp ? expandedHTML() : collapsedHTML();
     }
+    rememberScroll(el);
   }
 
   /* ---------- Eventos ---------- */
