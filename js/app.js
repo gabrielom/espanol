@@ -237,13 +237,13 @@
           ? '<span class="card-status pct">' + s.pct + '%</span>'
           : '<span class="card-status new">Nuevo</span>';
       return (
-        '<div class="card" role="link" tabindex="0" onclick="location.hash=\'#/module/' + mod.id + '\'" onkeydown="if(event.key===\'Enter\')location.hash=\'#/module/' + mod.id + '\'">' +
+        '<a class="card" href="#/module/' + mod.id + '">' +
           '<div class="card-top"><span class="eyebrow">Módulo ' + num2(i + 1) + '</span>' + status + '</div>' +
           '<h3>' + (mod.eyebrow ? mod.title : esc(mod.title)) + '</h3>' +
           '<p>' + (mod.eyebrow ? mod.description : esc(mod.description)) + '</p>' +
           '<div class="card-meta">' + mod.lessons.length + ' lecciones · ' + mod.lessons.length + ' evaluaciones · tarjetas</div>' +
           '<div class="bar"><span style="width:' + s.pct + '%"></span></div>' +
-        '</div>'
+        '</a>'
       );
     }).join("");
 
@@ -288,14 +288,14 @@
           ? '<span class="lrow-meta">Borrador · ' + e.words + ' palabras</span>'
           : '<span class="lrow-meta muted">Sin empezar</span>');
     return (
-      '<div class="lrow sub" onclick="location.hash=\'#/redaccion/' + mid + "/" + l.id + '\'">' +
+      '<a class="lrow sub" href="#/redaccion/' + mid + "/" + l.id + '">' +
         '<div class="mark eval' + (done ? " passed" : "") + '">✓</div>' +
         '<div class="lrow-body">' +
           '<span class="eyebrow">Redacci\u00f3n ' + (i + 1) + '</span>' +
           '<h4>Escrita: ' + esc(l.essay.title) + '</h4>' +
         '</div>' +
         meta +
-      '</div>'
+      '</a>'
     );
   }
 
@@ -323,24 +323,24 @@
             : '<span class="lrow-meta">Último intento · ' + q.pct + '%</span>')
         : '<span class="lrow-meta muted">Sin intentos</span>';
       var quizRow = !l.quiz ? "" : (
-          '<div class="lrow sub" onclick="location.hash=\'#/quiz/' + mod.id + "/" + l.id + '\'">' +
+          '<a class="lrow sub" href="#/quiz/' + mod.id + "/" + l.id + '">' +
             '<div class="mark eval' + (qPassed ? " passed" : "") + '">✓</div>' +
             '<div class="lrow-body">' +
               '<span class="eyebrow">Evaluación ' + (i + 1) + '</span>' +
               '<h4>Test: ' + esc(l.title) + '</h4>' +
             '</div>' +
             quizMeta +
-          '</div>');
+          '</a>');
       rows +=
         '<div class="lgroup">' +
-          '<div class="lrow" onclick="location.hash=\'#/lesson/' + mod.id + "/" + l.id + '\'">' +
+          '<a class="lrow" href="#/lesson/' + mod.id + "/" + l.id + '">' +
             '<div class="mark' + (done ? " done" : "") + '">✓</div>' +
             '<div class="lrow-body">' +
               '<span class="eyebrow">' + (l.n ? 'Sesión ' + num2(l.n) : 'Lección ' + (i + 1)) + '</span>' +
               '<h4>' + esc(l.title) + '</h4>' +
             '</div>' +
             (l.duration ? '<span class="lrow-meta">' + esc(l.duration) + '</span>' : '<span class="lrow-meta"></span>') +
-          '</div>' +
+          '</a>' +
           quizRow +
           (l.essay ? essayRow(mod.id, l, i) : "") +
         '</div>';
@@ -349,14 +349,14 @@
     if (mod.flashcards && mod.flashcards.length) {
       rows +=
         '<div class="lgroup">' +
-          '<div class="lrow" onclick="location.hash=\'#/flashcards/' + mod.id + '\'">' +
+          '<a class="lrow" href="#/flashcards/' + mod.id + '">' +
             '<div class="mark square"></div>' +
             '<div class="lrow-body">' +
               '<span class="eyebrow">Estudio libre</span>' +
               '<h4>Tarjetas de repaso del módulo</h4>' +
             '</div>' +
             '<span class="lrow-meta">' + mod.flashcards.length + ' tarjetas</span>' +
-          '</div>' +
+          '</a>' +
         '</div>';
     }
 
@@ -555,7 +555,7 @@
                   : '<a class="btn" href="#/">Volver al programa</a>'));
         }
       } else {
-        nextBtn = '<button class="btn" onclick="location.reload()">Intentar de nuevo</button>';
+        nextBtn = '<button class="btn" id="quiz-retry">Intentar de nuevo</button>';
       }
 
       document.getElementById("quiz-result").innerHTML =
@@ -566,6 +566,8 @@
             : "Acertaste " + score + " de " + quiz.questions.length + ". Necesitas " + META.passScore + "% — revisa las explicaciones y vuelve a intentarlo.") + '</p>' +
           '<p style="margin-top:16px">' + nextBtn + '</p>' +
         '</div>';
+      var retry = document.getElementById("quiz-retry");
+      if (retry) retry.addEventListener("click", function () { location.reload(); });
       document.getElementById("btn-submit").style.display = "none";
       updateTopbar();
       document.getElementById("quiz-result").scrollIntoView({ behavior: "smooth" });
@@ -906,7 +908,7 @@
         '<p>completó con éxito los ' + MODULES.length + ' módulos y las ' + lessonsTotal + ' evaluaciones del curso contrastivo de español para hablantes de portugués brasileño, con nota mínima de ' + META.passScore + '% en cada una.</p>' +
         '<p class="cert-date">' + dateStr + '</p>' +
       '</div>' +
-      '<p style="text-align:center;margin-top:26px"><button class="btn ghost" onclick="window.print()">Imprimir / guardar PDF</button></p>' +
+      '<p style="text-align:center;margin-top:26px"><button class="btn ghost" id="cert-print">Imprimir / guardar PDF</button></p>' +
       '</div>'
     );
 
@@ -916,6 +918,7 @@
       saveProgress(progress);
       document.getElementById("cert-display").textContent = v || "________________";
     });
+    document.getElementById("cert-print").addEventListener("click", function () { window.print(); });
   }
 
   /* ---------- Vista: sincronización ---------- */
