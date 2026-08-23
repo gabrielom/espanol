@@ -26,7 +26,11 @@ se guarda en el `localStorage` del navegador.
 
 ### Dos perfiles: alumno y profesora
 
-En **Ajustes** se elige quién usa el dispositivo — sin contraseñas ni cuentas.
+En **Ajustes** se elige quién usa el dispositivo — sin contraseñas ni cuentas. El
+engranaje de la barra abre Ajustes como una caja de luz sobre lo que estés haciendo:
+como no cambia de ruta, volver a pulsarlo te deja en la misma página y en el mismo
+punto. En el móvil no hay sitio para una caja, así que ahí sigue siendo una página
+(`#/ajustes`).
 
 - **Alumno** (por defecto): el curso completo, con su progreso.
 - **Profesora**: lee las redacciones, les pone **nota y comentario** y los guarda en un

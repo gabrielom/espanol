@@ -1627,8 +1627,91 @@ body.is-teacher .appbar::after {
   .corr-row { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 
+/* ---------- Caja de luz (Ajustes) ----------
+   Flota sobre la interfaz sin tocar la ruta, así que al cerrarla vuelves
+   exactamente a donde estabas. El velo arranca bajo la barra superior —igual
+   que el del cajón lateral— para que el engranaje siga a la vista y sirva
+   de interruptor. En el móvil no se usa: ahí Ajustes es una página. */
+/* El contenedor cubre la ventana entera pero no intercepta nada: solo el velo
+   y el panel reciben clics. Si no, la franja de la barra superior quedaría
+   tapada y el engranaje no podría cerrar lo que abrió. */
+.lightbox { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+.lightbox-veil {
+  position: absolute;
+  inset: var(--appbar-h) 0 0 0;
+  background: var(--ink);
+  opacity: .28;
+  pointer-events: auto;
+  animation: lb-veil .18s ease-out;
+}
+.lightbox-panel {
+  position: absolute;
+  top: calc(var(--appbar-h) + 26px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(620px, calc(100vw - 48px));
+  max-height: calc(100vh - var(--appbar-h) - 52px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  box-shadow: 0 18px 48px rgba(20, 20, 20, .16), 0 2px 6px rgba(20, 20, 20, .06);
+  outline: none;
+  pointer-events: auto;
+  animation: lb-panel .2s cubic-bezier(.2, .7, .3, 1);
+}
+.lightbox-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.lightbox-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+.lightbox-x {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--mut-3);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease;
+}
+.lightbox-x:hover { color: var(--ink); border-color: var(--card-border); }
+.lightbox-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 22px 22px;
+}
+/* Dentro de la caja el primer encabezado ya no necesita separarse del h1. */
+.lightbox-body .settings-h2:first-child { margin-top: 18px; }
+body.lightbox-open { overflow: hidden; }
+
+@keyframes lb-veil { from { opacity: 0; } }
+@keyframes lb-panel { from { opacity: 0; transform: translate(-50%, -8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-veil, .lightbox-panel { animation: none; }
+}
+
 /* ---------- Focus visibility ---------- */
-.btn:focus-visible, .opt:focus-visible, .flashcard:focus-visible, .card:focus-visible {
+.btn:focus-visible, .opt:focus-visible, .flashcard:focus-visible, .card:focus-visible,
+.lightbox-x:focus-visible, .role-opt:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
@@ -1687,7 +1770,7 @@ body.is-teacher .appbar::after {
 }
 
 @media print {
-  .appbar, .lesson-nav, .btn, .crumbs, .back-link, .cert-form { display: none !important; }
+  .appbar, .lesson-nav, .btn, .crumbs, .back-link, .cert-form, .lightbox { display: none !important; }
   body { background: #fff; }
   .certificate { border: 1px solid #141414; }
 }
