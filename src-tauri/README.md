@@ -79,27 +79,36 @@ que es la proporción que usa el sistema. `icon.icns` lleva las diez variantes
   renderiza.
 - **`hiddenTitle: true`**: oculta el texto del título; el nombre del producto en
   la barra de la app es el único título.
-- **`trafficLightPosition: { x: 9, y: 22 }`**: los centra a media altura de
+- **`trafficLightPosition: { x: 9, y: 30.5 }`**: los centra a media altura de
   nuestra barra. Sin esto macOS los coloca donde irían en una barra de título
   normal (28 pt), y en una barra de 57 pt quedan demasiado arriba.
 
-### De dónde sale ese 22
+### De dónde sale ese 30,5
 
-`y` es la distancia desde el borde superior de la ventana hasta el borde
-superior de los botones. Se ve en `tao`
-(`platform_impl/macos/view.rs`, `inset_traffic_lights`): pone el contenedor de
-la barra de título a `alto_del_botón + y` y lo pega arriba del todo, así que
-el hueco que queda por encima del botón es exactamente `y`.
+Cuidado, porque `y` **no** es la distancia hasta el borde superior del botón,
+que es lo que uno supondría leyendo `inset_traffic_lights` en `tao`
+(`platform_impl/macos/view.rs`): esa función pone el contenedor de la barra de
+título a `alto_del_botón + y` y lo pega arriba del todo, pero **el botón
+conserva su origen dentro del contenedor** (8 pt), así que solo baja `y − 8`.
 
-Los semáforos miden 12 pt y `--appbar-h` son 57 px:
+Medido sobre la ventana real, con los semáforos a 12 pt:
+
+| `y` | centro del botón desde el borde superior |
+|---|---|
+| sin fijar | ≈ 16 pt (lo que pone macOS) |
+| 22 | 20 pt |
+
+De ahí sale la relación, y de ella la fórmula:
 
 ```
-y = (57 − 12) / 2 = 22,5 → 22        (centro en 22 + 6 = 28 ≈ 57/2)
+centro = y − 2   →   y = alto_de_la_barra / 2 + 2 = 57/2 + 2 = 30,5
 ```
 
-`x` = 9 es donde ya estaban, para no moverlos de sitio horizontalmente.
+`x` sí es literal (`rect.origin.x = x + i·separación`): 9 es donde ya estaban,
+para no moverlos de sitio horizontalmente.
 
-**Si cambias el alto de la barra, recalcula `y` con esa misma fórmula.**
+**Si cambias el alto de la barra, recalcula `y` con esa fórmula.** El campo es
+`f64`, así que los medios puntos valen.
 
 En el lado web:
 
