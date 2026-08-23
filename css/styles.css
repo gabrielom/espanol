@@ -1627,18 +1627,6 @@ body.is-teacher .appbar::after {
   .corr-row { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 
-/* ---------- Footer ---------- */
-.site-foot {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  text-align: center;
-  color: var(--faint-3);
-  padding: 30px 20px 44px;
-  border-top: 1px solid var(--hairline);
-}
-
 /* ---------- Focus visibility ---------- */
 .btn:focus-visible, .opt:focus-visible, .flashcard:focus-visible, .card:focus-visible {
   outline: 2px solid var(--accent);
@@ -1699,7 +1687,7 @@ body.is-teacher .appbar::after {
 }
 
 @media print {
-  .appbar, .lesson-nav, .btn, .site-foot, .crumbs, .back-link, .cert-form { display: none !important; }
+  .appbar, .lesson-nav, .btn, .crumbs, .back-link, .cert-form { display: none !important; }
   body { background: #fff; }
   .certificate { border: 1px solid #141414; }
 }
