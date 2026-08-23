@@ -17,16 +17,54 @@ Desde la raíz del repositorio:
 cargo tauri dev
 ```
 
-Carga los archivos estáticos de la raíz (`index.html`, `css/`, `js/`, `fonts/`) —
-no hay build ni bundler.
-
 ## Compilar el .app / .dmg
 
+### En un Mac
+
 ```bash
-cargo tauri build
+cargo tauri build --target universal-apple-darwin   # Apple Silicon + Intel
 ```
 
-El resultado queda en `src-tauri/target/release/bundle/`.
+El resultado queda en `src-tauri/target/universal-apple-darwin/release/bundle/`:
+el `.app` en `macos/` y el `.dmg` en `dmg/`.
+
+### Sin un Mac a mano
+
+macOS no se puede compilar desde Linux ni Windows (hace falta el SDK de Apple).
+El workflow `.github/workflows/macos.yml` lo hace en un runner de macOS:
+pestaña **Actions → Build macOS app → Run workflow**, y al terminar el `.dmg`
+queda entre los artefactos. Con una etiqueta `v*` publica además una release.
+
+### Firma
+
+Las compilaciones no llevan firma de Apple, solo *ad hoc*
+(`APPLE_SIGNING_IDENTITY: "-"`), que es lo mínimo para que el binario universal
+arranque en Apple Silicon. Al descargarlo de internet macOS lo pone en
+cuarentena; se quita con:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/Español para brasileños.app"
+```
+
+## Qué se empaqueta
+
+`build.frontendDist` apunta a `../dist`, que arma `scripts/dist.sh` copiando solo
+`index.html`, `css/`, `js/`, `fonts/`, `icons/`, `manifest.webmanifest` y `sw.js`.
+Es deliberado: Tauri incrusta **todo** lo que hay bajo `frontendDist`, así que
+apuntarlo a la raíz metería `.git/`, `.github/` y `src-tauri/target/` — varios GB
+— dentro del `.app`. El script corre solo (`beforeDevCommand` /
+`beforeBuildCommand`), no hace falta invocarlo a mano.
+
+El service worker no se registra en la app de escritorio (`index.html` lo omite
+cuando detecta Tauri): los archivos ya viajan dentro del binario, y una caché
+vieja del worker solo podría servir una versión anterior.
+
+## Iconos
+
+`src-tauri/icons/` los genera un script a partir de `icons/icon-512.png`, con la
+silueta de macOS — el arte ocupa 824/1024 del lienzo con esquinas de radio 185,
+que es la proporción que usa el sistema. `icon.icns` lleva las diez variantes
+(16 a 1024, con sus versiones @2x).
 
 ## Cómo se integran los semáforos
 

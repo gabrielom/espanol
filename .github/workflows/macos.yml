@@ -1,0 +1,92 @@
+name: Build macOS app
+
+# Compila la app de escritorio (Tauri) en un runner de macOS y deja el .dmg
+# y el .app listos para descargar. No se puede compilar para macOS desde Linux
+# o Windows: hace falta el SDK de Apple, que solo corre en macOS.
+#
+#   · Manualmente:  pestaña Actions → "Build macOS app" → Run workflow
+#   · Con etiqueta: git tag v1.0.0 && git push origin v1.0.0
+#                   (además publica una release con el .dmg adjunto)
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    env:
+      # Firma ad hoc: sin cuenta de desarrollador de Apple, pero necesaria para
+      # que el binario universal arranque en Apple Silicon después del lipo.
+      APPLE_SIGNING_IDENTITY: "-"
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Rust (arm64 + x86_64)
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Instalar la CLI de Tauri
+        run: npm install -g "@tauri-apps/cli@^2"
+
+      - name: Armar dist/
+        run: sh scripts/dist.sh
+
+      - name: Compilar el binario universal
+        run: tauri build --target universal-apple-darwin --verbose
+
+      - name: Comprobar el resultado
+        run: |
+          set -eu
+          bundle=src-tauri/target/universal-apple-darwin/release/bundle
+          app="$bundle/macos/Español para brasileños.app"
+          echo "── arquitecturas"
+          lipo -info "$app/Contents/MacOS/Español para brasileños"
+          echo "── firma"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          echo "── tamaño"
+          du -sh "$app" "$bundle"/dmg/*.dmg
+
+      - name: Comprimir el .app
+        run: |
+          bundle=src-tauri/target/universal-apple-darwin/release/bundle
+          mkdir -p out
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$bundle/macos/Español para brasileños.app" \
+            "out/Espanol-para-brasilenos.app.zip"
+          cp "$bundle"/dmg/*.dmg "out/Espanol-para-brasilenos.dmg"
+          ls -lh out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-app
+          path: out/*
+          if-no-files-found: error
+
+      - name: Publicar la release (solo con etiqueta)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/*
+          body: |
+            App de escritorio para macOS (universal: Apple Silicon e Intel).
+
+            Está firmada solo *ad hoc*, sin cuenta de desarrollador de Apple, así
+            que la primera vez macOS la bloquea. Para quitar la cuarentena:
+
+            ```sh
+            xattr -dr com.apple.quarantine "/Applications/Español para brasileños.app"
+            ```

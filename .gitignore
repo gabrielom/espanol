@@ -1,0 +1,3 @@
+# Copia de trabajo que arma scripts/dist.sh para empaquetar con Tauri.
+/dist/
+.DS_Store

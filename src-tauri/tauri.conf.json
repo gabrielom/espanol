@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "identifier": "com.gabrielom.espanol",
   "build": {
-    "frontendDist": "../"
+    "frontendDist": "../dist",
+    "beforeDevCommand": "sh scripts/dist.sh",
+    "beforeBuildCommand": "sh scripts/dist.sh"
   },
   "app": {
     "windows": [
@@ -28,13 +30,18 @@
     "active": true,
     "targets": ["dmg", "app"],
     "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
+      "icons/icon.icns",
+      "icons/icon.png",
       "icons/128x128@2x.png",
-      "icons/icon.png"
+      "icons/128x128.png",
+      "icons/32x32.png"
     ],
     "category": "Education",
+    "copyright": "© gabrielom · MIT",
     "shortDescription": "Curso contrastivo de español para brasileños",
-    "longDescription": "Del portuñol al dominio: 7 módulos, 42 lecciones con evaluación propia, tarjetas de repaso y certificado."
+    "longDescription": "Del portuñol al dominio: 9 módulos y 56 lecciones con tests, redacciones corregibles, tarjetas de repaso y certificado. Sincroniza el progreso entre dispositivos con un gist secreto de GitHub.",
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    }
   }
 }
