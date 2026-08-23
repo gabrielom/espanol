@@ -79,9 +79,15 @@ los semáforos de macOS quedan integrados dentro de la propia barra de la app
 el hueco de los semáforos solo se reserva en macOS. Ver `src-tauri/README.md`.
 
 ```bash
-cargo tauri dev     # desarrollo
-cargo tauri build   # .app / .dmg
+cargo tauri dev                                     # desarrollo
+cargo tauri build --target universal-apple-darwin   # .app / .dmg (Apple Silicon + Intel)
 ```
+
+¿Sin un Mac a mano? macOS no se compila desde otro sistema, pero
+**Actions → Build macOS app → Run workflow** lo compila en un runner de macOS y
+deja el `.dmg` entre los artefactos; una etiqueta `v*` publica además una release.
+Las compilaciones van firmadas solo *ad hoc*, así que la primera vez hay que
+quitar la cuarentena: `xattr -dr com.apple.quarantine "/Applications/Español para brasileños.app"`.
 
 ## Estructura del código
 
@@ -93,7 +99,8 @@ js/sync.js            sincronización opcional entre dispositivos (gist secreto)
 js/exercises.js       cuaderno interactivo: ejercicios y taller (módulo 9)
 js/sidebar.js         barra lateral del curso (expandida / raíl / cajón)
 sw.js + manifest      PWA instalable y offline
-icons/                iconos de la app (PWA + Tauri)
+icons/                iconos de la app (PWA)
+scripts/dist.sh       arma dist/ con solo los archivos web (empaquetado Tauri)
 src-tauri/            envoltorio nativo de macOS (ventana sin barra de título)
 js/course.js          metadatos del curso
 js/app.js             motor: router, progreso, evaluaciones, tarjetas, certificado
