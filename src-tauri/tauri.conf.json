@@ -11,6 +11,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Español para brasileños",
         "width": 1180,
         "height": 900,
