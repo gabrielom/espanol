@@ -79,7 +79,7 @@ que es la proporción que usa el sistema. `icon.icns` lleva las diez variantes
   renderiza.
 - **`hiddenTitle: true`**: oculta el texto del título; el nombre del producto en
   la barra de la app es el único título.
-- **`trafficLightPosition: { x: 9, y: 30.5 }`**: los centra a media altura de
+- **`trafficLightPosition: { x: 13, y: 30.5 }`**: los centra a media altura de
   nuestra barra. Sin esto macOS los coloca donde irían en una barra de título
   normal (28 pt), y en una barra de 57 pt quedan demasiado arriba.
 
@@ -104,8 +104,11 @@ De ahí sale la relación, y de ella la fórmula:
 centro = y − 2   →   y = alto_de_la_barra / 2 + 2 = 57/2 + 2 = 30,5
 ```
 
-`x` sí es literal (`rect.origin.x = x + i·separación`): 9 es donde ya estaban,
-para no moverlos de sitio horizontalmente.
+`x` sí es literal (`rect.origin.x = x + i·separación`): es el borde izquierdo
+del botón de cerrar contado desde el borde de la ventana. macOS los dejaba en 9,
+demasiado pegados al canto; 13 los separa lo justo. El botón verde acaba
+entonces en `13 + 2·20 + 12 = 65 pt`, muy por delante de los 104 pt donde
+empieza la marca, así que `.traffic-space` no necesita ningún cambio.
 
 **Si cambias el alto de la barra, recalcula `y` con esa fórmula.** El campo es
 `f64`, así que los medios puntos valen.
