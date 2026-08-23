@@ -131,7 +131,6 @@ a:hover { color: var(--accent-hover); }
   cursor: pointer;
   flex: none;
   transition: border-color .12s ease, color .12s ease;
-  -webkit-app-region: no-drag;
 }
 .toolbtn:hover { border-color: var(--ink); color: var(--ink); }
 .toolbtn.gear { width: 30px; padding: 0; }
@@ -160,8 +159,10 @@ a:hover { color: var(--accent-hover); }
   color: var(--ink);
   white-space: nowrap;
 }
-/* Todo lo interactivo de la barra debe seguir siendo clicable al arrastrar */
-.appbar a, .appbar button, .brand { -webkit-app-region: no-drag; }
+/* El arrastre de la ventana NO se controla desde el CSS: `-webkit-app-region`
+   es cosa de Chromium y en macOS la app corre sobre WKWebView, donde la
+   propiedad no existe. Quien manda es el atributo data-tauri-drag-region del
+   HTML; lo interactivo simplemente no lo lleva. */
 
 /* Enlace "atrás" dentro del contenido (iPhone) */
 .back-link {

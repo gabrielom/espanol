@@ -87,9 +87,23 @@ En el lado web:
   hueco de `64px` (`.traffic-space`) que, sumado al `padding-left: 20px` y al
   `gap: 20px` de la barra, deja los semáforos en su posición nativa. En Windows,
   Linux y en el navegador ese hueco **no** existe.
-- La barra lleva `data-tauri-drag-region` para poder arrastrar la ventana, y
-  todo lo interactivo (enlaces, botón atrás, engranaje) lleva
-  `-webkit-app-region: no-drag` para que los clics sigan funcionando.
+## Arrastrar la ventana
+
+Lo decide `data-tauri-drag-region` en el HTML — **no el CSS**. `-webkit-app-region`
+es cosa de Chromium y en macOS la app corre sobre WKWebView, donde esa propiedad
+sencillamente no existe: ponerla no hace nada.
+
+El detalle que importa: Tauri mira el elemento **exacto** que pulsas
+(`e.target.hasAttribute(...)`) y no sube por sus padres. Ponerlo solo en
+`.appbar` no basta — cada hueco no interactivo lo lleva por su cuenta
+(`.traffic-space`, los `<span>` de la marca, `.appbar-right`, la etiqueta
+«Progreso», la barra de progreso y el porcentaje). Si a un `<span>` le falta,
+ese trozo de barra deja de arrastrar.
+
+Los botones y enlaces (atrás, engranaje, hamburguesa) **no** lo llevan, y por
+eso siguen respondiendo al clic. Como contrapartida, en la app de escritorio
+pulsar el título ya no vuelve a Inicio: arrastra la ventana, que es lo que hace
+un título en macOS. Para ir a Inicio están el botón «← Inicio» y las migas.
 
 ## Nota sobre la CSP
 
