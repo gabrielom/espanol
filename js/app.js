@@ -949,12 +949,68 @@
       '</div>'
     );
   }
-  function viewSync() {
-    if (!window.Sync) { render('<div class="col-680"><p>La sincronización no está disponible.</p></div>'); return; }
+  // Cuerpo de Ajustes. Se pinta igual en la página (#/ajustes, que es lo que
+  // se ve en el móvil) y dentro de la caja de luz del engranaje.
+  function settingsBodyHTML() {
     var configured = Sync.isConfigured();
     var gistId = Sync.getGistId();
     var tokenUrl = "https://github.com/settings/tokens/new?scopes=gist&description=Espanol%20para%20brasilenos%20sync";
+    return (
+      '<h2 class="settings-h2">¿Quién usa este dispositivo?</h2>' +
+      '<div class="role-pick">' +
+        '<button type="button" class="role-opt' + (isTeacher() ? '' : ' on') + '" data-role="alumno">' +
+          '<span class="role-name">Alumno</span>' +
+          '<span class="role-desc">Haces el curso: lecciones, tests y redacciones. Tu progreso se guarda y se sincroniza.</span>' +
+        '</button>' +
+        '<button type="button" class="role-opt' + (isTeacher() ? ' on' : '') + '" data-role="profesora">' +
+          '<span class="role-name">Profesora</span>' +
+          '<span class="role-desc">Lee las redacciones, las corrige y les pone nota. No marca lecciones ni tests: el progreso del alumno no se toca.</span>' +
+        '</button>' +
+      '</div>' +
+      (isTeacher() ? '<p class="role-note"><a href="#/correcciones">Ir a las redacciones para corregir →</a></p>' : '') +
+      '<h2 class="settings-h2">Sincronizar dispositivos</h2>' +
+      '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
+      (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl))
+    );
+  }
 
+  // Engancha los controles de Ajustes dentro de `root`. `repaint` vuelve a
+  // pintar ese mismo contenedor — la página o la caja, según quién llame.
+  // Todo se busca dentro de `root`: los dos contenedores usan los mismos id.
+  function wireSettings(root, repaint) {
+    root.querySelectorAll("[data-role]").forEach(function (b) {
+      b.addEventListener("click", function () { setRole(b.dataset.role); repaint(); });
+    });
+
+    var connect = root.querySelector("#sync-connect");
+    if (connect) {
+      connect.addEventListener("click", function () {
+        var t = root.querySelector("#sync-token").value.trim();
+        if (!t) { alert("Pega tu token de GitHub."); return; }
+        Sync.setToken(t);
+        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint);
+      });
+    }
+    var now = root.querySelector("#sync-now");
+    if (now) {
+      now.addEventListener("click", function () {
+        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint);
+      });
+    }
+    var off = root.querySelector("#sync-disconnect");
+    if (off) {
+      off.addEventListener("click", function () {
+        if (!confirm("¿Desconectar la sincronización en este dispositivo? Tu progreso local se conserva.")) return;
+        Sync.clearConfig();
+        repaint();
+      });
+    }
+  }
+
+  function isSettingsRoute() { return /^#\/?(ajustes|sync)\b/.test(location.hash); }
+
+  function viewSync() {
+    if (!window.Sync) { render('<div class="col-680"><p>La sincronización no está disponible.</p></div>'); return; }
     setBack("#/", "Inicio");
     render(
       '<div class="col-680">' +
@@ -962,51 +1018,70 @@
       '<div class="crumbs"><a href="#/">Inicio</a><span class="sep">›</span>Ajustes</div>' +
       '<div class="sync-view">' +
         '<h1>Ajustes</h1>' +
-        '<h2 class="settings-h2">¿Quién usa este dispositivo?</h2>' +
-        '<div class="role-pick">' +
-          '<button type="button" class="role-opt' + (isTeacher() ? '' : ' on') + '" data-role="alumno">' +
-            '<span class="role-name">Alumno</span>' +
-            '<span class="role-desc">Haces el curso: lecciones, tests y redacciones. Tu progreso se guarda y se sincroniza.</span>' +
-          '</button>' +
-          '<button type="button" class="role-opt' + (isTeacher() ? ' on' : '') + '" data-role="profesora">' +
-            '<span class="role-name">Profesora</span>' +
-            '<span class="role-desc">Lee las redacciones, las corrige y les pone nota. No marca lecciones ni tests: el progreso del alumno no se toca.</span>' +
-          '</button>' +
-        '</div>' +
-        (isTeacher() ? '<p class="role-note"><a href="#/correcciones">Ir a las redacciones para corregir →</a></p>' : '') +
-        '<h2 class="settings-h2">Sincronizar dispositivos</h2>' +
-        '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
-        (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl)) +
+        settingsBodyHTML() +
       '</div>' +
       '</div>'
     );
+    wireSettings(app, function () { if (isSettingsRoute()) viewSync(); });
+  }
 
-    app.querySelectorAll("[data-role]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        setRole(b.dataset.role);
-        viewSync();
-      });
+  /* ---------- Ajustes como caja de luz ----------
+     Fuera del móvil el engranaje no navega: abre Ajustes flotando encima de
+     lo que estés haciendo. Como la ruta no cambia, volver a pulsarlo te deja
+     exactamente en la misma página y en el mismo estado. En el móvil no hay
+     sitio para una caja, así que ahí sigue navegando a #/ajustes. */
+  var settingsBox = null;     // el nodo mientras está abierta
+  var settingsOpener = null;  // a quién devolver el foco al cerrar
+
+  function settingsFitsBox() { return !window.matchMedia("(max-width: 640px)").matches; }
+
+  function paintSettingsBox() {
+    var body = settingsBox.querySelector(".lightbox-body");
+    body.innerHTML = settingsBodyHTML();
+    wireSettings(body, function () { if (settingsBox) paintSettingsBox(); });
+  }
+
+  function openSettingsBox() {
+    if (settingsBox || !window.Sync) return;
+    settingsOpener = document.activeElement;
+    settingsBox = document.createElement("div");
+    settingsBox.className = "lightbox";
+    settingsBox.innerHTML =
+      '<div class="lightbox-veil" data-close></div>' +
+      '<div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" tabindex="-1">' +
+        '<div class="lightbox-head">' +
+          '<h2 id="lightbox-title">Ajustes</h2>' +
+          '<button type="button" class="lightbox-x" data-close aria-label="Cerrar ajustes">×</button>' +
+        '</div>' +
+        '<div class="lightbox-body"></div>' +
+      '</div>';
+    document.body.appendChild(settingsBox);
+    document.body.classList.add("lightbox-open");
+    paintSettingsBox();
+
+    settingsBox.addEventListener("click", function (e) {
+      if (e.target.closest("[data-close]")) closeSettingsBox();
     });
+    document.addEventListener("keydown", settingsBoxKeys);
+    var g = document.getElementById("gear-btn");
+    if (g) g.setAttribute("aria-expanded", "true");
+    settingsBox.querySelector(".lightbox-panel").focus();
+  }
 
-    if (!configured) {
-      document.getElementById("sync-connect").addEventListener("click", function () {
-        var t = document.getElementById("sync-token").value.trim();
-        if (!t) { alert("Pega tu token de GitHub."); return; }
-        Sync.setToken(t);
-        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); })
-          .then(function () { if (/^#\/?sync/.test(location.hash)) viewSync(); });
-      });
-    } else {
-      document.getElementById("sync-now").addEventListener("click", function () {
-        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); })
-          .then(function () { if (/^#\/?sync/.test(location.hash)) viewSync(); });
-      });
-      document.getElementById("sync-disconnect").addEventListener("click", function () {
-        if (!confirm("¿Desconectar la sincronización en este dispositivo? Tu progreso local se conserva.")) return;
-        Sync.clearConfig();
-        viewSync();
-      });
-    }
+  function closeSettingsBox() {
+    if (!settingsBox) return;
+    settingsBox.remove();
+    settingsBox = null;
+    document.body.classList.remove("lightbox-open");
+    document.removeEventListener("keydown", settingsBoxKeys);
+    var g = document.getElementById("gear-btn");
+    if (g) g.setAttribute("aria-expanded", "false");
+    if (settingsOpener && settingsOpener.focus) settingsOpener.focus();
+    settingsOpener = null;
+  }
+
+  function settingsBoxKeys(e) {
+    if (e.key === "Escape") { e.preventDefault(); closeSettingsBox(); }
   }
 
   /* ---------- Router ---------- */
@@ -1065,6 +1140,28 @@
 
   window.addEventListener("hashchange", route);
   document.getElementById("brand").addEventListener("click", function () { location.hash = "#/"; });
+
+  // El engranaje: caja de luz fuera del móvil, navegación normal dentro de él.
+  (function () {
+    var g = document.getElementById("gear-btn");
+    if (!g) return;
+    g.setAttribute("aria-expanded", "false");
+    g.addEventListener("click", function (e) {
+      if (!settingsFitsBox()) return;                  // móvil: deja ir a #/ajustes
+      e.preventDefault();
+      if (settingsBox) { closeSettingsBox(); return; }
+      // Si ya estás en la página de Ajustes, el engranaje sale de ella.
+      if (isSettingsRoute()) { location.hash = "#/"; return; }
+      openSettingsBox();
+    });
+    // Navegar (p. ej. "Ir a las redacciones") cierra la caja.
+    window.addEventListener("hashchange", closeSettingsBox);
+    // Si la ventana se estrecha hasta el móvil, la caja deja de tener sitio.
+    window.addEventListener("resize", function () {
+      if (settingsBox && !settingsFitsBox()) closeSettingsBox();
+    });
+  })();
+
   route();
 
   // Sincronización opcional (GitHub Gist) — reflejar estado en la barra y arrancar.
