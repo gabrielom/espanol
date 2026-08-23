@@ -14,6 +14,8 @@
   <meta name="apple-mobile-web-app-title" content="Español BR">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="stylesheet" href="css/styles.css">
+  <!-- Antes del primer pintado: reserva el hueco de los controles de ventana. -->
+  <script src="js/platform.js"></script>
 </head>
 <body>
   <header class="appbar" id="appbar" data-tauri-drag-region>
@@ -45,31 +47,6 @@
     <main class="wrap" id="app"></main>
   </div>
 
-  <script>
-    // Marca la plataforma antes del render. Dos sistemas dibujan sus propios
-    // controles de ventana ENCIMA de la app y hay que dejarles sitio:
-    //   · macOS + Tauri  → semáforos (titleBarStyle: "Overlay")
-    //   · iPadOS instalada en ventana (Stage Manager) → píldora de controles
-    // En el navegador y en Windows/Linux no se reserva nada.
-    (function () {
-      var ua = navigator.userAgent || "";
-      var cls = document.documentElement.classList;
-
-      var isTauri = !!(window.__TAURI__ || window.__TAURI_INTERNALS__ || ua.indexOf("Tauri") !== -1);
-      var isTouch = /iPhone|iPad|iPod|Android/.test(ua) || navigator.maxTouchPoints > 1;
-      var isMac = /Mac/.test(navigator.platform || "") || /Mac OS X/.test(ua);
-      // iPadOS 13+ se anuncia como "Macintosh": se distingue por el táctil.
-      var isIPad = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-      var standalone = window.navigator.standalone === true ||
-        (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
-
-      if (isTauri) cls.add("is-tauri");
-      if (isTauri && isMac && !isTouch) cls.add("is-mac-overlay");
-      if (standalone) cls.add("is-standalone");
-      // Instalada en iPad: iPadOS superpone sus controles arriba a la izquierda.
-      if (isIPad && standalone) cls.add("is-ipad-window");
-    })();
-  </script>
   <script src="js/sync.js"></script>
   <script src="js/exercises.js"></script>
   <script src="js/sidebar.js"></script>
@@ -84,16 +61,6 @@
   <script src="js/modules/module8.js"></script>
   <script src="js/modules/module9.js"></script>
   <script src="js/app.js"></script>
-  <script>
-    // Registro del service worker (contexto seguro: https o localhost; en file:// se omite).
-    // En la app de escritorio no hace falta: los archivos ya viajan dentro del
-    // binario, y una caché vieja del worker podría servir una versión anterior.
-    if ("serviceWorker" in navigator && window.isSecureContext &&
-        !document.documentElement.classList.contains("is-tauri")) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("sw.js").catch(function () {});
-      });
-    }
-  </script>
+  <script src="js/sw-register.js"></script>
 </body>
 </html>

@@ -316,6 +316,11 @@ a:hover { color: var(--accent-hover); }
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
+/* Las tarjetas y las filas son <a> de verdad: navegan sin JS, se abren en
+   pestaña nueva y responden al teclado solas. Solo hay que quitarles el
+   aspecto de enlace — el display lo fija cada una más abajo. */
+.card, .lrow { color: inherit; text-decoration: none; }
+
 .card {
   background: #fff;
   border: 1px solid var(--card-border);
