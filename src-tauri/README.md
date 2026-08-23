@@ -79,6 +79,27 @@ que es la proporción que usa el sistema. `icon.icns` lleva las diez variantes
   renderiza.
 - **`hiddenTitle: true`**: oculta el texto del título; el nombre del producto en
   la barra de la app es el único título.
+- **`trafficLightPosition: { x: 9, y: 22 }`**: los centra a media altura de
+  nuestra barra. Sin esto macOS los coloca donde irían en una barra de título
+  normal (28 pt), y en una barra de 57 pt quedan demasiado arriba.
+
+### De dónde sale ese 22
+
+`y` es la distancia desde el borde superior de la ventana hasta el borde
+superior de los botones. Se ve en `tao`
+(`platform_impl/macos/view.rs`, `inset_traffic_lights`): pone el contenedor de
+la barra de título a `alto_del_botón + y` y lo pega arriba del todo, así que
+el hueco que queda por encima del botón es exactamente `y`.
+
+Los semáforos miden 12 pt y `--appbar-h` son 57 px:
+
+```
+y = (57 − 12) / 2 = 22,5 → 22        (centro en 22 + 6 = 28 ≈ 57/2)
+```
+
+`x` = 9 es donde ya estaban, para no moverlos de sitio horizontalmente.
+
+**Si cambias el alto de la barra, recalcula `y` con esa misma fórmula.**
 
 En el lado web:
 
