@@ -2,10 +2,11 @@
    Barra lateral del curso ("Contenido del curso").
      · Expandida (268px) — por defecto dentro de lección / evaluación /
        redacción / tarjetas
-     · Colapsada (56px)  — por defecto en la página de módulo
+     · Colapsada (56px)  — SIEMPRE al entrar en la página de módulo
      · iPad: cajón temporal sobre el contenido, con velo
      · iPhone: sin barra lateral
-   El estado manual se guarda y manda sobre el valor por defecto.
+   Fuera del módulo el estado manual se guarda y manda. En el módulo no: se
+   entra siempre colapsada y lo que pulses dura solo esa visita.
    Todo (%, marcas, notas, "estás aquí") sale del progreso real.
    ============================================================ */
 (function () {
@@ -70,13 +71,24 @@
     return window.matchMedia("(max-width: 640px)").matches;
   }
 
-  // Por nivel de ruta: el módulo arranca colapsado; dentro de un ítem, expandida.
-  function defaultExpanded() {
-    return ctx.view !== "module";
-  }
+  // En la página de módulo se entra SIEMPRE colapsada: ahí el contenido ya es
+  // el índice del módulo y la barra solo estorba. Lo que pulses vale mientras
+  // estés en esa pantalla y no se guarda, así que la siguiente vez que entres
+  // en un módulo vuelve a estar colapsada.
+  // En el resto (lección, evaluación, redacción, tarjetas) manda tu preferencia
+  // guardada, y si nunca has tocado nada, expandida.
+  var moduleExpanded = null;
+
+  function inModule() { return ctx.view === "module"; }
+
   function expanded() {
+    if (inModule()) return moduleExpanded === null ? false : moduleExpanded;
     var p = pref();
-    return p === null ? defaultExpanded() : p;
+    return p === null ? true : p;
+  }
+  function setExpanded(v) {
+    if (inModule()) moduleExpanded = v;
+    else setPref(v);
   }
 
   function esc(s) {
@@ -238,8 +250,8 @@
     var t = e.target.closest("[data-sb]");
     if (!t) return;
     var act = t.dataset.sb;
-    if (act === "collapse") { setPref(false); render(); }
-    else if (act === "expand") { setPref(true); render(); }
+    if (act === "collapse") { setExpanded(false); render(); }
+    else if (act === "expand") { setExpanded(true); render(); }
     else if (act === "close") { drawerOpen = false; render(); }
     else if (act === "open") { drawerOpen = true; render(); }
     else if (act === "toggle") {
@@ -269,6 +281,7 @@
   function update(next) {
     ctx = next;
     drawerOpen = false;      // cada navegación cierra el cajón
+    moduleExpanded = null;   // y cada entrada a un módulo vuelve a colapsar
     measureBar();
     render();
   }
