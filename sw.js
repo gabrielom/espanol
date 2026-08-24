@@ -1,15 +1,24 @@
 /* Service worker — offline + installable PWA.
-   - Same-origin GET assets: stale-while-revalidate (fast, self-updating).
-   - Navigations: network-first, fall back to cached shell offline.
-   - Cross-origin (e.g. api.github.com sync) and non-GET: never intercepted.
-   Bump CACHE to force-drop old caches on the next activate. */
-var CACHE = "espanol-cache-v8";
+   Es también lo que hace funcionar la app de escritorio sin internet: la
+   ventana de Tauri carga el sitio publicado, no archivos incrustados.
+
+   - Navegación: primero la caché, y de fondo se revalida. Arranca al instante
+     y sin red; lo que se descargue queda listo para el siguiente arranque.
+   - Resto de GET del mismo origen: igual, stale-while-revalidate. GitHub Pages
+     manda ETag, así que revalidar un archivo que no cambió no descarga nada
+     (responde 304 y se conserva lo cacheado).
+   - version.json: NUNCA se toca. Es la única forma de preguntarle a la red qué
+     versión hay publicada, así que tiene que saltarse la caché siempre.
+   - Origen cruzado (api.github.com para el gist) y no-GET: nunca se interceptan.
+   Subir CACHE tira las cachés viejas en el siguiente activate. */
+var CACHE = "espanol-cache-v9";
 var SHELL = [
   "./",
   "./index.html",
   "./css/styles.css",
   "./js/platform.js",
   "./js/sw-register.js",
+  "./js/version.js",
   "./js/sync.js",
   "./js/exercises.js",
   "./js/sidebar.js",
@@ -60,14 +69,21 @@ self.addEventListener("fetch", function (e) {
   // Only handle same-origin GET; let sync (api.github.com) and non-GET pass.
   if (req.method !== "GET" || url.origin !== self.location.origin) return;
 
+  // El sello de la versión publicada: siempre a la red, nunca a la caché.
+  if (/\/version\.json$/.test(url.pathname)) return;
+
   if (req.mode === "navigate") {
     e.respondWith(
-      fetch(req).then(function (r) {
-        var copy = r.clone();
-        caches.open(CACHE).then(function (c) { c.put("./", copy); });
-        return r;
-      }).catch(function () {
-        return caches.match("./index.html").then(function (r) { return r || caches.match("./"); });
+      caches.open(CACHE).then(function (c) {
+        return Promise.all([c.match("./index.html"), c.match("./")]).then(function (hits) {
+          var cached = hits[0] || hits[1];
+          var network = fetch(req).then(function (r) {
+            if (r && r.ok) c.put("./index.html", r.clone());
+            return r;
+          }).catch(function () { return cached; });
+          // Con copia guardada se responde ya y la red actualiza por detrás.
+          return cached || network;
+        });
       })
     );
     return;

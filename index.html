@@ -18,28 +18,27 @@
   <script src="js/platform.js"></script>
 </head>
 <body>
-  <!-- data-tauri-drag-region arrastra la ventana, pero Tauri solo mira el
-       elemento exacto que pulsas (e.target), sin subir por sus padres. Por eso
-       lo lleva CADA hueco no interactivo de la barra, no solo sus contenedores:
-       si falta en un <span>, ese trozo de barra no arrastra. Los botones y
-       enlaces NO lo llevan, y así siguen respondiendo al clic. -->
-  <header class="appbar" id="appbar" data-tauri-drag-region>
-    <div class="appbar-left" data-tauri-drag-region>
-      <span class="traffic-space" aria-hidden="true" data-tauri-drag-region></span>
+  <!-- `deep` arrastra la ventana desde cualquier punto de la barra: Tauri sube
+       por el composedPath, así que basta ponerlo aquí una vez. Los elementos
+       clicables (a, button, input…) cortan el arrastre ellos solos, de modo que
+       atrás, hamburguesa y engranaje siguen respondiendo al clic sin marcarlos. -->
+  <header class="appbar" id="appbar" data-tauri-drag-region="deep">
+    <div class="appbar-left">
+      <span class="traffic-space" aria-hidden="true"></span>
       <button type="button" class="toolbtn burger" id="burger-btn" data-sb="open" aria-label="Contenido del curso" hidden>☰</button>
       <a class="toolbtn back-btn" id="back-btn" href="#/" hidden>
         <span class="back-arrow" aria-hidden="true">←</span><span class="back-label" id="back-label">Inicio</span>
       </a>
-      <div class="brand" id="brand" data-tauri-drag-region>
-        <span class="brand-full" data-tauri-drag-region>Español para brasileños</span>
-        <span class="brand-short" data-tauri-drag-region>Español</span>
-        <span class="brand-tag" data-tauri-drag-region>PT → ES</span>
+      <div class="brand" id="brand">
+        <span class="brand-full">Español para brasileños</span>
+        <span class="brand-short">Español</span>
+        <span class="brand-tag">PT → ES</span>
       </div>
     </div>
-    <div class="appbar-right" data-tauri-drag-region>
-      <span class="plabel" data-tauri-drag-region>Progreso</span>
-      <div class="bar" data-tauri-drag-region><span id="topbar-bar" style="width:0%" data-tauri-drag-region></span></div>
-      <span id="topbar-pct" data-tauri-drag-region>0%</span>
+    <div class="appbar-right">
+      <span class="plabel">Progreso</span>
+      <div class="bar"><span id="topbar-bar" style="width:0%"></span></div>
+      <span id="topbar-pct">0%</span>
       <a class="toolbtn gear" id="gear-btn" href="#/ajustes" aria-label="Ajustes y sincronización" title="Ajustes">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </a>
@@ -52,6 +51,7 @@
     <main class="wrap" id="app"></main>
   </div>
 
+  <script src="js/version.js"></script>
   <script src="js/sync.js"></script>
   <script src="js/exercises.js"></script>
   <script src="js/sidebar.js"></script>

@@ -46,18 +46,68 @@ cuarentena; se quita con:
 xattr -dr com.apple.quarantine "/Applications/Español para brasileños.app"
 ```
 
-## Qué se empaqueta
+## Qué carga la ventana
 
-`build.frontendDist` apunta a `../dist`, que arma `scripts/dist.sh` copiando solo
-`index.html`, `css/`, `js/`, `fonts/`, `icons/`, `manifest.webmanifest` y `sw.js`.
-Es deliberado: Tauri incrusta **todo** lo que hay bajo `frontendDist`, así que
-apuntarlo a la raíz metería `.git/`, `.github/` y `src-tauri/target/` — varios GB
-— dentro del `.app`. El script corre solo (`beforeDevCommand` /
-`beforeBuildCommand`), no hace falta invocarlo a mano.
+**Nada incrustado.** `build.frontendDist` es una URL:
 
-El service worker no se registra en la app de escritorio (`index.html` lo omite
-cuando detecta Tauri): los archivos ya viajan dentro del binario, y una caché
-vieja del worker solo podría servir una versión anterior.
+```json
+"frontendDist": "https://gabrielom.github.io/espanol/"
+```
+
+Tauri lo admite (`FrontendDist::Url` — «no assets are embedded in the app in this
+case»), así que el `.app` es solo la ventana nativa y todo lo que se despliega a
+Pages llega al escritorio **sin recompilar**.
+
+### Y sin internet, ¿qué?
+
+Lo resuelve el **service worker**, el mismo de la PWA. Antes no se registraba en
+la app de escritorio, porque los archivos ya viajaban dentro del binario y una
+caché vieja solo podía estorbar; ahora es justo al revés: es lo único que la hace
+funcionar sin red, así que se registra también aquí.
+
+La estrategia es **primero la caché**, incluida la navegación: arranca al
+instante de la copia guardada y revalida por detrás. Como GitHub Pages manda
+`ETag`, revalidar un archivo que no cambió responde `304` y no descarga nada. Lo
+que sí baje queda listo para el arranque siguiente.
+
+> **La primera vez hace falta conexión.** Antes de que exista una copia guardada
+> no hay nada que servir.
+
+### Saber qué versión tienes
+
+Dos sellos que el despliegue escribe con el mismo commit
+(`.github/workflows/pages.yml`):
+
+| archivo | dónde vive | qué dice |
+|---|---|---|
+| `js/version.js` | **dentro** de la caché | la versión que se está ejecutando |
+| `version.json` | el worker **nunca** lo cachea | la versión publicada ahora mismo |
+
+**Ajustes → Versión** enseña la primera y compara con la segunda. Si difieren, la
+copia nueva ya se está descargando y entra al reiniciar la app.
+
+### Permiso para el origen remoto
+
+Como el contenido ya no es local, la capacidad tiene que nombrar el origen o el
+arrastre de la ventana vuelve a fallar:
+
+```json
+"remote": { "urls": ["https://gabrielom.github.io/espanol/*"] }
+```
+
+### La CSP ya no la pone Tauri
+
+`app.security.csp` desapareció de la configuración: con contenido remoto, la
+cabecera la manda el servidor y Tauri no puede inyectar nada. Dejarla escrita
+sugeriría que hace algo. Los scripts de Tauri (`__TAURI_INTERNALS__`, el de
+arrastre) se inyectan igual, porque van al webview, no a la página.
+
+### Volver a empaquetar los archivos
+
+Si algún día interesa un `.app` autónomo de verdad, hay que apuntar
+`frontendDist` a un directorio **con solo los archivos web** y volver a poner
+`beforeBuildCommand`. Nunca a la raíz del repositorio: Tauri incrusta todo lo que
+cuelga de ahí, y `.git/` y `src-tauri/target/` son varios GB.
 
 ## Iconos
 

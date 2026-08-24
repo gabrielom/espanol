@@ -42,9 +42,6 @@ jobs:
       - name: Instalar la CLI de Tauri
         run: npm install -g "@tauri-apps/cli@^2"
 
-      - name: Armar dist/
-        run: sh scripts/dist.sh
-
       - name: Compilar el binario universal
         run: tauri build --target universal-apple-darwin --verbose
 

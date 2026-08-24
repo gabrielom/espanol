@@ -973,8 +973,76 @@
       (isTeacher() ? '<p class="role-note"><a href="#/correcciones">Ir a las redacciones para corregir →</a></p>' : '') +
       '<h2 class="settings-h2">Sincronizar dispositivos</h2>' +
       '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
-      (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl))
+      (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl)) +
+      versionHTML()
     );
+  }
+
+  /* ---------- Versión ----------
+     `window.APP_VERSION` viene de js/version.js, que viaja dentro de la caché
+     del service worker: es siempre la versión que se está EJECUTANDO. La
+     publicada se pregunta aparte a version.json, que el worker deja pasar sin
+     cachear. Si difieren, ya hay una copia nueva descargándose de fondo y
+     entrará al reiniciar. */
+  function appVersion() {
+    var v = window.APP_VERSION || {};
+    return { version: v.version || "dev", built: v.built || "" };
+  }
+  function prettyDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d)) return "";
+    return d.toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" }) +
+      " · " + d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+  }
+  function versionHTML() {
+    var v = appVersion();
+    var when = prettyDate(v.built);
+    return (
+      '<h2 class="settings-h2">Versión</h2>' +
+      '<div class="ver-panel">' +
+        '<div class="ver-row"><span class="ver-k">Instalada</span>' +
+          '<code class="ver-v">' + esc(v.version) + '</code></div>' +
+        (when ? '<div class="ver-row"><span class="ver-k">Publicada el</span>' +
+          '<span class="ver-v">' + esc(when) + '</span></div>' : '') +
+        '<div class="ver-state" id="ver-state">Comprobando si hay una versión nueva…</div>' +
+      '</div>'
+    );
+  }
+  function wireVersion(root) {
+    var box = root.querySelector("#ver-state");
+    if (!box) return;
+    var mine = appVersion().version;
+
+    function say(txt, cls) {
+      if (!box.isConnected) return;
+      box.className = "ver-state" + (cls ? " " + cls : "");
+      box.innerHTML = txt;
+    }
+
+    if (mine === "dev") {
+      say("Copia de desarrollo, sin sello de versión.", "muted");
+      return;
+    }
+    // `no-store` y, además, el worker no intercepta version.json: esto siempre
+    // sale a la red, así que refleja de verdad lo que hay publicado.
+    fetch("version.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (live) {
+        if (!live || !live.version) return Promise.reject();
+        if (live.version === mine) {
+          say("Estás al día.", "ok");
+        } else {
+          var howToApply = document.documentElement.classList.contains("is-tauri")
+            ? "Cierra y vuelve a abrir la app para aplicarla."
+            : "Recarga la página para aplicarla.";
+          say("Hay una versión nueva: <code>" + esc(live.version) + "</code>. " +
+            "Ya se está descargando. " + howToApply, "new");
+        }
+      })
+      .catch(function () {
+        say("Sin conexión: no se puede comprobar. Estás usando la copia guardada.", "muted");
+      });
   }
 
   // Engancha los controles de Ajustes dentro de `root`. `repaint` vuelve a
@@ -984,6 +1052,7 @@
     root.querySelectorAll("[data-role]").forEach(function (b) {
       b.addEventListener("click", function () { setRole(b.dataset.role); repaint(); });
     });
+    wireVersion(root);
 
     var connect = root.querySelector("#sync-connect");
     if (connect) {

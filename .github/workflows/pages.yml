@@ -22,6 +22,20 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
+      # Sella la versión que se publica. version.json lo pide la app a la red
+      # (el service worker no lo cachea) para saber si hay algo más nuevo;
+      # js/version.js viaja DENTRO de la caché, así que dice qué copia se está
+      # ejecutando. Comparar los dos es lo que detecta una actualización.
+      - name: Sellar la versión
+        run: |
+          set -eu
+          sha=$(git rev-parse --short HEAD)
+          built=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          printf '{ "version": "%s", "built": "%s" }\n' "$sha" "$built" > version.json
+          printf '// Generado en el despliegue (.github/workflows/pages.yml).\nwindow.APP_VERSION = { version: "%s", built: "%s" };\n' "$sha" "$built" > js/version.js
+          echo "→ $sha  $built"
+
       - uses: actions/configure-pages@v5
         with:
           enablement: true
