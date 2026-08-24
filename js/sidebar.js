@@ -1,13 +1,11 @@
 /* ============================================================
    Barra lateral del curso ("Contenido del curso").
-     · Expandida (268px) — por defecto dentro de lección / evaluación /
-       redacción / tarjetas
-     · Colapsada (56px)  — al LLEGAR a la página de módulo (desde Inicio o
-       volviendo con «atrás»), pero no si la abriste desde la propia barra
+     · Expandida (268px) / colapsada (56px) — el ancho se arrastra al navegar
+     · Se colapsa al LLEGAR a la página de módulo (desde Inicio o volviendo
+       con «atrás»), pero no si la abriste desde la propia barra
      · iPad: cajón temporal sobre el contenido, con velo
      · iPhone: sin barra lateral
-   Fuera del módulo el estado manual se guarda y manda. En el módulo no: lo
-   que pulses dura solo esa visita.
+   Salvo esa llegada, solo « y » cambian el ancho, y esa elección se guarda.
    Todo (%, marcas, notas, "estás aquí") sale del progreso real.
    ============================================================ */
 (function () {
@@ -85,21 +83,26 @@
      El raíl colapsado no marca nada: ahí ya estás en modo estrecho y navegar a
      otro módulo no es motivo para abrirla.
 
-     Fuera del módulo manda tu preferencia guardada; si nunca la has tocado,
-     expandida. Lo que pulses dentro de un módulo dura solo esa visita. */
-  var moduleExpanded = null;
+     Salvo en esa llegada, el ancho NO se recalcula al navegar: se arrastra tal
+     cual. Si estabas en el módulo con la barra estrecha y abres un ejercicio,
+     sigue estrecha — abrirla es cosa tuya, con el botón «. Antes se consultaba
+     de nuevo la preferencia guardada en cuanto salías del módulo, y por eso se
+     abría sola justo después de que la llegada la hubiera cerrado.
+
+     `wide` es el ancho de esta sesión; `null` significa «aún sin decidir», y
+     entonces manda tu preferencia guardada (o expandida, si nunca la tocaste). */
+  var wide = null;
   var cameFromSidebar = false;
 
-  function inModule() { return ctx.view === "module"; }
-
   function expanded() {
-    if (inModule()) return moduleExpanded === null ? false : moduleExpanded;
+    if (wide !== null) return wide;
     var p = pref();
     return p === null ? true : p;
   }
+  // Pulsar « o » decide, y esa decisión sobrevive al recargado.
   function setExpanded(v) {
-    if (inModule()) moduleExpanded = v;
-    else setPref(v);
+    wide = v;
+    setPref(v);
   }
 
   function esc(s) {
@@ -305,7 +308,8 @@
     ctx = next;
     drawerOpen = false;      // cada navegación cierra el cajón
     // Llegar a un módulo lo colapsa, salvo si vienes de pulsarlo en la barra.
-    moduleExpanded = (cameFromSidebar && ctx.view === "module") ? true : null;
+    // El resto de navegaciones no tocan el ancho: se arrastra el que hubiera.
+    if (ctx.view === "module") wide = !!cameFromSidebar;
     cameFromSidebar = false;
     measureBar();
     render();
