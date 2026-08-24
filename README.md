@@ -35,7 +35,9 @@ punto. En el móvil no hay sitio para una caja, así que ahí sigue siendo una p
 - **Alumno** (por defecto): el curso completo, con su progreso.
 - **Profesora**: lee las redacciones, les pone **nota y comentario** y los guarda en un
   **registro con fecha** que solo crece — cada corrección se suma, ninguna reemplaza a la
-  anterior. Sus clics **no** marcan lecciones ni tests: el progreso del alumno no se toca.
+  anterior. Ve también las **respuestas del cuaderno del módulo 9** (huecos, opciones,
+  transformaciones y casillas de repaso), en solo lectura. Sus clics **no** marcan
+  lecciones ni tests: el progreso del alumno no se toca.
   Tiene además un índice (`#/correcciones`) con las 14 redacciones y su estado.
 
 Los dos perfiles comparten los mismos datos, así que con la sincronización activada la

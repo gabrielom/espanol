@@ -15,9 +15,10 @@
   function loadProgress() {
     try {
       var p = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-      return { lessons: p.lessons || {}, quizzes: p.quizzes || {}, essays: p.essays || {}, corrections: p.corrections || {}, name: p.name || "" };
+      return { lessons: p.lessons || {}, quizzes: p.quizzes || {}, essays: p.essays || {}, corrections: p.corrections || {},
+               cuaderno: p.cuaderno || null, cuadernoAt: p.cuadernoAt || 0, name: p.name || "" };
     } catch (e) {
-      return { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: "" };
+      return { lessons: {}, quizzes: {}, essays: {}, corrections: {}, cuaderno: null, cuadernoAt: 0, name: "" };
     }
   }
   function saveLocal(p) {
@@ -77,6 +78,7 @@
   function setRole(r) {
     try { localStorage.setItem(ROLE_KEY, r === "profesora" ? "profesora" : "alumno"); } catch (e) {}
     document.body.classList.toggle("is-teacher", role() === "profesora");
+    if (window.Cuaderno) Cuaderno.setReadOnly(isTeacher());
   }
   function isTeacher() { return role() === "profesora"; }
   // La profesora no avanza el curso por el alumno: sus clics no marcan progreso.
@@ -124,6 +126,35 @@
   function isEssayDone(mid, lid) {
     var e = essayData(mid, lid);
     return !!(e && e.done);
+  }
+
+  /* ---------- Cuaderno del módulo 9 ----------
+     Sus respuestas vivían en una clave suelta de localStorage, fuera del
+     progreso: no entraban en el gist, así que no salían del dispositivo y la
+     profesora no las veía. Ahora se guardan dentro del progreso, que sí viaja.
+     Lo que ya estuviera en la clave vieja se trae una sola vez. */
+  if (window.Cuaderno) {
+    var cuadernoStore = {
+      load: function () { return progress.cuaderno || { R: {}, W: {}, CH: {} }; },
+      save: function (s) {
+        if (!canEditProgress()) return;   // la profesora mira, no escribe
+        progress.cuaderno = s;
+        progress.cuadernoAt = Date.now();
+        saveProgress(progress);
+      }
+    };
+    // Migración de la clave suelta, una sola vez y solo en el dispositivo del
+    // alumno: es quien tiene las respuestas de verdad.
+    if (!progress.cuaderno && canEditProgress()) {
+      var viejo = Cuaderno.localState();
+      if (viejo && (Object.keys(viejo.R).length || Object.keys(viejo.CH).length)) {
+        progress.cuaderno = viejo;
+        progress.cuadernoAt = Date.now();
+        saveProgress(progress);
+      }
+    }
+    Cuaderno.useStore(cuadernoStore);
+    Cuaderno.setReadOnly(isTeacher());
   }
 
   // Ítems de una lección: contenido + test (+ redacción si la lección la tiene)

@@ -142,10 +142,50 @@
   }
 
   /* ---- Fusión grow-only ---- */
+  /* Cuaderno del módulo 9 (respuestas del alumno).
+     Se fusiona respuesta a respuesta: una que solo existe en un lado se
+     conserva siempre, así que contestar en el iPad y en el Mac no borra nada.
+     Cuando las dos tienen algo distinto para el mismo hueco gana la copia con
+     `cuadernoAt` más reciente, que es lo más parecido a "lo último que
+     escribiste" sin ponerle fecha a cada casilla. */
+  function mergeCuaderno(a, b) {
+    var ca = a.cuaderno, cb = b.cuaderno;
+    if (!ca && !cb) return null;
+    if (!ca) return cb;
+    if (!cb) return ca;
+    var bNewer = (b.cuadernoAt || 0) > (a.cuadernoAt || 0);
+    var filled = function (v) { return v !== undefined && v !== null && v !== ""; };
+    var pick = function (va, vb) {
+      if (!filled(va)) return vb;
+      if (!filled(vb)) return va;
+      return bNewer ? vb : va;
+    };
+    var out = { R: {}, W: {}, CH: {} }, k, i, ids = {};
+
+    for (k in ca.R || {}) ids[k] = 1;
+    for (k in cb.R || {}) ids[k] = 1;
+    for (k in ids) {
+      var ra = (ca.R || {})[k] || {}, rb = (cb.R || {})[k] || {}, items = {};
+      for (i in ra) items[i] = 1;
+      for (i in rb) items[i] = 1;
+      out.R[k] = {};
+      for (i in items) {
+        var v = pick(ra[i], rb[i]);
+        if (filled(v)) out.R[k][i] = v;
+      }
+    }
+    // Las casillas de repaso son booleanas: marcada gana a sin marcar.
+    for (k in ca.CH || {}) if ((ca.CH || {})[k]) out.CH[k] = true;
+    for (k in cb.CH || {}) if ((cb.CH || {})[k]) out.CH[k] = true;
+    return out;
+  }
+
   function merge(a, b) {
     a = a || { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: "" };
     b = b || { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: "" };
-    var out = { lessons: {}, quizzes: {}, essays: {}, corrections: {}, name: a.name || b.name || "" };
+    var out = { lessons: {}, quizzes: {}, essays: {}, corrections: {},
+                cuaderno: mergeCuaderno(a, b), cuadernoAt: Math.max(a.cuadernoAt || 0, b.cuadernoAt || 0),
+                name: a.name || b.name || "" };
     var k;
     for (k in a.lessons) if (a.lessons[k]) out.lessons[k] = true;
     for (k in b.lessons) if (b.lessons[k]) out.lessons[k] = true;
