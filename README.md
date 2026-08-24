@@ -52,6 +52,11 @@ es *grow-only* (las lecciones se unen y de cada evaluación se conserva la mejor
 que dos dispositivos avanzan por separado y se reconcilian sin perder progreso. El token
 vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
 
+**¿El gist equivocado?** *Ajustes → Buscar el gist otra vez* olvida el id guardado y
+conserva el token: la siguiente sincronización vuelve a localizar el gist por el nombre
+del archivo, o crea uno si no hay. Es la salida cuando el id apunta a donde no debe, sin
+tener que desconectar y volver a empezar.
+
 **Añadir un dispositivo de una pegada.** Desde uno que ya funcione, *Ajustes →
 Copiar código de conexión*: sale una línea `espanol:1:<token>:<gist>` que se pega en el
 otro y lo deja conectado al mismo gist, sin volver a buscar el token. Ese código

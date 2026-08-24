@@ -207,6 +207,60 @@
     btn.setAttribute("href", href);
     document.getElementById("back-label").textContent = label;
   }
+  /* ---------- Avisos dentro de la página ----------
+     Ni alert() ni confirm() sirven en la app de escritorio. wry implementa tres
+     métodos de WKUIDelegate —ventana nueva, permiso de cámara y panel de
+     archivos— y ninguno es el de los diálogos de JavaScript. WebKit, ante un
+     delegado que no los implementa, no enseña nada: alert() no hace nada y
+     confirm() devuelve false SIN preguntar. Todo lo que colgara de ellos estaba
+     muerto ahí, incluido el botón de desconectar.
+
+     Se pinta el aviso justo debajo del control que lo provoca. */
+  function flashBox(anchor) {
+    var box = anchor.parentNode.querySelector(":scope > .flash");
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "flash";
+      anchor.parentNode.insertBefore(box, anchor.nextSibling);
+    }
+    return box;
+  }
+  function flash(anchor, text, cls) {
+    if (!anchor) return;
+    var box = flashBox(anchor);
+    box.className = "flash" + (cls ? " " + cls : "");
+    box.textContent = text;
+  }
+  function clearFlash(anchor) {
+    if (!anchor) return;
+    var box = anchor.parentNode.querySelector(":scope > .flash");
+    if (box) box.remove();
+  }
+  // Confirmación en dos pasos: sustituye al confirm() del navegador.
+  function flashConfirm(anchor, question, okLabel, onOk) {
+    if (!anchor) return;
+    var box = flashBox(anchor);
+    box.className = "flash ask";
+    box.textContent = "";
+    var q = document.createElement("span");
+    q.className = "flash-q";
+    q.textContent = question;
+    var yes = document.createElement("button");
+    yes.type = "button";
+    yes.className = "btn tiny";
+    yes.textContent = okLabel;
+    yes.addEventListener("click", function () { clearFlash(anchor); onOk(); });
+    var no = document.createElement("button");
+    no.type = "button";
+    no.className = "btn tiny ghost";
+    no.textContent = "Cancelar";
+    no.addEventListener("click", function () { clearFlash(anchor); });
+    box.appendChild(q);
+    box.appendChild(yes);
+    box.appendChild(no);
+    yes.focus();
+  }
+
   // Enlace "atrás" dentro del contenido (visible solo en iPhone).
   function backLink(href, label) {
     return '<a class="back-link" href="' + href + '"><span aria-hidden="true">\u2190</span>' + esc(label) + '</a>';
@@ -511,14 +565,16 @@
       });
     });
 
-    document.getElementById("btn-submit").addEventListener("click", function (e) {
+    var submitBtn = document.getElementById("btn-submit");
+    submitBtn.addEventListener("click", function (e) {
       e.preventDefault();
       var unanswered = [];
       answers.forEach(function (a, i) { if (a === null) unanswered.push(i + 1); });
       if (unanswered.length) {
-        alert("Te faltan las preguntas: " + unanswered.join(", "));
+        flash(submitBtn, "Te faltan las preguntas: " + unanswered.join(", "), "warn");
         return;
       }
+      clearFlash(submitBtn);
 
       var score = 0;
       quiz.questions.forEach(function (q, qi) {
@@ -735,9 +791,10 @@
       var w = countWords(ta.value);
       var nowDone = !isEssayDone(mid, lid);
       if (nowDone && w < e.minWords) {
-        alert("Te faltan palabras: llevas " + w + " y el mínimo son " + e.minWords + ".");
+        flash(doneBtn, "Te faltan palabras: llevas " + w + " y el mínimo son " + e.minWords + ".", "warn");
         return;
       }
+      clearFlash(doneBtn);
       if (timer) { clearTimeout(timer); timer = null; }
       flushSave(nowDone);
       viewEssay(mid, lid);
@@ -800,7 +857,8 @@
     btn.addEventListener("click", function () {
       var g = document.getElementById("corr-grade").value;
       var c = document.getElementById("corr-comment").value;
-      if (!g.trim() && !c.trim()) { alert("Pon al menos una nota o un comentario."); return; }
+      if (!g.trim() && !c.trim()) { flash(btn, "Pon al menos una nota o un comentario.", "warn"); return; }
+      clearFlash(btn);
       addCorrection(mid, lid, g, c);
       viewEssay(mid, lid);
     });
@@ -956,6 +1014,7 @@
         '<div class="sync-actions">' +
           '<button class="btn" id="sync-now">Sincronizar ahora</button>' +
           '<button class="btn ghost" id="sync-code-copy">Copiar código de conexión</button>' +
+          (gistId ? '<button class="btn ghost" id="sync-regist">Buscar el gist otra vez</button>' : "") +
           '<button class="btn ghost" id="sync-disconnect">Desconectar este dispositivo</button>' +
         '</div>' +
         '<input type="text" id="sync-code-out" class="sync-input code-out" readonly spellcheck="false" hidden>' +
@@ -1070,7 +1129,8 @@
     if (connect) {
       connect.addEventListener("click", function () {
         var t = root.querySelector("#sync-token").value.trim();
-        if (!t) { alert("Pega tu token de GitHub."); return; }
+        if (!t) { flash(connect, "Pega tu token de GitHub.", "warn"); return; }
+        clearFlash(connect);
         Sync.setToken(t);
         Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint);
       });
@@ -1081,12 +1141,25 @@
         Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint);
       });
     }
+    // Salida cuando el id guardado apunta al gist equivocado: se olvida solo
+    // el gist y el siguiente sync lo vuelve a buscar por nombre de archivo.
+    var regist = root.querySelector("#sync-regist");
+    if (regist) {
+      regist.addEventListener("click", function () {
+        flashConfirm(regist, "¿Olvidar este gist y volver a buscarlo? El token se conserva.",
+          "Sí, buscarlo", function () {
+            Sync.forgetGist();
+            Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); })
+              .then(repaint, repaint);
+          });
+      });
+    }
+
     var off = root.querySelector("#sync-disconnect");
     if (off) {
       off.addEventListener("click", function () {
-        if (!confirm("¿Desconectar la sincronización en este dispositivo? Tu progreso local se conserva.")) return;
-        Sync.clearConfig();
-        repaint();
+        flashConfirm(off, "¿Desconectar este dispositivo? Tu progreso local se conserva.",
+          "Sí, desconectar", function () { Sync.clearConfig(); repaint(); });
       });
     }
     wireCode(root, repaint);
