@@ -10,16 +10,42 @@
 
   var KEY = "espanol-cuaderno-v1";
 
-  function loadState() {
+  /* ---------- Dónde viven las respuestas ----------
+     Por defecto, en su propia clave de localStorage. Pero así se quedaban
+     ENCERRADAS en el dispositivo: no entraban en el progreso, así que no
+     viajaban por el gist y la profesora no las veía nunca.
+     `useStore` deja que app.js las guarde dentro del progreso, que sí se
+     sincroniza. La clave vieja se conserva para poder migrarla. */
+  function blank() { return { R: {}, W: {}, CH: {} }; }
+  function shape(p) {
+    p = p || {};
+    return { R: p.R || {}, W: p.W || {}, CH: p.CH || {} };
+  }
+  var store = {
+    load: function () {
+      try { return shape(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return blank(); }
+    },
+    save: function (s) {
+      try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+    }
+  };
+  function useStore(s) {
+    store = { load: function () { return shape(s.load()); }, save: s.save };
+    st = store.load();
+  }
+  // Lo que hay en la clave vieja, para migrarlo una sola vez.
+  function localState() {
     try {
-      var p = JSON.parse(localStorage.getItem(KEY)) || {};
-      return { R: p.R || {}, W: p.W || {}, CH: p.CH || {} };
-    } catch (e) { return { R: {}, W: {}, CH: {} }; }
+      var raw = localStorage.getItem(KEY);
+      return raw ? shape(JSON.parse(raw)) : null;
+    } catch (e) { return null; }
   }
-  function persist() {
-    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
-  }
-  var st = loadState();
+  function persist() { store.save(st); }
+  var st = store.load();
+
+  // Solo lectura: la profesora mira, no escribe.
+  var readOnly = false;
+  function setReadOnly(v) { readOnly = !!v; }
   function rbox(id) { return (st.R[id] = st.R[id] || {}); }
 
   // Normalización idéntica a la del cuaderno original
@@ -194,12 +220,17 @@
     host.innerHTML = html;
     mounted = lesson;
 
+    // El estado puede haber cambiado por una sincronización desde otro
+    // dispositivo, así que se relee al montar.
+    st = store.load();
     ex.forEach(function (x) { restore(host, x); });
     updateTaller(host, lesson.taller, opts.pieceText);
+    if (readOnly) lockDown(host);
 
     host.addEventListener('click', function (e) {
       var opt = e.target.closest('.opt-btn');
       if (opt) {
+        if (readOnly) return;
         var ob = opt.closest('[data-ex]'), oid = ob.dataset.ex, i = +opt.dataset.i;
         ob.querySelectorAll('.opt-btn[data-i="' + i + '"]').forEach(function (o) { o.dataset.s = ''; });
         opt.dataset.s = 'sel';
@@ -232,12 +263,13 @@
         act.textContent = on ? 'Ver las versiones modelo' : 'Ocultar las versiones modelo';
         return;
       }
-      if (act.dataset.act === 'clear') { clear(el, x); return; }
+      if (act.dataset.act === 'clear') { if (!readOnly) clear(el, x); return; }
       check(el, x);
     });
 
     host.addEventListener('input', function (e) {
       var el = e.target.closest('[data-ex]');
+      if (readOnly) return;
       if (el && (e.target.tagName === 'TEXTAREA' || e.target.classList.contains('gap'))) {
         rbox(el.dataset.ex)[e.target.dataset.i] = e.target.value;
         persist();
@@ -246,6 +278,7 @@
 
     host.addEventListener('change', function (e) {
       if (e.target.type !== 'checkbox') return;
+      if (readOnly) { e.target.checked = !e.target.checked; return; }
       var exEl = e.target.closest('[data-ex]');
       if (!exEl) return;
       st.CH[exEl.dataset.ex + ':' + e.target.dataset.i] = e.target.checked;
@@ -253,5 +286,23 @@
     });
   }
 
-  window.Cuaderno = { mount: mount };
+  // Deja el cuaderno como está: se lee, no se toca. Los botones de comprobar
+  // y borrar desaparecen porque son del alumno.
+  function lockDown(host) {
+    host.querySelectorAll('input, textarea').forEach(function (el) {
+      if (el.type === 'checkbox') el.disabled = true;
+      else { el.readOnly = true; el.tabIndex = -1; }
+    });
+    host.querySelectorAll('[data-act="check"], [data-act="clear"], #btnEns').forEach(function (b) {
+      b.hidden = true;
+    });
+    host.classList.add('cuaderno-ro');
+  }
+
+  window.Cuaderno = {
+    mount: mount,
+    useStore: useStore,
+    localState: localState,
+    setReadOnly: setReadOnly
+  };
 })();
