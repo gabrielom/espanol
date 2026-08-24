@@ -126,11 +126,20 @@
       var st = api.stats(mod);
       var isOpen = !!open[mod.id];
       h += '<div class="sb-mod' + (isOpen ? ' open' : '') + '">';
-      h += '<div class="sb-modrow" data-sb="toggle" data-mid="' + mod.id + '">' +
-        '<span class="sb-num">' + num2(mi + 1) + '</span>' +
-        '<span class="sb-modtitle">' + esc(api.plainTitle(mod)) + '</span>' +
-        '<span class="sb-modmeta"><span class="sb-pct">' + st.pct + '%</span>' +
-        '<span class="sb-caret">' + (isOpen ? '−' : '+') + '</span></span>' +
+      // El título lleva a la página del módulo; el % y el +/− abren y cierran
+      // la lista. Son dos controles distintos, y por eso el botón va FUERA del
+      // enlace: un <button> dentro de un <a> no es HTML válido.
+      h += '<div class="sb-modrow">' +
+        '<a class="sb-modmain" href="#/module/' + mod.id + '">' +
+          '<span class="sb-num">' + num2(mi + 1) + '</span>' +
+          '<span class="sb-modtitle">' + esc(api.plainTitle(mod)) + '</span>' +
+        '</a>' +
+        '<button type="button" class="sb-modmeta" data-sb="toggle" data-mid="' + mod.id + '"' +
+          ' aria-expanded="' + (isOpen ? 'true' : 'false') + '"' +
+          ' aria-label="' + (isOpen ? 'Cerrar' : 'Abrir') + ' ' + esc(api.plainTitle(mod)) + '">' +
+          '<span class="sb-pct">' + st.pct + '%</span>' +
+          '<span class="sb-caret">' + (isOpen ? '−' : '+') + '</span>' +
+        '</button>' +
         '</div>';
 
       if (isOpen) {
