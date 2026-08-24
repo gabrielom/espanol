@@ -57,11 +57,19 @@ conserva el token: la siguiente sincronización vuelve a localizar el gist por e
 del archivo, o crea uno si no hay. Es la salida cuando el id apunta a donde no debe, sin
 tener que desconectar y volver a empezar.
 
-**Añadir un dispositivo de una pegada.** Desde uno que ya funcione, *Ajustes →
-Copiar código de conexión*: sale una línea `espanol:1:<token>:<gist>` que se pega en el
-otro y lo deja conectado al mismo gist, sin volver a buscar el token. Ese código
-**lleva el token dentro**, así que es una contraseña: no lo dejes en un chat ni en notas
-compartidas. Si alguna vez se te escapa, basta con revocar el token en GitHub.
+**Mover la configuración de una pegada.** Hay dos códigos, y cada uno se copia entero:
+nunca hay que recortar nada a mano. Se pegan en *Ajustes → Pegar un código de otro
+dispositivo*.
+
+| código | qué lleva | para qué |
+|---|---|---|
+| `espanol:1:<token>:<gist>` | token **y** gist | enlazar un dispositivo desde cero |
+| `espanol:g1:<gist>` | solo el gist | apuntar al mismo gist uno que **ya tiene** el token |
+
+El primero **lleva el token dentro**, así que es una contraseña: no lo dejes en un chat ni
+en notas compartidas, y si se te escapa, revoca el token en GitHub. El segundo no es
+ningún secreto — un id de gist sin token no abre nada — y es el que sirve para poner
+todos los dispositivos en el mismo sitio sin volver a mover el token.
 
 ## Cuatro formas de estudiar
 

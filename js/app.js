@@ -1000,7 +1000,7 @@
         '<label class="sync-label" for="sync-code-in">Código de conexión de otro dispositivo</label>' +
         '<input type="password" id="sync-code-in" class="sync-input" placeholder="espanol:1:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
         '<button class="btn" id="sync-code-use">Usar este código →</button>' +
-        '<div class="code-msg" id="sync-code-msg"></div>' +
+        '<div class="code-msg" id="sync-code-in-msg"></div>' +
       '</div>'
     );
   }
@@ -1013,13 +1013,22 @@
         (gistId ? '<div class="sync-gist">Gist secreto: <code>' + esc(gistId) + '</code></div>' : "") +
         '<div class="sync-actions">' +
           '<button class="btn" id="sync-now">Sincronizar ahora</button>' +
+          (gistId ? '<button class="btn ghost" id="sync-gist-copy">Copiar solo el gist</button>' : "") +
           '<button class="btn ghost" id="sync-code-copy">Copiar código de conexión</button>' +
           (gistId ? '<button class="btn ghost" id="sync-regist">Buscar el gist otra vez</button>' : "") +
           '<button class="btn ghost" id="sync-disconnect">Desconectar este dispositivo</button>' +
         '</div>' +
         '<input type="text" id="sync-code-out" class="sync-input code-out" readonly spellcheck="false" hidden>' +
         '<div class="code-msg" id="sync-code-msg"></div>' +
-        '<p class="sync-note">Este dispositivo está conectado. El progreso se sincroniza al abrir la página, al volver a ella y al completar lecciones o evaluaciones. Para añadir otro dispositivo, copia el código de conexión y pégalo allí en <em>Ajustes</em> — o pega el mismo token, como prefieras.</p>' +
+        '<p class="sync-note">Este dispositivo está conectado. El progreso se sincroniza al abrir la página, al volver a ella y al completar lecciones o evaluaciones. <strong>Solo el gist</strong> apunta otro dispositivo —uno que ya tenga el token— al mismo sitio que este; el <strong>código de conexión</strong> enlaza uno desde cero, y lleva el token dentro.</p>' +
+      '</div>' +
+      // También aquí se puede pegar: es como se corrige un dispositivo que
+      // quedó apuntando al gist equivocado.
+      '<div class="code-alt">' +
+        '<label class="sync-label" for="sync-code-in">Pegar un código de otro dispositivo</label>' +
+        '<input type="password" id="sync-code-in" class="sync-input" placeholder="espanol:g1:… o espanol:1:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+        '<button class="btn" id="sync-code-use">Usar este código →</button>' +
+        '<div class="code-msg" id="sync-code-in-msg"></div>' +
       '</div>'
     );
   }
@@ -1167,48 +1176,60 @@
 
   /* ---------- Código de conexión ---------- */
   function wireCode(root, repaint) {
-    var msg = root.querySelector("#sync-code-msg");
-    function say(t, cls) {
-      if (!msg) return;
-      msg.className = "code-msg" + (cls ? " " + cls : "");
-      msg.textContent = t;
+    function talker(sel) {
+      var el = root.querySelector(sel);
+      return function (t, cls) {
+        if (!el) return;
+        el.className = "code-msg" + (cls ? " " + cls : "");
+        el.textContent = t;
+      };
     }
+    var sayCopy = talker("#sync-code-msg");
+    var sayPaste = talker("#sync-code-in-msg");
 
-    // Dispositivo ya configurado: enseña el código y lo copia.
-    var copy = root.querySelector("#sync-code-copy");
-    if (copy) {
-      copy.addEventListener("click", function () {
-        var code = Sync.exportCode();
-        if (!code) { say("No hay nada que copiar todavía.", "warn"); return; }
+    // Copiar. El recuadro se enseña siempre además de copiar: si el
+    // portapapeles falla, ahí queda el código entero para seleccionarlo.
+    function wireCopy(sel, get, aviso) {
+      var btn = root.querySelector(sel);
+      if (!btn) return;
+      btn.addEventListener("click", function () {
+        var code = get();
+        if (!code) { sayCopy("No hay nada que copiar todavía.", "warn"); return; }
         var out = root.querySelector("#sync-code-out");
-        // Se enseña siempre: si el portapapeles falla, queda para seleccionar.
         if (out) { out.hidden = false; out.value = code; out.select(); }
-        var done = function () {
-          say("Copiado. Lleva tu token dentro: trátalo como una contraseña y no lo dejes en un chat ni en notas compartidas.", "warn");
-        };
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(code).then(done, function () {
-            say("No he podido usar el portapapeles: cópialo a mano del recuadro de arriba.", "warn");
-          });
+          navigator.clipboard.writeText(code).then(
+            function () { sayCopy("Copiado. " + aviso, aviso ? "warn" : "ok"); },
+            function () { sayCopy("No he podido usar el portapapeles: cópialo del recuadro de arriba.", "warn"); }
+          );
         } else {
-          say("Cópialo a mano del recuadro de arriba. Lleva tu token dentro: trátalo como una contraseña.", "warn");
+          sayCopy("Cópialo del recuadro de arriba. " + aviso, "warn");
         }
       });
     }
+    wireCopy("#sync-gist-copy", Sync.exportGistCode,
+      "Es solo el id del gist: sin el token no abre nada, así que puedes moverlo sin miedo.");
+    wireCopy("#sync-code-copy", Sync.exportCode,
+      "Lleva tu token dentro: trátalo como una contraseña y no lo dejes en un chat ni en notas compartidas.");
 
-    // Dispositivo nuevo: pega el código y queda conectado.
+    // Pegar. Acepta los dos formatos, cada uno copiado entero.
     var use = root.querySelector("#sync-code-use");
     if (use) {
       use.addEventListener("click", function () {
         var input = root.querySelector("#sync-code-in");
         var raw = input ? input.value : "";
-        if (!raw.trim()) { say("Pega aquí el código del otro dispositivo.", "warn"); return; }
-        if (!Sync.parseCode(raw)) {
-          say("Ese código no vale. Tiene que empezar por «espanol:1:» — cópialo entero desde el otro dispositivo.", "err");
+        if (!raw.trim()) { sayPaste("Pega aquí el código del otro dispositivo.", "warn"); return; }
+        var parsed = Sync.parseCode(raw);
+        if (!parsed) {
+          sayPaste("Ese código no vale. Tiene que empezar por «espanol:1:» o «espanol:g1:» — cópialo entero desde el otro dispositivo.", "err");
+          return;
+        }
+        if (parsed.kind === "gist" && !Sync.isConfigured()) {
+          sayPaste("Ese código lleva solo el gist, y aquí todavía no hay token. Conecta primero con tu token, o usa el código de conexión completo.", "err");
           return;
         }
         Sync.importCode(raw);
-        say("Conectado. Sincronizando…", "ok");
+        sayPaste(parsed.kind === "gist" ? "Gist actualizado. Sincronizando…" : "Conectado. Sincronizando…", "ok");
         Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint, repaint);
       });
     }
