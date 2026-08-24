@@ -1662,6 +1662,33 @@ body.is-teacher .appbar::after {
   .corr-row { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 
+/* ---------- Avisos y confirmaciones dentro de la página ----------
+   Sustituyen a alert() y confirm(), que en la app de escritorio no hacen nada
+   (wry no implementa los paneles de diálogo de WKUIDelegate). */
+.flash {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--body);
+}
+.flash.warn { color: var(--error); }
+.flash.ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: var(--callout-bg);
+}
+.flash-q { flex: 1; min-width: 220px; color: var(--ink); }
+.btn.tiny {
+  padding: 7px 12px;
+  font-size: 12px;
+  min-width: 0;
+}
+
 /* ---------- Código de conexión (Ajustes) ---------- */
 .code-alt { margin-top: 22px; }
 .code-or {

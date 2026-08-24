@@ -35,6 +35,14 @@
   }
   function isConfigured() { return !!getToken(); }
 
+  // Olvida SOLO el gist y conserva el token: en el siguiente sync, ensureGist
+  // vuelve a buscarlo por nombre de archivo (o lo crea). Es la salida cuando
+  // el id guardado apunta a donde no debe.
+  function forgetGist() {
+    try { localStorage.removeItem(LS_GIST); } catch (e) {}
+    setState("off", "");
+  }
+
   /* ---------- Código de conexión ----------
      Token y gist en una línea, para enlazar otro dispositivo de una sola
      pegada en vez de volver a crear un token.
@@ -227,6 +235,7 @@
     getGistId: getGistId,
     setToken: setToken,
     setGistId: setGistId,
+    forgetGist: forgetGist,
     exportCode: exportCode,
     parseCode: parseCode,
     importCode: importCode,
