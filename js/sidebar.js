@@ -38,10 +38,15 @@
   /* ---------- Posición de la lista ----------
      Cada render rehace el HTML de la barra, y con él se perdía el scroll:
      cambiar de lección te devolvía al principio de la lista. Se anota
-     mientras el usuario hace scroll y se repone después de cada render, así
-     que la barra solo se mueve cuando lo decides tú.
+     mientras el usuario hace scroll y se repone después de cada render.
      Se guarda por modo (lista expandida y raíl tienen alturas muy distintas)
-     y en sessionStorage, para que un recargado no la mueva tampoco. */
+     y en sessionStorage, para que un recargado no la mueva tampoco.
+
+     Con una excepción: si al llegar a una lección o evaluación su fila cae
+     fuera de la parte visible, la barra se desplaza para enseñártela — no
+     tiene sentido que marque «estás aquí» donde no lo ves. Solo entonces:
+     si ya se ve, no se mueve ni un píxel. */
+  var HERE_PAD = 8;   // margen para no dejarla pegada al borde
   var scrollAt = { list: 0, rail: 0 };
   try {
     var saved = JSON.parse(sessionStorage.getItem(KEY_SCROLL));
@@ -51,12 +56,32 @@
     }
   } catch (e) {}
 
+  // Deja a la vista la fila de «estás aquí», si la hay y no se ve ya.
+  // Se mide con rectángulos y no con offsetTop: la fila cuelga de .sb-items >
+  // .sb-mod, y offsetTop dependería de quién sea el offsetParent.
+  function revealHere(box) {
+    var here = box.querySelector(".sb-row.here, .sb-railitem.current");
+    if (!here) return;
+    var r = here.getBoundingClientRect();
+    var b = box.getBoundingClientRect();
+    var visible = r.top >= b.top + HERE_PAD && r.bottom <= b.bottom - HERE_PAD;
+    if (visible) return;
+    // Centrada: al venir de otro módulo puede caer lejos, y así se ve con
+    // algo de contexto por arriba y por abajo.
+    box.scrollTop += (r.top - b.top) - (b.height - r.height) / 2;
+  }
+
   function rememberScroll(el) {
     var box = el.querySelector(".sb-list") || el.querySelector(".sb-rail");
     if (!box) return;
     var key = box.classList.contains("sb-list") ? "list" : "rail";
     // El navegador recorta solo si la lista es más corta que la posición.
     box.scrollTop = scrollAt[key];
+    revealHere(box);
+    // Lo que haya quedado (ya recortado por el navegador) es la nueva posición.
+    scrollAt[key] = box.scrollTop;
+    try { sessionStorage.setItem(KEY_SCROLL, JSON.stringify(scrollAt)); } catch (e) {}
+
     box.addEventListener("scroll", function () {
       scrollAt[key] = box.scrollTop;
       try { sessionStorage.setItem(KEY_SCROLL, JSON.stringify(scrollAt)); } catch (e) {}
