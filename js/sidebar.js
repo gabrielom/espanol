@@ -2,11 +2,12 @@
    Barra lateral del curso ("Contenido del curso").
      · Expandida (268px) — por defecto dentro de lección / evaluación /
        redacción / tarjetas
-     · Colapsada (56px)  — SIEMPRE al entrar en la página de módulo
+     · Colapsada (56px)  — al LLEGAR a la página de módulo (desde Inicio o
+       volviendo con «atrás»), pero no si la abriste desde la propia barra
      · iPad: cajón temporal sobre el contenido, con velo
      · iPhone: sin barra lateral
-   Fuera del módulo el estado manual se guarda y manda. En el módulo no: se
-   entra siempre colapsada y lo que pulses dura solo esa visita.
+   Fuera del módulo el estado manual se guarda y manda. En el módulo no: lo
+   que pulses dura solo esa visita.
    Todo (%, marcas, notas, "estás aquí") sale del progreso real.
    ============================================================ */
 (function () {
@@ -71,13 +72,23 @@
     return window.matchMedia("(max-width: 640px)").matches;
   }
 
-  // En la página de módulo se entra SIEMPRE colapsada: ahí el contenido ya es
-  // el índice del módulo y la barra solo estorba. Lo que pulses vale mientras
-  // estés en esa pantalla y no se guarda, así que la siguiente vez que entres
-  // en un módulo vuelve a estar colapsada.
-  // En el resto (lección, evaluación, redacción, tarjetas) manda tu preferencia
-  // guardada, y si nunca has tocado nada, expandida.
+  /* ---------- Expandida o colapsada ----------
+     En la página de módulo se entra colapsada: ahí el contenido ya es el índice
+     del módulo y la barra repetiría lo mismo. Eso vale cuando LLEGAS a esa
+     página — desde Inicio, o volviendo con «atrás» desde una lección.
+
+     La excepción es pulsar un módulo en la propia barra expandida: cerrártela
+     justo después de usarla sería quitarte la herramienta de las manos. Ese
+     caso se marca al hacer clic (`cameFromSidebar`), porque desde la ruta no se
+     distingue: los dos caminos acaban en el mismo #/module/<id>.
+
+     El raíl colapsado no marca nada: ahí ya estás en modo estrecho y navegar a
+     otro módulo no es motivo para abrirla.
+
+     Fuera del módulo manda tu preferencia guardada; si nunca la has tocado,
+     expandida. Lo que pulses dentro de un módulo dura solo esa visita. */
   var moduleExpanded = null;
+  var cameFromSidebar = false;
 
   function inModule() { return ctx.view === "module"; }
 
@@ -130,7 +141,7 @@
       // la lista. Son dos controles distintos, y por eso el botón va FUERA del
       // enlace: un <button> dentro de un <a> no es HTML válido.
       h += '<div class="sb-modrow">' +
-        '<a class="sb-modmain" href="#/module/' + mod.id + '">' +
+        '<a class="sb-modmain" data-sb="goto-module" href="#/module/' + mod.id + '">' +
           '<span class="sb-num">' + num2(mi + 1) + '</span>' +
           '<span class="sb-modtitle">' + esc(api.plainTitle(mod)) + '</span>' +
         '</a>' +
@@ -259,6 +270,9 @@
     var t = e.target.closest("[data-sb]");
     if (!t) return;
     var act = t.dataset.sb;
+    // Ir a un módulo desde la propia barra expandida: no la cierres en la cara.
+    // No se toca el enlace, solo se anota; navega como cualquier otro <a>.
+    if (act === "goto-module") { cameFromSidebar = true; return; }
     if (act === "collapse") { setExpanded(false); render(); }
     else if (act === "expand") { setExpanded(true); render(); }
     else if (act === "close") { drawerOpen = false; render(); }
@@ -290,7 +304,9 @@
   function update(next) {
     ctx = next;
     drawerOpen = false;      // cada navegación cierra el cajón
-    moduleExpanded = null;   // y cada entrada a un módulo vuelve a colapsar
+    // Llegar a un módulo lo colapsa, salvo si vienes de pulsarlo en la barra.
+    moduleExpanded = (cameFromSidebar && ctx.view === "module") ? true : null;
+    cameFromSidebar = false;
     measureBar();
     render();
   }
