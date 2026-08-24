@@ -128,7 +128,15 @@
   function expandedHTML() {
     var mods = api.modules();
     var open = openSet();
-    if (ctx.mid && open[ctx.mid] === undefined) open[ctx.mid] = true;
+    // La lista del módulo se despliega sola solo cuando estás DENTRO de algo
+    // suyo — lección, evaluación, redacción, tarjetas —, para enseñarte dónde
+    // estás. En la propia página del módulo no: ahí el índice ya lo tienes
+    // delante, y abrirla sería repetirlo.
+    // Es transitorio: no se guarda, así que no pisa lo que hayas abierto o
+    // cerrado tú con el ±, que siempre manda.
+    if (ctx.mid && ctx.view !== "module" && open[ctx.mid] === undefined) {
+      open[ctx.mid] = true;
+    }
 
     var h = '<div class="sb-head">' +
       '<span class="sb-title">Contenido del curso</span>' +
