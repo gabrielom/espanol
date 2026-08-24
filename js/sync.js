@@ -51,27 +51,56 @@
      tenga puede leer y escribir los gists de esa cuenta. No se codifica ni se
      cifra a propósito — ofuscarlo solo aparentaría una seguridad que no hay.
 
-     Formato:  espanol:1:<token>:<gist>
+     Hay dos formatos, y cada uno se copia entero: nunca hay que recortar nada
+     a mano.
+
+       espanol:1:<token>:<gist>   completo — enlaza un dispositivo desde cero
+       espanol:g1:<gist>          solo el gist — para uno que YA tiene el token
+
+     El segundo es el que sirve para poner a todos los dispositivos en el mismo
+     gist sin volver a mover el token, y no es ningún secreto: un id de gist sin
+     el token no abre nada.
+
      Ni los tokens de GitHub (ghp_… / github_pat_…) ni los id de gist llevan
      dos puntos, así que partir por ":" es seguro. */
   var CODE_TAG = "espanol";
   var CODE_V = "1";
+  var CODE_V_GIST = "g1";
 
   function exportCode() {
     var t = getToken();
     return t ? [CODE_TAG, CODE_V, t, getGistId()].join(":") : "";
   }
+  function exportGistCode() {
+    var g = getGistId();
+    return g ? [CODE_TAG, CODE_V_GIST, g].join(":") : "";
+  }
+
+  // Devuelve { kind: "full", token, gist } o { kind: "gist", gist }.
   function parseCode(raw) {
     var p = String(raw || "").trim().split(":");
-    if (p.length < 4 || p[0] !== CODE_TAG || p[1] !== CODE_V) return null;
+    if (p[0] !== CODE_TAG) return null;
+    if (p[1] === CODE_V_GIST) {
+      var gist = (p[2] || "").trim();
+      return gist ? { kind: "gist", gist: gist } : null;
+    }
+    if (p[1] !== CODE_V || p.length < 4) return null;
     var token = (p[2] || "").trim();
     if (!token) return null;
-    return { token: token, gist: (p[3] || "").trim() };
+    return { kind: "full", token: token, gist: (p[3] || "").trim() };
   }
-  // Sustituye la configuración de este dispositivo por la del código.
+
+  // Aplica el código a este dispositivo. El de solo-gist necesita que ya haya
+  // un token aquí: sin él no hay con qué abrirlo.
   function importCode(raw) {
     var c = parseCode(raw);
     if (!c) return false;
+    if (c.kind === "gist") {
+      if (!getToken()) return false;
+      setGistId(c.gist);
+      setState("off", "");
+      return true;
+    }
     setToken(c.token);
     if (c.gist) setGistId(c.gist);
     else { try { localStorage.removeItem(LS_GIST); } catch (e) {} }
@@ -237,6 +266,7 @@
     setGistId: setGistId,
     forgetGist: forgetGist,
     exportCode: exportCode,
+    exportGistCode: exportGistCode,
     parseCode: parseCode,
     importCode: importCode,
     clearConfig: clearConfig,
