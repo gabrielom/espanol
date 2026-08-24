@@ -82,7 +82,16 @@ los semáforos de macOS quedan integrados dentro de la propia barra de la app
 (`titleBarStyle: "Overlay"` + `hiddenTitle: true`). La barra es la región de arrastre y
 el hueco de los semáforos solo se reserva en macOS. Ver `src-tauri/README.md`.
 
+La ventana **no lleva los archivos dentro**: carga el sitio publicado
+(`frontendDist` es la URL de GitHub Pages). Así lo que se despliega llega al
+escritorio sin recompilar nada. Quien lo hace funcionar sin internet es el
+**service worker**, el mismo de la PWA: arranca de la copia guardada y revalida
+por detrás, y como Pages manda `ETag`, un archivo que no cambió responde 304 y no
+se descarga. **La primera vez sí hace falta conexión**, para que haya algo que
+guardar. En **Ajustes → Versión** se ve la copia instalada y si hay una nueva.
+
 ```bash
+python3 -m http.server 8000   # en otra terminal: `devUrl` apunta aquí
 cargo tauri dev                                     # desarrollo
 cargo tauri build --target universal-apple-darwin   # .app / .dmg (Apple Silicon + Intel)
 ```
@@ -104,7 +113,8 @@ js/exercises.js       cuaderno interactivo: ejercicios y taller (módulo 9)
 js/sidebar.js         barra lateral del curso (expandida / raíl / cajón)
 sw.js + manifest      PWA instalable y offline
 icons/                iconos de la app (PWA)
-scripts/dist.sh       arma dist/ con solo los archivos web (empaquetado Tauri)
+js/version.js         sello de la versión en ejecución (lo reescribe el despliegue)
+version.json          sello de la versión publicada (nunca se cachea)
 src-tauri/            envoltorio nativo de macOS (ventana sin barra de título)
 js/course.js          metadatos del curso
 js/app.js             motor: router, progreso, evaluaciones, tarjetas, certificado
