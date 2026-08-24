@@ -39,11 +39,13 @@ jobs:
         with:
           workspaces: src-tauri
 
+      # Mismo package.json que en local, para que CI y tu Mac compilen con la
+      # misma versión de la CLI y con el mismo comando.
       - name: Instalar la CLI de Tauri
-        run: npm install -g "@tauri-apps/cli@^2"
+        run: npm install
 
       - name: Compilar el binario universal
-        run: tauri build --target universal-apple-darwin --verbose
+        run: npm run build -- --verbose
 
       - name: Comprobar el resultado
         run: |

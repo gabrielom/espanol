@@ -35,6 +35,42 @@
   }
   function isConfigured() { return !!getToken(); }
 
+  /* ---------- Código de conexión ----------
+     Token y gist en una línea, para enlazar otro dispositivo de una sola
+     pegada en vez de volver a crear un token.
+
+     ¡LLEVA EL TOKEN DENTRO! Es una contraseña disfrazada de código: quien lo
+     tenga puede leer y escribir los gists de esa cuenta. No se codifica ni se
+     cifra a propósito — ofuscarlo solo aparentaría una seguridad que no hay.
+
+     Formato:  espanol:1:<token>:<gist>
+     Ni los tokens de GitHub (ghp_… / github_pat_…) ni los id de gist llevan
+     dos puntos, así que partir por ":" es seguro. */
+  var CODE_TAG = "espanol";
+  var CODE_V = "1";
+
+  function exportCode() {
+    var t = getToken();
+    return t ? [CODE_TAG, CODE_V, t, getGistId()].join(":") : "";
+  }
+  function parseCode(raw) {
+    var p = String(raw || "").trim().split(":");
+    if (p.length < 4 || p[0] !== CODE_TAG || p[1] !== CODE_V) return null;
+    var token = (p[2] || "").trim();
+    if (!token) return null;
+    return { token: token, gist: (p[3] || "").trim() };
+  }
+  // Sustituye la configuración de este dispositivo por la del código.
+  function importCode(raw) {
+    var c = parseCode(raw);
+    if (!c) return false;
+    setToken(c.token);
+    if (c.gist) setGistId(c.gist);
+    else { try { localStorage.removeItem(LS_GIST); } catch (e) {} }
+    setState("off", "");
+    return true;
+  }
+
   function setState(status, detail) {
     state.status = status;
     state.detail = detail || "";
@@ -190,6 +226,10 @@
     getToken: getToken,
     getGistId: getGistId,
     setToken: setToken,
+    setGistId: setGistId,
+    exportCode: exportCode,
+    parseCode: parseCode,
+    importCode: importCode,
     clearConfig: clearConfig,
     onState: onState,
     getState: function () { return state; },

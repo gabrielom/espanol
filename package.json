@@ -1,0 +1,16 @@
+{
+  "name": "espanol-para-brasilenos",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Curso contrastivo de español para hablantes de portugués brasileño. La app web no necesita nada de esto: este archivo existe solo para compilar la app de escritorio con `npm run build`.",
+  "scripts": {
+    "build": "tauri build --target universal-apple-darwin",
+    "build:native": "tauri build",
+    "dev": "tauri dev",
+    "serve": "python3 -m http.server 8000",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

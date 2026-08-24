@@ -931,9 +931,18 @@
         '<div class="sync-help">' +
           '<p><span class="sn">1</span> Crea un token en <a href="' + tokenUrl + '" target="_blank" rel="noopener">github.com</a> con el permiso <code>gist</code> (ya viene marcado). Ningún otro permiso hace falta.</p>' +
           '<p><span class="sn">2</span> Pégalo aquí y pulsa Conectar: se creará (o reutilizará) un gist <strong>secreto</strong> con tu progreso.</p>' +
-          '<p><span class="sn">3</span> En tu iPhone, iPad y Mac abre esta misma página → <em>Sincronizar</em> → pega el <em>mismo token</em>. Eso es todo.</p>' +
+          '<p><span class="sn">3</span> En tu iPhone, iPad y Mac abre esta misma página → <em>Ajustes</em> → pega el <em>mismo token</em>, o el <em>código de conexión</em> que copies desde el dispositivo que ya funciona. Eso es todo.</p>' +
         '</div>' +
         '<p class="sync-note">El token se guarda solo en este dispositivo y únicamente se envía a api.github.com — nunca al repositorio. El gist es secreto (no aparece en tu perfil). La fusión conserva siempre la mejor nota de cada evaluación, así que nunca pierdes progreso.</p>' +
+      '</div>' +
+      // Atajo para el paso 3: en vez de repetir el token, se pega el código
+      // que el dispositivo ya configurado copia de una vez.
+      '<div class="code-alt">' +
+        '<div class="code-or"><span>o</span></div>' +
+        '<label class="sync-label" for="sync-code-in">Código de conexión de otro dispositivo</label>' +
+        '<input type="password" id="sync-code-in" class="sync-input" placeholder="espanol:1:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+        '<button class="btn" id="sync-code-use">Usar este código →</button>' +
+        '<div class="code-msg" id="sync-code-msg"></div>' +
       '</div>'
     );
   }
@@ -946,9 +955,12 @@
         (gistId ? '<div class="sync-gist">Gist secreto: <code>' + esc(gistId) + '</code></div>' : "") +
         '<div class="sync-actions">' +
           '<button class="btn" id="sync-now">Sincronizar ahora</button>' +
+          '<button class="btn ghost" id="sync-code-copy">Copiar código de conexión</button>' +
           '<button class="btn ghost" id="sync-disconnect">Desconectar este dispositivo</button>' +
         '</div>' +
-        '<p class="sync-note">Este dispositivo está conectado. El progreso se sincroniza al abrir la página, al volver a ella y al completar lecciones o evaluaciones. En tus otros dispositivos, pega el mismo token para unirlos.</p>' +
+        '<input type="text" id="sync-code-out" class="sync-input code-out" readonly spellcheck="false" hidden>' +
+        '<div class="code-msg" id="sync-code-msg"></div>' +
+        '<p class="sync-note">Este dispositivo está conectado. El progreso se sincroniza al abrir la página, al volver a ella y al completar lecciones o evaluaciones. Para añadir otro dispositivo, copia el código de conexión y pégalo allí en <em>Ajustes</em> — o pega el mismo token, como prefieras.</p>' +
       '</div>'
     );
   }
@@ -1075,6 +1087,56 @@
         if (!confirm("¿Desconectar la sincronización en este dispositivo? Tu progreso local se conserva.")) return;
         Sync.clearConfig();
         repaint();
+      });
+    }
+    wireCode(root, repaint);
+  }
+
+  /* ---------- Código de conexión ---------- */
+  function wireCode(root, repaint) {
+    var msg = root.querySelector("#sync-code-msg");
+    function say(t, cls) {
+      if (!msg) return;
+      msg.className = "code-msg" + (cls ? " " + cls : "");
+      msg.textContent = t;
+    }
+
+    // Dispositivo ya configurado: enseña el código y lo copia.
+    var copy = root.querySelector("#sync-code-copy");
+    if (copy) {
+      copy.addEventListener("click", function () {
+        var code = Sync.exportCode();
+        if (!code) { say("No hay nada que copiar todavía.", "warn"); return; }
+        var out = root.querySelector("#sync-code-out");
+        // Se enseña siempre: si el portapapeles falla, queda para seleccionar.
+        if (out) { out.hidden = false; out.value = code; out.select(); }
+        var done = function () {
+          say("Copiado. Lleva tu token dentro: trátalo como una contraseña y no lo dejes en un chat ni en notas compartidas.", "warn");
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(done, function () {
+            say("No he podido usar el portapapeles: cópialo a mano del recuadro de arriba.", "warn");
+          });
+        } else {
+          say("Cópialo a mano del recuadro de arriba. Lleva tu token dentro: trátalo como una contraseña.", "warn");
+        }
+      });
+    }
+
+    // Dispositivo nuevo: pega el código y queda conectado.
+    var use = root.querySelector("#sync-code-use");
+    if (use) {
+      use.addEventListener("click", function () {
+        var input = root.querySelector("#sync-code-in");
+        var raw = input ? input.value : "";
+        if (!raw.trim()) { say("Pega aquí el código del otro dispositivo.", "warn"); return; }
+        if (!Sync.parseCode(raw)) {
+          say("Ese código no vale. Tiene que empezar por «espanol:1:» — cópialo entero desde el otro dispositivo.", "err");
+          return;
+        }
+        Sync.importCode(raw);
+        say("Conectado. Sincronizando…", "ok");
+        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint, repaint);
       });
     }
   }
