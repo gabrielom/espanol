@@ -52,6 +52,12 @@ es *grow-only* (las lecciones se unen y de cada evaluación se conserva la mejor
 que dos dispositivos avanzan por separado y se reconcilian sin perder progreso. El token
 vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
 
+**Añadir un dispositivo de una pegada.** Desde uno que ya funcione, *Ajustes →
+Copiar código de conexión*: sale una línea `espanol:1:<token>:<gist>` que se pega en el
+otro y lo deja conectado al mismo gist, sin volver a buscar el token. Ese código
+**lleva el token dentro**, así que es una contraseña: no lo dejes en un chat ni en notas
+compartidas. Si alguna vez se te escapa, basta con revocar el token en GitHub.
+
 ## Cuatro formas de estudiar
 
 1. **Lecciones** — 56 lecciones (6 por módulo; 8 en el módulo 9) con tablas PT↔ES, ejemplos ✗/✓ y notas de registro regional.
@@ -91,10 +97,13 @@ se descarga. **La primera vez sí hace falta conexión**, para que haya algo que
 guardar. En **Ajustes → Versión** se ve la copia instalada y si hay una nueva.
 
 ```bash
-python3 -m http.server 8000   # en otra terminal: `devUrl` apunta aquí
-cargo tauri dev                                     # desarrollo
-cargo tauri build --target universal-apple-darwin   # .app / .dmg (Apple Silicon + Intel)
+npm install       # una sola vez: baja la CLI de Tauri en node_modules/
+npm run build     # .app / .dmg universal (Apple Silicon + Intel)
 ```
+
+El `.dmg` queda en
+`src-tauri/target/universal-apple-darwin/release/bundle/dmg/`. Para desarrollo,
+`npm run serve` en una terminal (ahí apunta `devUrl`) y `npm run dev` en otra.
 
 ¿Sin un Mac a mano? macOS no se compila desde otro sistema, pero
 **Actions → Build macOS app → Run workflow** lo compila en un runner de macOS y
