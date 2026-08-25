@@ -1174,16 +1174,18 @@
     };
     return Object.keys(esencia).map(function (k) { return k + "=" + esencia[k]; }).join("  ");
   }
+  // Plegado: es una herramienta para cuando algo no cuadra entre dispositivos,
+  // no algo que deba estar a la vista en un curso de idiomas.
   function diagHTML() {
     return (
-      '<h2 class="settings-h2">Diagnóstico</h2>' +
-      '<div class="ver-panel">' +
+      '<details class="diag-wrap">' +
+        '<summary>Diagnóstico de sincronización</summary>' +
         '<div class="diag" id="diag-text">' + esc(diagText()) + '</div>' +
         '<div class="sync-actions" style="margin-top:12px">' +
           '<button class="btn ghost" id="diag-copy">Copiar diagnóstico</button>' +
         '</div>' +
         '<div class="code-msg" id="diag-msg"></div>' +
-      '</div>'
+      '</details>'
     );
   }
   function wireDiag(root) {
