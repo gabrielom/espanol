@@ -126,7 +126,7 @@
     if (x.tipo === "gap") {
       el.querySelectorAll('input.gap').forEach(function (inp) {
         var v = box[inp.dataset.i];
-        if (typeof v === "string") inp.value = v;
+        if (typeof v === "string" && inp !== document.activeElement) inp.value = v;
       });
     } else if (x.tipo === "opcion") {
       el.querySelectorAll('.opt-btn').forEach(function (b) {
@@ -135,7 +135,7 @@
     } else if (x.tipo === "modelo") {
       el.querySelectorAll('textarea.mini').forEach(function (t) {
         var v = box[t.dataset.i];
-        if (typeof v === "string") t.value = v;
+        if (typeof v === "string" && t !== document.activeElement) t.value = v;
       });
     } else if (x.tipo === "check") {
       el.querySelectorAll('input[type="checkbox"]').forEach(function (c) {
@@ -191,7 +191,9 @@
   }
 
   /* ---------------- Montaje ---------------- */
-  var mounted = null;   // { exercises, w, taller }
+  var mounted = null;       // la lección montada
+  var mountedHost = null;   // y dónde, para poder refrescarla sin repintar
+  var mountedOpts = {};
 
   function updateTaller(root, taller, pieceText) {
     if (!taller) return;
@@ -219,6 +221,8 @@
     if (lesson.taller) html += tallerHTML(lesson.taller);
     host.innerHTML = html;
     mounted = lesson;
+    mountedHost = host;
+    mountedOpts = opts;
 
     // El estado puede haber cambiado por una sincronización desde otro
     // dispositivo, así que se relee al montar.
@@ -299,8 +303,20 @@
     host.classList.add('cuaderno-ro');
   }
 
+  /* Vuelve a leer el estado y lo aplica a lo que ya hay en pantalla.
+     Hace falta porque una sincronización de fondo cambia el progreso sin
+     repintar la lección: sin esto, las respuestas que llegan del otro
+     dispositivo quedan guardadas pero invisibles, y el hueco parece vacío. */
+  function reload() {
+    st = store.load();
+    if (!mountedHost || !mounted || !mountedHost.isConnected) return;
+    (mounted.exercises || []).forEach(function (x) { restore(mountedHost, x); });
+    updateTaller(mountedHost, mounted.taller, mountedOpts.pieceText);
+  }
+
   window.Cuaderno = {
     mount: mount,
+    reload: reload,
     useStore: useStore,
     localState: localState,
     setReadOnly: setReadOnly

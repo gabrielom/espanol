@@ -38,6 +38,11 @@
     var changed = JSON.stringify(merged) !== JSON.stringify(progress);
     progress = merged;
     saveLocal(merged);
+    // El cuaderno guarda una copia en memoria del progreso. Tras fusionar hay
+    // que releerla y volcarla en pantalla: si no, lo que llega del otro
+    // dispositivo queda guardado pero invisible, y el hueco parece vacío.
+    // No basta con repintar, porque el empuje de fondo no repinta.
+    if (changed && window.Cuaderno) Cuaderno.reload();
     if (changed && allowRerender && !/^#\/quiz\//.test(location.hash)) route();
   }
   function pullAndMerge() {
@@ -143,14 +148,30 @@
         saveProgress(progress);
       }
     };
-    // Migración de la clave suelta, una sola vez y solo en el dispositivo del
-    // alumno: es quien tiene las respuestas de verdad.
-    if (!progress.cuaderno && canEditProgress()) {
+    // Migración de la clave suelta, en el dispositivo del alumno: es quien
+    // tiene las respuestas de verdad. Rellena solo los huecos que falten, así
+    // que también sirve si este dispositivo ya había recibido un cuaderno del
+    // gist — sus respuestas locales no se quedan fuera.
+    if (canEditProgress()) {
       var viejo = Cuaderno.localState();
       if (viejo && (Object.keys(viejo.R).length || Object.keys(viejo.CH).length)) {
-        progress.cuaderno = viejo;
-        progress.cuadernoAt = Date.now();
-        saveProgress(progress);
+        var dest = progress.cuaderno || { R: {}, W: {}, CH: {} }, sumadas = 0, id, i;
+        for (id in viejo.R) {
+          dest.R[id] = dest.R[id] || {};
+          for (i in viejo.R[id]) {
+            var v = viejo.R[id][i];
+            if (v !== "" && v !== undefined && v !== null &&
+                (dest.R[id][i] === undefined || dest.R[id][i] === "")) {
+              dest.R[id][i] = v; sumadas++;
+            }
+          }
+        }
+        for (id in viejo.CH) if (viejo.CH[id] && !dest.CH[id]) { dest.CH[id] = true; sumadas++; }
+        if (sumadas) {
+          progress.cuaderno = dest;
+          progress.cuadernoAt = Date.now();
+          saveProgress(progress);
+        }
       }
     }
     Cuaderno.useStore(cuadernoStore);
