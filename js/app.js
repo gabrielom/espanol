@@ -1106,7 +1106,8 @@
       '<h2 class="settings-h2">Sincronizar dispositivos</h2>' +
       '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
       (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl)) +
-      versionHTML()
+      versionHTML() +
+      diagHTML()
     );
   }
 
@@ -1141,6 +1142,66 @@
       '</div>'
     );
   }
+  /* ---------- Diagnóstico ----------
+     Cuando algo "no se sincroniza", lo que hace falta es ver qué tiene cada
+     dispositivo. Esto lo resume en una línea copiable: perfil, versión, cuántas
+     respuestas del cuaderno hay guardadas, si queda algo en la clave vieja sin
+     migrar, y el estado de la última sincronización. */
+  function cuadernoCount(c) {
+    if (!c) return 0;
+    var n = 0, id, i;
+    for (id in c.R || {}) for (i in c.R[id]) {
+      var v = c.R[id][i];
+      if (v !== "" && v !== undefined && v !== null) n++;
+    }
+    for (id in c.CH || {}) if (c.CH[id]) n++;
+    return n;
+  }
+  function diagText() {
+    var vieja = (window.Cuaderno && Cuaderno.localState) ? Cuaderno.localState() : null;
+    var st = window.Sync ? Sync.getState() : { status: "?" };
+    var esencia = {
+      version: appVersion().version,
+      perfil: role(),
+      app: document.documentElement.classList.contains("is-tauri") ? "escritorio" : "navegador",
+      cuaderno: cuadernoCount(progress.cuaderno),
+      cuadernoAt: progress.cuadernoAt ? new Date(progress.cuadernoAt).toISOString().slice(0, 16) : "—",
+      claveVieja: cuadernoCount(vieja),
+      redacciones: Object.keys(progress.essays || {}).length,
+      lecciones: Object.keys(progress.lessons || {}).length,
+      sync: window.Sync && Sync.isConfigured() ? (st.status + (st.detail ? " · " + st.detail : "")) : "sin conectar",
+      gist: (window.Sync && Sync.getGistId() ? Sync.getGistId().slice(0, 8) + "…" : "—")
+    };
+    return Object.keys(esencia).map(function (k) { return k + "=" + esencia[k]; }).join("  ");
+  }
+  function diagHTML() {
+    return (
+      '<h2 class="settings-h2">Diagnóstico</h2>' +
+      '<div class="ver-panel">' +
+        '<div class="diag" id="diag-text">' + esc(diagText()) + '</div>' +
+        '<div class="sync-actions" style="margin-top:12px">' +
+          '<button class="btn ghost" id="diag-copy">Copiar diagnóstico</button>' +
+        '</div>' +
+        '<div class="code-msg" id="diag-msg"></div>' +
+      '</div>'
+    );
+  }
+  function wireDiag(root) {
+    var b = root.querySelector("#diag-copy");
+    if (!b) return;
+    b.addEventListener("click", function () {
+      var t = diagText();
+      var msg = root.querySelector("#diag-msg");
+      var show = function (s) { if (msg) { msg.className = "code-msg warn"; msg.textContent = s; } };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t).then(function () { show("Copiado."); },
+          function () { show("Selecciona el texto de arriba y cópialo a mano."); });
+      } else {
+        show("Selecciona el texto de arriba y cópialo a mano.");
+      }
+    });
+  }
+
   function wireVersion(root) {
     var box = root.querySelector("#ver-state");
     if (!box) return;
@@ -1185,6 +1246,7 @@
       b.addEventListener("click", function () { setRole(b.dataset.role); repaint(); });
     });
     wireVersion(root);
+    wireDiag(root);
 
     var connect = root.querySelector("#sync-connect");
     if (connect) {
