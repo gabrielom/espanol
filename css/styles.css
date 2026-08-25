@@ -1772,6 +1772,27 @@ code.ver-v { background: none; padding: 0; }
 .ver-state.muted { color: var(--mut-3); }
 .ver-state.new { color: var(--accent); }
 
+.diag-wrap {
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hairline);
+}
+.diag-wrap > summary {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--faint-1);
+  cursor: pointer;
+  list-style: none;
+  transition: color .12s ease;
+}
+.diag-wrap > summary::-webkit-details-marker { display: none; }
+.diag-wrap > summary::before { content: "+ "; }
+.diag-wrap[open] > summary::before { content: "− "; }
+.diag-wrap > summary:hover { color: var(--mut-2); }
+.diag-wrap[open] > summary { margin-bottom: 14px; color: var(--mut-2); }
+
 .diag {
   font-family: var(--mono);
   font-size: 11px;
