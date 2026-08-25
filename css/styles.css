@@ -1772,6 +1772,16 @@ code.ver-v { background: none; padding: 0; }
 .ver-state.muted { color: var(--mut-3); }
 .ver-state.new { color: var(--accent); }
 
+.diag {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--body);
+  word-break: break-word;
+  user-select: all;
+  -webkit-user-select: all;
+}
+
 /* ---------- Caja de luz (Ajustes) ----------
    Flota sobre la interfaz sin tocar la ruta, así que al cerrarla vuelves
    exactamente a donde estabas. El velo arranca bajo la barra superior —igual
