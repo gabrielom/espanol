@@ -1759,6 +1759,17 @@ body.is-teacher .appbar::after {
 }
 .ver-v { color: var(--ink); }
 code.ver-v { background: none; padding: 0; }
+a.ver-v { color: var(--accent); text-decoration: none; }
+a.ver-v:hover { text-decoration: underline; }
+a.ver-v code { background: none; padding: 0; color: inherit; }
+/* El título del cambio es texto libre: que rompa en varias líneas sin empujar
+   a la etiqueta de la izquierda. */
+.ver-title .ver-v {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  text-align: right;
+  max-width: 68%;
+}
 .ver-state {
   margin-top: 12px;
   padding-top: 12px;
