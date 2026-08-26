@@ -1117,9 +1117,16 @@
      publicada se pregunta aparte a version.json, que el worker deja pasar sin
      cachear. Si difieren, ya hay una copia nueva descargándose de fondo y
      entrará al reiniciar. */
+  var REPO = "https://github.com/gabrielom/espanol";
   function appVersion() {
     var v = window.APP_VERSION || {};
-    return { version: v.version || "dev", built: v.built || "" };
+    return {
+      version: v.version || "dev",
+      commit: v.commit || "",
+      title: v.title || "",
+      pr: v.pr || null,
+      built: v.built || ""
+    };
   }
   function prettyDate(iso) {
     if (!iso) return "";
@@ -1128,14 +1135,22 @@
     return d.toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" }) +
       " · " + d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
   }
+  // Un sha de siete caracteres no dice nada por sí solo: al lado van el cambio
+  // que trajo y su PR, enlazados a GitHub para poder ir a leer el diff.
   function versionHTML() {
     var v = appVersion();
     var when = prettyDate(v.built);
+    var commitLink = v.commit
+      ? '<a class="ver-v" href="' + REPO + '/commit/' + esc(v.commit) + '" target="_blank" rel="noopener"><code>' + esc(v.version) + '</code></a>'
+      : '<code class="ver-v">' + esc(v.version) + '</code>';
     return (
       '<h2 class="settings-h2">Versión</h2>' +
       '<div class="ver-panel">' +
-        '<div class="ver-row"><span class="ver-k">Instalada</span>' +
-          '<code class="ver-v">' + esc(v.version) + '</code></div>' +
+        '<div class="ver-row"><span class="ver-k">Instalada</span>' + commitLink + '</div>' +
+        (v.title ? '<div class="ver-row ver-title"><span class="ver-k">Cambio</span>' +
+          '<span class="ver-v">' + esc(v.title) + '</span></div>' : '') +
+        (v.pr ? '<div class="ver-row"><span class="ver-k">Pull request</span>' +
+          '<a class="ver-v" href="' + REPO + '/pull/' + encodeURIComponent(v.pr) + '" target="_blank" rel="noopener">#' + esc(v.pr) + '</a></div>' : '') +
         (when ? '<div class="ver-row"><span class="ver-k">Publicada el</span>' +
           '<span class="ver-v">' + esc(when) + '</span></div>' : '') +
         '<div class="ver-state" id="ver-state">Comprobando si hay una versión nueva…</div>' +
