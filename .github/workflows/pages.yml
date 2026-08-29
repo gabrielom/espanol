@@ -23,46 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Sella la versión que se publica. version.json lo pide la app a la red
-      # (el service worker no lo cachea) para saber si hay algo más nuevo;
-      # js/version.js viaja DENTRO de la caché, así que dice qué copia se está
-      # ejecutando. Comparar los dos es lo que detecta una actualización.
-      - name: Sellar la versión
-        # En python y no en shell porque el título del commit es texto libre:
-        # comillas, acentos y barras hay que escaparlos como JSON, no a mano.
-        run: |
-          python3 - <<'PY'
-          import json, subprocess, datetime, re, pathlib
-
-          def git(*a):
-              return subprocess.check_output(["git", *a], text=True).strip()
-
-          sha = git("rev-parse", "--short", "HEAD")
-          full = git("rev-parse", "HEAD")
-          subject = git("log", "-1", "--pretty=%s")
-          body = git("log", "-1", "--pretty=%B")
-          built = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          # main avanza por merges de PR, así que el commit desplegado suele ser
-          # "Merge pull request #N …" y el título legible es la última línea del
-          # mensaje. En un push directo no hay PR y vale el propio asunto.
-          m = re.match(r"Merge pull request #(\d+)", subject)
-          pr = int(m.group(1)) if m else None
-          if pr:
-              lineas = [l.strip() for l in body.splitlines() if l.strip()]
-              titulo = lineas[-1] if len(lineas) > 1 else subject
-          else:
-              titulo = subject
-
-          info = {"version": sha, "commit": full, "title": titulo, "pr": pr, "built": built}
-          pathlib.Path("version.json").write_text(
-              json.dumps(info, ensure_ascii=False) + "\n", encoding="utf-8")
-          pathlib.Path("js/version.js").write_text(
-              "// Generado en el despliegue (.github/workflows/pages.yml).\n"
-              "window.APP_VERSION = " + json.dumps(info, ensure_ascii=False) + ";\n",
-              encoding="utf-8")
-          print("→", sha, "PR", pr, "·", titulo)
-          PY
+      # El sello de versión NO se genera aquí: GitHub Pages publica este
+      # repositorio desde la rama `main` con su propio compilador
+      # ("pages build and deployment"), no desde este artefacto, así que
+      # cualquier archivo escrito en este paso se descartaba. Lo escribe
+      # scripts/stamp.sh y se commitea. Ver README.
 
       - uses: actions/configure-pages@v5
         with:
