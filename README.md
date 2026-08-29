@@ -137,8 +137,9 @@ js/exercises.js       cuaderno interactivo: ejercicios y taller (módulo 9)
 js/sidebar.js         barra lateral del curso (expandida / raíl / cajón)
 sw.js + manifest      PWA instalable y offline
 icons/                iconos de la app (PWA)
-js/version.js         sello de la versión en ejecución (lo reescribe el despliegue)
+js/version.js         sello de la versión en ejecución (se commitea)
 version.json          sello de la versión publicada (nunca se cachea)
+scripts/stamp.sh      escribe los dos sellos: sh scripts/stamp.sh <PR> "<título>"
 src-tauri/            envoltorio nativo de macOS (ventana sin barra de título)
 js/course.js          metadatos del curso
 js/app.js             motor: router, progreso, evaluaciones, tarjetas, certificado
