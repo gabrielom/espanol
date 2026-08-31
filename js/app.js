@@ -1031,83 +1031,83 @@
     document.getElementById("cert-print").addEventListener("click", function () { window.print(); });
   }
 
-  /* ---------- Vista: sincronización ---------- */
+  /* ---------- Vista: sincronización ----------
+     Sin conectar todavía. El campo es UNO: acepta el token de GitHub y también
+     el código de un aparato que ya funcione, porque tener que acertar cuál se
+     pega era la mitad del lío. Los tres pasos se quedan enteros: es aquí,
+     con nada montado, donde de verdad hacen falta. */
   function syncSetupHtml(tokenUrl) {
     return (
-      '<div class="sync-panel">' +
-        '<label class="sync-label" for="sync-token">Token de acceso de GitHub</label>' +
-        '<input type="password" id="sync-token" class="sync-input" placeholder="ghp_… o github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-        '<button class="btn" id="sync-connect">Conectar y sincronizar →</button>' +
-        '<div class="sync-help">' +
-          '<p><span class="sn">1</span> Crea un token en <a href="' + tokenUrl + '" target="_blank" rel="noopener">github.com</a> con el permiso <code>gist</code> (ya viene marcado). Ningún otro permiso hace falta.</p>' +
-          '<p><span class="sn">2</span> Pégalo aquí y pulsa Conectar: se creará (o reutilizará) un gist <strong>secreto</strong> con tu progreso.</p>' +
-          '<p><span class="sn">3</span> En tu iPhone, iPad y Mac abre esta misma página → <em>Ajustes</em> → pega el <em>mismo token</em>, o el <em>código de conexión</em> que copies desde el dispositivo que ya funciona. Eso es todo.</p>' +
-        '</div>' +
-        '<p class="sync-note">El token se guarda solo en este dispositivo y únicamente se envía a api.github.com — nunca al repositorio. El gist es secreto (no aparece en tu perfil). La fusión conserva siempre la mejor nota de cada evaluación, así que nunca pierdes progreso.</p>' +
+      '<p class="link-h">Sincronizar dispositivos</p>' +
+      '<p class="link-note">Pega tu token de GitHub, o el código de un aparato que ya funcione.</p>' +
+      '<div class="code-field">' +
+        '<input type="password" id="code-in" class="code-in" placeholder="ghp_… · github_pat_… · espanol:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
       '</div>' +
-      // Atajo para el paso 3: en vez de repetir el token, se pega el código
-      // que el dispositivo ya configurado copia de una vez.
-      '<div class="code-alt">' +
-        '<div class="code-or"><span>o</span></div>' +
-        '<label class="sync-label" for="sync-code-in">Código de conexión de otro dispositivo</label>' +
-        '<input type="password" id="sync-code-in" class="sync-input" placeholder="espanol:1:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-        '<button class="btn" id="sync-code-use">Usar este código →</button>' +
-        '<div class="code-msg" id="sync-code-in-msg"></div>' +
+      '<div class="code-msg" id="code-msg"></div>' +
+      '<div class="sync-help">' +
+        '<p><span class="sn">1</span> Crea un token en <a href="' + tokenUrl + '" target="_blank" rel="noopener">github.com</a> con el permiso <code>gist</code> (ya viene marcado). Ningún otro permiso hace falta.</p>' +
+        '<p><span class="sn">2</span> Pégalo aquí: se creará (o reutilizará) un gist <strong>secreto</strong> con tu progreso, y se sincroniza solo.</p>' +
+        '<p><span class="sn">3</span> En tu iPhone, iPad y Mac abre esta misma página → <em>Ajustes</em> → pega el código que este aparato te dará. Eso es todo.</p>' +
       '</div>'
     );
   }
-  function syncConnectedHtml(gistId) {
-    var st = window.Sync.getState();
-    var statusTxt = st.detail || (st.status === "syncing" ? "Sincronizando…" : "Conectado");
+  /* Ya conectado. Un solo código, y lo que se enseña es su parte pública —el id
+     del gist, que sin token no abre nada—; la cola va con puntos y se destapa
+     con «ver». Lo que copia el botón es el código entero, así que pegarlo
+     funciona en cualquier aparato, recién estrenado o no. */
+  function syncConnectedHtml() {
     return (
-      '<div class="sync-panel">' +
-        '<div class="sync-connected"><span class="sync-dot ' + st.status + '"></span> ' + esc(statusTxt) + '</div>' +
-        (gistId ? '<div class="sync-gist">Gist secreto: <code>' + esc(gistId) + '</code></div>' : "") +
-        '<div class="sync-actions">' +
-          '<button class="btn" id="sync-now">Sincronizar ahora</button>' +
-          (gistId ? '<button class="btn ghost" id="sync-gist-copy">Copiar solo el gist</button>' : "") +
-          '<button class="btn ghost" id="sync-code-copy">Copiar código de conexión</button>' +
-          (gistId ? '<button class="btn ghost" id="sync-regist">Buscar el gist otra vez</button>' : "") +
-          '<button class="btn ghost" id="sync-disconnect">Desconectar este dispositivo</button>' +
-        '</div>' +
-        '<input type="text" id="sync-code-out" class="sync-input code-out" readonly spellcheck="false" hidden>' +
-        '<div class="code-msg" id="sync-code-msg"></div>' +
-        '<p class="sync-note">Este dispositivo está conectado. El progreso se sincroniza al abrir la página, al volver a ella y al completar lecciones o evaluaciones. <strong>Solo el gist</strong> apunta otro dispositivo —uno que ya tenga el token— al mismo sitio que este; el <strong>código de conexión</strong> enlaza uno desde cero, y lleva el token dentro.</p>' +
+      '<p class="link-h">Añadir otro dispositivo</p>' +
+      '<p class="link-note">Cópialo y pégalo en el otro aparato.</p>' +
+      '<div class="code-field" id="code-show">' +
+        '<span class="code-val" id="code-val"></span>' +
+        '<button type="button" class="code-eye" id="code-eye">ver</button>' +
       '</div>' +
-      // También aquí se puede pegar: es como se corrige un dispositivo que
-      // quedó apuntando al gist equivocado.
-      '<div class="code-alt">' +
-        '<label class="sync-label" for="sync-code-in">Pegar un código de otro dispositivo</label>' +
-        '<input type="password" id="sync-code-in" class="sync-input" placeholder="espanol:g1:… o espanol:1:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-        '<button class="btn" id="sync-code-use">Usar este código →</button>' +
-        '<div class="code-msg" id="sync-code-in-msg"></div>' +
-      '</div>'
+      '<div class="code-field" id="code-edit" hidden>' +
+        '<input type="password" id="code-in" class="code-in" placeholder="Pega aquí el código del otro aparato" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+      '</div>' +
+      '<div class="link-btns">' +
+        '<button class="btn" id="code-copy">Copiar</button>' +
+        '<button class="btn ghost" id="code-paste">Pegar…</button>' +
+      '</div>' +
+      '<div class="code-msg" id="code-msg"></div>'
     );
   }
   // Cuerpo de Ajustes. Se pinta igual en la página (#/ajustes, que es lo que
   // se ve en el móvil) y dentro de la caja de luz del engranaje.
   function settingsBodyHTML() {
     var configured = Sync.isConfigured();
-    var gistId = Sync.getGistId();
     var tokenUrl = "https://github.com/settings/tokens/new?scopes=gist&description=Espanol%20para%20brasilenos%20sync";
+    var st = window.Sync.getState();
+    var statusTxt = configured
+      ? (st.detail || (st.status === "syncing" ? "Sincronizando…" : "Conectado"))
+      : "Sin sincronizar";
     return (
-      '<h2 class="settings-h2">¿Quién usa este dispositivo?</h2>' +
-      '<div class="role-pick">' +
-        '<button type="button" class="role-opt' + (isTeacher() ? '' : ' on') + '" data-role="alumno">' +
-          '<span class="role-name">Alumno</span>' +
-          '<span class="role-desc">Haces el curso: lecciones, tests y redacciones. Tu progreso se guarda y se sincroniza.</span>' +
-        '</button>' +
-        '<button type="button" class="role-opt' + (isTeacher() ? ' on' : '') + '" data-role="profesora">' +
-          '<span class="role-name">Profesora</span>' +
-          '<span class="role-desc">Lee las redacciones, las corrige y les pone nota. No marca lecciones ni tests: el progreso del alumno no se toca.</span>' +
-        '</button>' +
+      '<div class="dev-card">' +
+        '<div class="dev-t">Este dispositivo</div>' +
+        '<div class="dev-strip">' +
+          '<button type="button" class="dev-chip' + (isTeacher() ? '' : ' on') + '" data-role="alumno">Alumno</button>' +
+          '<button type="button" class="dev-chip' + (isTeacher() ? ' on' : '') + '" data-role="profesora">Profesora</button>' +
+          '<span class="dev-sep">·</span>' +
+          '<span class="sync-dot ' + (configured ? st.status : "off") + '"></span>' +
+          '<span class="dev-st">' + esc(statusTxt) + '</span>' +
+        '</div>' +
+        (isTeacher() ? '<p class="dev-link"><a href="#/correcciones">Corregir redacciones →</a></p>' : '') +
+        versionHTML() +
       '</div>' +
-      (isTeacher() ? '<p class="role-note"><a href="#/correcciones">Ir a las redacciones para corregir →</a></p>' : '') +
-      '<h2 class="settings-h2">Sincronizar dispositivos</h2>' +
-      '<p class="sync-lead">Tu progreso se guarda en este navegador. Para continuar en tu iPhone, iPad y Mac se sincroniza a través de un <strong>gist secreto de GitHub</strong> — tuyo y privado, sin servidores ni cuentas nuevas.</p>' +
-      (configured ? syncConnectedHtml(gistId) : syncSetupHtml(tokenUrl)) +
-      versionHTML() +
-      diagHTML()
+      '<div class="link-blk">' +
+        (configured ? syncConnectedHtml() : syncSetupHtml(tokenUrl)) +
+      '</div>' +
+      '<div class="dev-foot">' +
+        diagHTML() +
+        (configured
+          ? '<div class="dev-acts">' +
+              '<button type="button" class="linkish" id="sync-now">Sincronizar</button>' +
+              '<span class="dev-sep">·</span>' +
+              '<button type="button" class="linkish" id="sync-disconnect">Desconectar</button>' +
+            '</div>'
+          : '') +
+      '</div>'
     );
   }
 
@@ -1128,33 +1128,48 @@
       built: v.built || ""
     };
   }
-  function prettyDate(iso) {
+  // Sin hora: en un renglón que ya lleva PR y commit, el minuto exacto de la
+  // publicación no cabe y tampoco lo mira nadie.
+  function shortDate(iso) {
     if (!iso) return "";
     var d = new Date(iso);
     if (isNaN(d)) return "";
-    return d.toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" }) +
-      " · " + d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" })
+      .replace(/\bde\b/g, "").replace(/\s+/g, " ").trim();
   }
-  // Un sha de siete caracteres no dice nada por sí solo: al lado van el cambio
-  // que trajo y su PR, enlazados a GitHub para poder ir a leer el diff.
+  // Todo en un renglón: el PR hace de número de versión, y detrás el commit y
+  // la fecha en que se publicó. El estado se va al extremo derecho. Lo único
+  // largo —el título del cambio— vive en el desplegable, y la fila entera es
+  // el botón que lo abre: sin etiqueta ni signo nuevo en una tarjeta que ya
+  // tiene tres cosas.
   function versionHTML() {
     var v = appVersion();
-    var when = prettyDate(v.built);
-    var commitLink = v.commit
-      ? '<a class="ver-v" href="' + REPO + '/commit/' + esc(v.commit) + '" target="_blank" rel="noopener"><code>' + esc(v.version) + '</code></a>'
-      : '<code class="ver-v">' + esc(v.version) + '</code>';
+    var when = shortDate(v.built);
+    var head = v.pr ? "#" + esc(v.pr) : esc(v.version);
+    var tail = [];
+    if (v.pr) tail.push(esc(v.version));
+    if (when) tail.push(esc(when));
+    var links = [];
+    if (v.pr) links.push('<a href="' + REPO + '/pull/' + encodeURIComponent(v.pr) + '" target="_blank" rel="noopener">Ver el pull request</a>');
+    if (v.commit) links.push('<a href="' + REPO + '/commit/' + esc(v.commit) + '" target="_blank" rel="noopener">ver el commit</a>');
     return (
-      '<h2 class="settings-h2">Versión</h2>' +
-      '<div class="ver-panel">' +
-        '<div class="ver-row"><span class="ver-k">Instalada</span>' + commitLink + '</div>' +
-        (v.title ? '<div class="ver-row ver-title"><span class="ver-k">Cambio</span>' +
-          '<span class="ver-v">' + esc(v.title) + '</span></div>' : '') +
-        (v.pr ? '<div class="ver-row"><span class="ver-k">Pull request</span>' +
-          '<a class="ver-v" href="' + REPO + '/pull/' + encodeURIComponent(v.pr) + '" target="_blank" rel="noopener">#' + esc(v.pr) + '</a></div>' : '') +
-        (when ? '<div class="ver-row"><span class="ver-k">Publicada el</span>' +
-          '<span class="ver-v">' + esc(when) + '</span></div>' : '') +
-        '<div class="ver-state" id="ver-state">Comprobando si hay una versión nueva…</div>' +
-      '</div>'
+      '<details class="vrow">' +
+        '<summary>' +
+          '<span class="vrow-k">Versión</span>' +
+          '<span class="vrow-v">' +
+            '<span class="vrow-line"><span class="vrow-pr">' + head + '</span>' +
+              (tail.length ? '<span class="vrow-rest"> · ' + tail.join(" · ") + '</span>' : '') +
+            '</span>' +
+            '<span class="vrow-state" id="ver-state">…</span>' +
+          '</span>' +
+          '<span class="vrow-chev">›</span>' +
+        '</summary>' +
+        '<div class="vrow-drop">' +
+          (v.title ? '<div class="vrow-title">' + esc(v.title) + '</div>' : '') +
+          '<div class="vrow-note" id="ver-note"></div>' +
+          (links.length ? '<div class="vrow-links">' + links.join(" · ") + '</div>' : '') +
+        '</div>' +
+      '</details>'
     );
   }
   /* ---------- Diagnóstico ----------
@@ -1194,10 +1209,10 @@
   function diagHTML() {
     return (
       '<details class="diag-wrap">' +
-        '<summary>Diagnóstico de sincronización</summary>' +
+        '<summary>Diagnóstico</summary>' +
         '<div class="diag" id="diag-text">' + esc(diagText()) + '</div>' +
-        '<div class="sync-actions" style="margin-top:12px">' +
-          '<button class="btn ghost" id="diag-copy">Copiar diagnóstico</button>' +
+        '<div class="diag-acts">' +
+          '<button type="button" class="linkish" id="diag-copy">Copiar diagnóstico</button>' +
         '</div>' +
         '<div class="code-msg" id="diag-msg"></div>' +
       '</details>'
@@ -1222,18 +1237,23 @@
   function wireVersion(root) {
     var box = root.querySelector("#ver-state");
     if (!box) return;
+    var note = root.querySelector("#ver-note");
     var mine = appVersion().version;
 
-    function say(txt, cls) {
+    // Dos sitios: dos palabras en la línea, y la explicación dentro del
+    // desplegable. Así el estado cabe al lado de la fecha sin partir la fila.
+    function say(txt, cls, detail) {
       if (!box.isConnected) return;
-      box.className = "ver-state" + (cls ? " " + cls : "");
-      box.innerHTML = txt;
+      box.className = "vrow-state" + (cls ? " " + cls : "");
+      box.textContent = txt;
+      if (note) note.innerHTML = detail || "";
     }
 
     if (mine === "dev") {
-      say("Copia de desarrollo, sin sello de versión.", "muted");
+      say("Desarrollo", "muted", "Copia de desarrollo, sin sello de versión.");
       return;
     }
+    say("Comprobando…", "muted", "");
     // `no-store` y, además, el worker no intercepta version.json: esto siempre
     // sale a la red, así que refleja de verdad lo que hay publicado.
     fetch("version.json", { cache: "no-store" })
@@ -1241,17 +1261,18 @@
       .then(function (live) {
         if (!live || !live.version) return Promise.reject();
         if (live.version === mine) {
-          say("Estás al día.", "ok");
+          say("Al día", "ok", "");
         } else {
           var howToApply = document.documentElement.classList.contains("is-tauri")
             ? "Cierra y vuelve a abrir la app para aplicarla."
             : "Recarga la página para aplicarla.";
-          say("Hay una versión nueva: <code>" + esc(live.version) + "</code>. " +
-            "Ya se está descargando. " + howToApply, "new");
+          say("Hay una nueva", "new",
+            "Publicada la <code>" + esc(live.version) + "</code>. Ya se está descargando. " + howToApply);
         }
       })
       .catch(function () {
-        say("Sin conexión: no se puede comprobar. Estás usando la copia guardada.", "muted");
+        say("Sin conexión", "muted",
+          "No se puede comprobar si hay una versión nueva. Estás usando la copia guardada.");
       });
   }
 
@@ -1265,36 +1286,12 @@
     wireVersion(root);
     wireDiag(root);
 
-    var connect = root.querySelector("#sync-connect");
-    if (connect) {
-      connect.addEventListener("click", function () {
-        var t = root.querySelector("#sync-token").value.trim();
-        if (!t) { flash(connect, "Pega tu token de GitHub.", "warn"); return; }
-        clearFlash(connect);
-        Sync.setToken(t);
-        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint);
-      });
-    }
     var now = root.querySelector("#sync-now");
     if (now) {
       now.addEventListener("click", function () {
         Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint);
       });
     }
-    // Salida cuando el id guardado apunta al gist equivocado: se olvida solo
-    // el gist y el siguiente sync lo vuelve a buscar por nombre de archivo.
-    var regist = root.querySelector("#sync-regist");
-    if (regist) {
-      regist.addEventListener("click", function () {
-        flashConfirm(regist, "¿Olvidar este gist y volver a buscarlo? El token se conserva.",
-          "Sí, buscarlo", function () {
-            Sync.forgetGist();
-            Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); })
-              .then(repaint, repaint);
-          });
-      });
-    }
-
     var off = root.querySelector("#sync-disconnect");
     if (off) {
       off.addEventListener("click", function () {
@@ -1305,65 +1302,114 @@
     wireCode(root, repaint);
   }
 
-  /* ---------- Código de conexión ---------- */
+  /* ---------- Código de conexión ----------
+     Un solo código y un solo campo. Lo que se ve en pantalla es la parte
+     pública —«espanol:<gist>:»—, y la cola del token va con puntos hasta que
+     se pulsa «ver»; lo que se copia, en cambio, es el código entero, para que
+     pegarlo funcione en cualquier aparato. Pegar no necesita segundo botón:
+     en cuanto lo que hay en el campo es un código o un token válido, conecta
+     y sincroniza. */
   function wireCode(root, repaint) {
-    function talker(sel) {
-      var el = root.querySelector(sel);
-      return function (t, cls) {
-        if (!el) return;
-        el.className = "code-msg" + (cls ? " " + cls : "");
-        el.textContent = t;
-      };
+    var msg = root.querySelector("#code-msg");
+    function say(t, cls) {
+      if (!msg) return;
+      msg.className = "code-msg" + (cls ? " " + cls : "");
+      msg.textContent = t;
     }
-    var sayCopy = talker("#sync-code-msg");
-    var sayPaste = talker("#sync-code-in-msg");
 
-    // Copiar. El recuadro se enseña siempre además de copiar: si el
-    // portapapeles falla, ahí queda el código entero para seleccionarlo.
-    function wireCopy(sel, get, aviso) {
-      var btn = root.querySelector(sel);
-      if (!btn) return;
-      btn.addEventListener("click", function () {
-        var code = get();
-        if (!code) { sayCopy("No hay nada que copiar todavía.", "warn"); return; }
-        var out = root.querySelector("#sync-code-out");
-        if (out) { out.hidden = false; out.value = code; out.select(); }
+    var val = root.querySelector("#code-val");
+    var eye = root.querySelector("#code-eye");
+    var shown = false;
+    function paintCode() {
+      if (!val) return;
+      var pub = Sync.exportPublicPart();
+      var code = Sync.exportCode();
+      var tail = code.slice(pub.length);
+      val.textContent = "";
+      val.appendChild(document.createTextNode(pub));
+      var rest = document.createElement("span");
+      if (shown) {
+        rest.textContent = tail;
+      } else {
+        rest.className = "code-hid";
+        rest.textContent = new Array(tail.length + 1).join("•");
+      }
+      val.appendChild(rest);
+    }
+    paintCode();
+    if (eye) {
+      eye.addEventListener("click", function () {
+        shown = !shown;
+        eye.textContent = shown ? "ocultar" : "ver";
+        paintCode();
+      });
+    }
+
+    // Copiar el código entero. El campo se destapa a la vez: si el
+    // portapapeles falla, ahí queda para seleccionarlo a mano.
+    var copy = root.querySelector("#code-copy");
+    if (copy) {
+      copy.addEventListener("click", function () {
+        var code = Sync.exportCode();
+        if (!code) { say("No hay nada que copiar todavía.", "warn"); return; }
+        shown = true;
+        if (eye) eye.textContent = "ocultar";
+        paintCode();
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(code).then(
-            function () { sayCopy("Copiado. " + aviso, aviso ? "warn" : "ok"); },
-            function () { sayCopy("No he podido usar el portapapeles: cópialo del recuadro de arriba.", "warn"); }
+            function () { say("Copiado. Pégalo en el otro aparato.", "ok"); },
+            function () { say("No he podido usar el portapapeles: cópialo del recuadro.", "warn"); }
           );
         } else {
-          sayCopy("Cópialo del recuadro de arriba. " + aviso, "warn");
+          say("Cópialo del recuadro.", "warn");
         }
       });
     }
-    wireCopy("#sync-gist-copy", Sync.exportGistCode,
-      "Es solo el id del gist: sin el token no abre nada, así que puedes moverlo sin miedo.");
-    wireCopy("#sync-code-copy", Sync.exportCode,
-      "Lleva tu token dentro: trátalo como una contraseña y no lo dejes en un chat ni en notas compartidas.");
 
-    // Pegar. Acepta los dos formatos, cada uno copiado entero.
-    var use = root.querySelector("#sync-code-use");
-    if (use) {
-      use.addEventListener("click", function () {
-        var input = root.querySelector("#sync-code-in");
-        var raw = input ? input.value : "";
-        if (!raw.trim()) { sayPaste("Pega aquí el código del otro dispositivo.", "warn"); return; }
-        var parsed = Sync.parseCode(raw);
-        if (!parsed) {
-          sayPaste("Ese código no vale. Tiene que empezar por «espanol:1:» o «espanol:g1:» — cópialo entero desde el otro dispositivo.", "err");
-          return;
+    // «Pegar…» cambia el recuadro por un campo, en el mismo sitio.
+    var paste = root.querySelector("#code-paste");
+    var show = root.querySelector("#code-show");
+    var edit = root.querySelector("#code-edit");
+    if (paste && show && edit) {
+      paste.addEventListener("click", function () {
+        var editing = !edit.hidden;
+        edit.hidden = editing;
+        show.hidden = !editing;
+        paste.textContent = editing ? "Pegar…" : "Cancelar";
+        say("", "");
+        if (!editing) {
+          var i = edit.querySelector("#code-in");
+          if (i) { i.value = ""; i.focus(); }
         }
-        if (parsed.kind === "gist" && !Sync.isConfigured()) {
-          sayPaste("Ese código lleva solo el gist, y aquí todavía no hay token. Conecta primero con tu token, o usa el código de conexión completo.", "err");
-          return;
-        }
-        Sync.importCode(raw);
-        sayPaste(parsed.kind === "gist" ? "Gist actualizado. Sincronizando…" : "Conectado. Sincronizando…", "ok");
-        Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint, repaint);
       });
     }
+
+    // El campo conecta solo, en cuanto lo pegado tiene sentido. Mientras se
+    // escribe a medias no dice nada: solo protesta si al soltar sigue sin valer.
+    var input = root.querySelector("#code-in");
+    if (!input) return;
+    function tryUse(raw, quiet) {
+      var s = String(raw || "").trim();
+      if (!s) { if (!quiet) say("Pega aquí el código del otro aparato.", "warn"); return; }
+      var token = Sync.looksLikeToken(s);
+      var parsed = token ? null : Sync.parseCode(s);
+      if (!token && !parsed) {
+        if (!quiet) say("Eso no es un código ni un token. El código empieza por «espanol:» — cópialo entero desde el otro aparato.", "err");
+        return;
+      }
+      if (parsed && parsed.kind === "gist" && !Sync.isConfigured()) {
+        say("Ese código antiguo lleva solo el gist, y aquí todavía no hay token. Pega el token de GitHub, o el código nuevo del otro aparato.", "err");
+        return;
+      }
+      if (!Sync.importCode(s)) { say("No he podido usar eso.", "err"); return; }
+      say("Conectado. Sincronizando…", "ok");
+      Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint, repaint);
+    }
+    input.addEventListener("input", function () { tryUse(input.value, true); });
+    input.addEventListener("change", function () { tryUse(input.value, false); });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); tryUse(input.value, false); }
+    });
   }
 
   function isSettingsRoute() { return /^#\/?(ajustes|sync)\b/.test(location.hash); }

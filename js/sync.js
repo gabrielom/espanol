@@ -35,45 +35,44 @@
   }
   function isConfigured() { return !!getToken(); }
 
-  // Olvida SOLO el gist y conserva el token: en el siguiente sync, ensureGist
-  // vuelve a buscarlo por nombre de archivo (o lo crea). Es la salida cuando
-  // el id guardado apunta a donde no debe.
-  function forgetGist() {
-    try { localStorage.removeItem(LS_GIST); } catch (e) {}
-    setState("off", "");
-  }
-
   /* ---------- Código de conexión ----------
-     Token y gist en una línea, para enlazar otro dispositivo de una sola
-     pegada en vez de volver a crear un token.
+     UN solo código, para que copiar y pegar funcione siempre: en un aparato
+     recién estrenado y en uno que ya estaba conectado. Antes había dos —uno con
+     el token y otro sin él— y había que acertar cuál copiar; el de solo-gist
+     fallaba justo donde más falta hacía, porque el gist es secreto y sin token
+     no se puede abrir.
+
+       espanol:<gist>:<token>
+
+     El gist va PRIMERO a propósito: es la parte pública (un id sin token no
+     abre nada), así que la pantalla puede enseñarla entera y tapar solo la
+     cola. Ajustes muestra el token con puntos y lo destapa con «ver».
 
      ¡LLEVA EL TOKEN DENTRO! Es una contraseña disfrazada de código: quien lo
      tenga puede leer y escribir los gists de esa cuenta. No se codifica ni se
      cifra a propósito — ofuscarlo solo aparentaría una seguridad que no hay.
 
-     Hay dos formatos, y cada uno se copia entero: nunca hay que recortar nada
-     a mano.
+     Se siguen aceptando los dos formatos viejos, por si alguno quedó copiado
+     en una nota:
 
-       espanol:1:<token>:<gist>   completo — enlaza un dispositivo desde cero
-       espanol:g1:<gist>          solo el gist — para uno que YA tiene el token
-
-     El segundo es el que sirve para poner a todos los dispositivos en el mismo
-     gist sin volver a mover el token, y no es ningún secreto: un id de gist sin
-     el token no abre nada.
+       espanol:1:<token>:<gist>
+       espanol:g1:<gist>
 
      Ni los tokens de GitHub (ghp_… / github_pat_…) ni los id de gist llevan
      dos puntos, así que partir por ":" es seguro. */
   var CODE_TAG = "espanol";
-  var CODE_V = "1";
+  var CODE_V_OLD = "1";
   var CODE_V_GIST = "g1";
 
+  // Devuelve también el corte donde acaba la parte pública, para que Ajustes
+  // sepa qué enseñar y qué tapar sin volver a partir la cadena.
   function exportCode() {
     var t = getToken();
-    return t ? [CODE_TAG, CODE_V, t, getGistId()].join(":") : "";
+    if (!t) return "";
+    return [CODE_TAG, getGistId(), t].join(":");
   }
-  function exportGistCode() {
-    var g = getGistId();
-    return g ? [CODE_TAG, CODE_V_GIST, g].join(":") : "";
+  function exportPublicPart() {
+    return getToken() ? [CODE_TAG, getGistId(), ""].join(":") : "";
   }
 
   // Devuelve { kind: "full", token, gist } o { kind: "gist", gist }.
@@ -84,15 +83,32 @@
       var gist = (p[2] || "").trim();
       return gist ? { kind: "gist", gist: gist } : null;
     }
-    if (p[1] !== CODE_V || p.length < 4) return null;
+    if (p[1] === CODE_V_OLD) {
+      if (p.length < 4) return null;
+      var old = (p[2] || "").trim();
+      return old ? { kind: "full", token: old, gist: (p[3] || "").trim() } : null;
+    }
+    if (p.length < 3) return null;
     var token = (p[2] || "").trim();
     if (!token) return null;
-    return { kind: "full", token: token, gist: (p[3] || "").trim() };
+    return { kind: "full", token: token, gist: (p[1] || "").trim() };
   }
 
-  // Aplica el código a este dispositivo. El de solo-gist necesita que ya haya
-  // un token aquí: sin él no hay con qué abrirlo.
+  // Un token pegado a pelo vale igual que un código: es lo que hace falta la
+  // primera vez, y así el campo de Ajustes es uno solo.
+  function looksLikeToken(raw) {
+    var s = String(raw || "").trim();
+    return /^(ghp_|gho_|ghu_|ghs_|github_pat_)[A-Za-z0-9_]+$/.test(s);
+  }
+
+  // Aplica el código a este dispositivo. El de solo-gist (formato viejo)
+  // necesita que ya haya un token aquí: sin él no hay con qué abrirlo.
   function importCode(raw) {
+    if (looksLikeToken(raw)) {
+      setToken(String(raw).trim());
+      setState("off", "");
+      return true;
+    }
     var c = parseCode(raw);
     if (!c) return false;
     if (c.kind === "gist") {
@@ -304,9 +320,9 @@
     getGistId: getGistId,
     setToken: setToken,
     setGistId: setGistId,
-    forgetGist: forgetGist,
     exportCode: exportCode,
-    exportGistCode: exportGistCode,
+    exportPublicPart: exportPublicPart,
+    looksLikeToken: looksLikeToken,
     parseCode: parseCode,
     importCode: importCode,
     clearConfig: clearConfig,

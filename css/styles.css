@@ -857,13 +857,6 @@ a:hover { color: var(--accent-hover); }
   color: var(--ink);
   margin-bottom: 14px;
 }
-.sync-lead { color: var(--mut-1); line-height: 1.7; margin-bottom: 26px; }
-.sync-panel {
-  border: 1px solid var(--hairline);
-  border-left: 2px solid var(--accent);
-  background: var(--callout-bg);
-  padding: 24px 26px;
-}
 .sync-label {
   display: block;
   font-family: var(--mono);
@@ -873,20 +866,8 @@ a:hover { color: var(--accent-hover); }
   color: var(--faint-1);
   margin-bottom: 8px;
 }
-.sync-input {
-  width: 100%;
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 10px 12px;
-  border: 1px solid var(--card-border);
-  border-radius: 2px;
-  margin-bottom: 14px;
-  color: var(--ink);
-  background: #fff;
-}
-.sync-input:focus { outline: none; border-color: var(--accent); }
-.sync-help { margin-top: 20px; }
-.sync-help p { font-size: 13.5px; line-height: 1.7; color: var(--body); margin-bottom: 11px; }
+.sync-help { margin-top: 18px; }
+.sync-help p { font-size: 13px; line-height: 1.7; color: var(--mut-1); margin-bottom: 10px; }
 .sync-help .sn {
   display: inline-block;
   font-family: var(--mono);
@@ -900,7 +881,7 @@ a:hover { color: var(--accent-hover); }
   margin-right: 7px;
   vertical-align: 1px;
 }
-.sync-help code, .sync-gist code {
+.sync-help code {
   font-family: var(--mono);
   font-size: 12px;
   background: #eceafe;
@@ -909,14 +890,10 @@ a:hover { color: var(--accent-hover); }
   border-radius: 2px;
   word-break: break-all;
 }
-.sync-note { font-size: 12px; line-height: 1.65; color: var(--faint-1); margin-top: 18px; }
-.sync-connected { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--ink); margin-bottom: 12px; }
-.sync-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--faint-3); flex: none; }
-.sync-dot.ok { background: var(--accent); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint-3); flex: none; }
+.sync-dot.ok { background: #3f9d7f; }
 .sync-dot.syncing { background: #d9a441; }
 .sync-dot.error { background: var(--error); }
-.sync-gist { font-size: 13px; color: var(--mut-2); margin-bottom: 18px; }
-.sync-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 
 /* ---------- Redacción (evaluación escrita) ---------- */
@@ -1512,32 +1489,6 @@ body.sb-drawer .sb-row { min-height: 44px; align-items: center; }
 }
 
 /* ---------- Perfil y correcciones ---------- */
-.role-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
-.role-opt {
-  text-align: left;
-  border: 1px solid var(--card-border);
-  border-radius: 4px;
-  background: #fff;
-  padding: 14px 16px;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: border-color .12s ease, background .12s ease;
-}
-.role-opt:hover { border-color: var(--ink); }
-.role-opt.on { border-color: var(--accent); background: #fafbff; }
-.role-name {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 5px;
-}
-.role-opt.on .role-name::after {
-  content: " ✓";
-  color: var(--accent);
-}
-.role-desc { display: block; font-size: 13px; line-height: 1.55; color: var(--mut-3); }
-.role-note { font-size: 14px; margin-bottom: 4px; }
 
 /* Cinta de perfil en la barra, para no corregir creyendo que estudias */
 body.is-teacher .appbar::after {
@@ -1658,7 +1609,6 @@ body.is-teacher .appbar::after {
 .corr-badge.pending { color: var(--faint-2); border-color: var(--hairline); background: #fff; }
 
 @media (max-width: 640px) {
-  .role-pick { grid-template-columns: 1fr; }
   .corr-row { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 
@@ -1699,32 +1649,170 @@ body.is-teacher .appbar::after {
   min-width: 0;
 }
 
-/* ---------- Código de conexión (Ajustes) ---------- */
-.code-alt { margin-top: 22px; }
-.code-or {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-  color: var(--faint-2);
+/* ---------- Ajustes: la ficha del dispositivo ----------
+   Una tarjeta que dice qué es este aparato (perfil, sincronización, versión)
+   y, debajo, lo único que se hace aquí: sumar otro. Cabe sin scroll dentro de
+   la caja de luz, así que nada de esto puede crecer a lo alto sin motivo. */
+.dev-card {
+  border: 1px solid var(--card-border);
+  border-radius: 9px;
+  padding: 14px 15px;
+}
+.dev-t { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+.dev-strip { display: flex; align-items: center; gap: 8px; margin-top: 9px; flex-wrap: wrap; }
+.dev-chip {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--mut-1);
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 3px 11px;
+  cursor: pointer;
+  transition: border-color .12s ease, color .12s ease;
+}
+.dev-chip:hover { border-color: var(--ink); color: var(--ink); }
+.dev-chip.on {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.dev-sep { color: var(--faint-3); }
+.dev-st { font-size: 12px; color: var(--mut-1); }
+.dev-link { font-size: 13px; margin-top: 10px; }
+
+/* La fila de versión: PR, commit, fecha y estado en un solo renglón, y la
+   fila entera hace de botón para el título del cambio. Sin etiqueta nueva. */
+.vrow { margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--hairline); }
+.vrow > summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 12px;
+  gap: 11px;
+  align-items: baseline;
+}
+.vrow > summary::-webkit-details-marker { display: none; }
+.vrow-k {
   font-family: var(--mono);
   font-size: 10.5px;
   text-transform: uppercase;
-  letter-spacing: .14em;
+  letter-spacing: .1em;
+  color: var(--mut-3);
 }
-.code-or::before, .code-or::after {
-  content: "";
+.vrow-v {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 11px;
+}
+.vrow-line { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+.vrow-pr { color: var(--accent); font-weight: 700; }
+.vrow-rest { color: var(--mut-2); }
+.vrow-state { font-size: 12px; white-space: nowrap; color: var(--mut-2); }
+.vrow-state::before { content: "●"; font-size: 7px; vertical-align: 2px; margin-right: 5px; }
+.vrow-state.ok { color: #3f7d6b; }
+.vrow-state.muted { color: var(--mut-3); }
+.vrow-state.new { color: var(--accent); }
+.vrow-chev {
+  justify-self: end;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint-2);
+  transition: transform .16s ease, color .12s ease;
+}
+.vrow[open] .vrow-chev { transform: rotate(90deg); }
+.vrow > summary:hover .vrow-chev { color: var(--ink); }
+.vrow-drop { padding: 9px 0 1px 67px; }
+.vrow-title { font-size: 12.5px; line-height: 1.45; color: var(--ink); }
+.vrow-note { font-size: 12px; line-height: 1.5; color: var(--mut-1); }
+.vrow-note:not(:empty) { margin-top: 5px; }
+.vrow-note code { font-family: var(--mono); font-size: 11.5px; }
+.vrow-links { font-size: 12px; color: var(--faint-2); margin-top: 6px; }
+
+/* Añadir otro dispositivo: un campo, dos botones. */
+.link-blk { margin-top: 17px; }
+.link-h { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.link-note { font-size: 12px; color: var(--mut-1); margin-top: 7px; }
+.code-field {
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--card-border);
+  border-radius: 7px;
+  padding: 8px 10px;
+  background: #fff;
+}
+.code-field[hidden] { display: none; }
+.code-field:focus-within { border-color: var(--accent); }
+.code-val {
   flex: 1;
-  height: 1px;
-  background: var(--hairline);
-}
-.code-out {
-  margin-top: 12px;
+  min-width: 0;
   font-family: var(--mono);
   font-size: 11.5px;
   color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: all;
+  -webkit-user-select: all;
 }
-.code-out[hidden] { display: none; }
+.code-hid { color: var(--faint-2); letter-spacing: .5px; }
+.code-eye {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--mut-2);
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  cursor: pointer;
+}
+.code-eye:hover { border-color: var(--ink); color: var(--ink); }
+.code-in {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink);
+  border: 0;
+  padding: 0;
+  background: none;
+}
+.code-in:focus { outline: none; }
+.link-btns { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* El pie: diagnóstico a la izquierda, las dos acciones a la derecha. */
+.dev-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 17px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+.dev-acts { display: flex; align-items: baseline; gap: 10px; flex: none; }
+.linkish {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--mut-1);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: color .12s ease;
+}
+.linkish:hover { color: var(--ink); }
+.diag-acts { margin-top: 10px; }
+
+/* ---------- Código de conexión (Ajustes) ---------- */
 .code-msg {
   font-size: 12.5px;
   line-height: 1.5;
@@ -1735,59 +1823,9 @@ body.is-teacher .appbar::after {
 .code-msg.warn { color: var(--mut-1); }
 .code-msg.err { color: var(--error); }
 
-/* ---------- Versión (Ajustes) ---------- */
-.ver-panel {
-  border: 1px solid var(--card-border);
-  border-radius: 6px;
-  padding: 14px 16px;
-  background: var(--callout-bg);
-}
-.ver-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  font-family: var(--mono);
-  font-size: 11.5px;
-}
-.ver-row + .ver-row { margin-top: 6px; }
-.ver-k {
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  font-size: 10.5px;
-  color: var(--mut-3);
-}
-.ver-v { color: var(--ink); }
-code.ver-v { background: none; padding: 0; }
-a.ver-v { color: var(--accent); text-decoration: none; }
-a.ver-v:hover { text-decoration: underline; }
-a.ver-v code { background: none; padding: 0; color: inherit; }
-/* El título del cambio es texto libre: que rompa en varias líneas sin empujar
-   a la etiqueta de la izquierda. */
-.ver-title .ver-v {
-  font-family: var(--sans);
-  font-size: 12.5px;
-  text-align: right;
-  max-width: 68%;
-}
-.ver-state {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--hairline);
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--body);
-}
-.ver-state code { font-size: 12px; }
-.ver-state.ok { color: var(--mut-1); }
-.ver-state.muted { color: var(--mut-3); }
-.ver-state.new { color: var(--accent); }
 
-.diag-wrap {
-  margin-top: 30px;
-  padding-top: 18px;
-  border-top: 1px solid var(--hairline);
-}
+/* Vive dentro del pie de la ficha, que ya pone la línea y el aire. */
+.diag-wrap { min-width: 0; }
 .diag-wrap > summary {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -1898,7 +1936,8 @@ body.lightbox-open { overflow: hidden; }
 
 /* ---------- Focus visibility ---------- */
 .btn:focus-visible, .opt:focus-visible, .flashcard:focus-visible, .card:focus-visible,
-.lightbox-x:focus-visible, .role-opt:focus-visible,
+.lightbox-x:focus-visible, .dev-chip:focus-visible, .linkish:focus-visible,
+.code-eye:focus-visible, .vrow > summary:focus-visible,
 .sb-modmain:focus-visible, .sb-modmeta:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
