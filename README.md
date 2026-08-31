@@ -26,11 +26,16 @@ se guarda en el `localStorage` del navegador.
 
 ### Dos perfiles: alumno y profesora
 
-En **Ajustes** se elige quién usa el dispositivo — sin contraseñas ni cuentas. El
-engranaje de la barra abre Ajustes como una caja de luz sobre lo que estés haciendo:
-como no cambia de ruta, volver a pulsarlo te deja en la misma página y en el mismo
-punto. En el móvil no hay sitio para una caja, así que ahí sigue siendo una página
-(`#/ajustes`).
+**Ajustes** es una ficha de este aparato: quién lo usa, cómo está la
+sincronización y qué versión lleva, y debajo lo único que se hace ahí —añadir
+otro dispositivo—. Cabe entero sin scroll. El engranaje de la barra lo abre como
+una caja de luz sobre lo que estés haciendo: como no cambia de ruta, volver a
+pulsarlo te deja en la misma página y en el mismo punto. En el móvil no hay sitio
+para una caja, así que ahí sigue siendo una página (`#/ajustes`).
+
+La fila **Versión** lo dice todo en un renglón —el número del pull request hace de
+número de versión, y detrás van el commit y la fecha en que se publicó—; la fila
+entera se despliega para leer el título del cambio y saltar a GitHub.
 
 - **Alumno** (por defecto): el curso completo, con su progreso.
 - **Profesora**: lee las redacciones, les pone **nota y comentario** y los guarda en un
@@ -48,30 +53,30 @@ elegido vive solo en cada dispositivo: no se sincroniza.
 
 Para continuar en el iPhone, iPad y Mac, la app puede sincronizar el progreso a través de
 un **gist secreto de GitHub** — sin servidores ni cuentas nuevas, y opt-in (nada sale a la
-red hasta que te conectas). Entra en **Ajustes** (el engranaje de la barra
-superior), pega un token de GitHub con permiso `gist` y repite con el mismo token en tus otros dispositivos. La fusión
-es *grow-only* (las lecciones se unen y de cada evaluación se conserva la mejor nota), así
-que dos dispositivos avanzan por separado y se reconcilian sin perder progreso. El token
-vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
+red hasta que te conectas). Entra en **Ajustes** (el engranaje de la barra superior) y pega
+un token de GitHub con permiso `gist`: se conecta y sincroniza solo, sin pulsar nada más.
+La fusión es *grow-only* (las lecciones se unen y de cada evaluación se conserva la mejor
+nota), así que dos dispositivos avanzan por separado y se reconcilian sin perder progreso.
+El token vive solo en cada dispositivo y únicamente se envía a `api.github.com`.
 
-**¿El gist equivocado?** *Ajustes → Buscar el gist otra vez* olvida el id guardado y
-conserva el token: la siguiente sincronización vuelve a localizar el gist por el nombre
-del archivo, o crea uno si no hay. Es la salida cuando el id apunta a donde no debe, sin
-tener que desconectar y volver a empezar.
+**Enlazar los demás: un solo código.**
 
-**Mover la configuración de una pegada.** Hay dos códigos, y cada uno se copia entero:
-nunca hay que recortar nada a mano. Se pegan en *Ajustes → Pegar un código de otro
-dispositivo*.
+```
+espanol:<gist>:<token>
+```
 
-| código | qué lleva | para qué |
-|---|---|---|
-| `espanol:1:<token>:<gist>` | token **y** gist | enlazar un dispositivo desde cero |
-| `espanol:g1:<gist>` | solo el gist | apuntar al mismo gist uno que **ya tiene** el token |
+*Ajustes → Añadir otro dispositivo → Copiar*, y se pega en el otro aparato. Funciona esté
+como esté —recién estrenado o ya conectado—, así que nunca hay que decidir cuál copiar;
+antes había dos códigos y el que no llevaba token fallaba justo en el aparato nuevo,
+porque el gist es secreto y sin token no se puede abrir. También es la salida cuando un
+dispositivo quedó apuntando al gist equivocado: se le pega el código del que sí funciona.
 
-El primero **lleva el token dentro**, así que es una contraseña: no lo dejes en un chat ni
-en notas compartidas, y si se te escapa, revoca el token en GitHub. El segundo no es
-ningún secreto — un id de gist sin token no abre nada — y es el que sirve para poner
-todos los dispositivos en el mismo sitio sin volver a mover el token.
+El gist va **primero** a propósito: es la parte pública —un id sin token no abre nada—, así
+que Ajustes la enseña entera y tapa solo la cola del token, que se destapa con *ver*. Lo que
+copia el botón, en cambio, es el código completo. **Lleva el token dentro**, así que es una
+contraseña: no lo dejes en un chat ni en notas compartidas, y si se te escapa, revoca el
+token en GitHub. Los formatos antiguos (`espanol:1:<token>:<gist>` y `espanol:g1:<gist>`) se
+siguen aceptando al pegar, por si alguno quedó guardado en una nota.
 
 ## Cuatro formas de estudiar
 
