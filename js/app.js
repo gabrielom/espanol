@@ -24,10 +24,13 @@
   function saveLocal(p) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
   }
-  function saveProgress(p) {
+  // `ahora` marca los guardados que no pueden esperar al acelerador de la
+  // sincronización: terminar algo, o irse de la página. Escribir no lo es —
+  // se guarda igual de rápido aquí, solo que sin salir a la red cada vez.
+  function saveProgress(p, ahora) {
     saveLocal(p);
     if (window.Sync && Sync.isConfigured()) {
-      Sync.schedulePush(function () { return progress; }, function (m) { applyMerged(m, false); });
+      Sync.schedulePush(function () { return progress; }, function (m) { applyMerged(m, false); }, ahora);
     }
   }
   var progress = loadProgress();
@@ -56,7 +59,7 @@
   function markLessonDone(mid, lid) {
     if (!canEditProgress()) return;
     progress.lessons[lessonKey(mid, lid)] = true;
-    saveProgress(progress);
+    saveProgress(progress, true);
   }
   function quizResult(mid, lid) { return progress.quizzes[lessonKey(mid, lid)] || null; }
   function setQuizResult(mid, lid, score, total) {
@@ -69,7 +72,7 @@
     } else if (pct >= META.passScore && !prev.passed) {
       prev.passed = true;
     }
-    saveProgress(progress);
+    saveProgress(progress, true);
   }
 
   /* ---------- Perfil: alumno o profesora ----------
@@ -99,7 +102,7 @@
     var list = corrections(mid, lid).slice();
     list.push({ grade: String(grade || "").trim(), comment: String(comment || "").trim(), at: Date.now() });
     progress.corrections[key] = list;
-    saveProgress(progress);
+    saveProgress(progress, true);
   }
   function lastCorrection(mid, lid) {
     var l = corrections(mid, lid);
@@ -126,7 +129,9 @@
       done: done === undefined ? !!prev.done : !!done,
       updatedAt: Date.now()
     };
-    saveProgress(progress);
+    // Teclear es un borrador: se guarda aquí y ya. Marcarla como terminada sí
+    // sale a la red en el momento — es cuando la profesora tiene que verla.
+    saveProgress(progress, done === true);
   }
   function isEssayDone(mid, lid) {
     var e = essayData(mid, lid);
@@ -837,7 +842,20 @@
       if (timer) clearTimeout(timer);
       timer = setTimeout(function () { timer = null; flushSave(); }, 800);
     });
-    window.addEventListener("beforeunload", function () { if (timer) { clearTimeout(timer); flushSave(); } });
+    // `pagehide` además de `beforeunload`: en iOS el segundo no llega, y ahí es
+    // justo donde se escribe y se cambia de app a media frase.
+    // El envío va aquí dentro y no solo en el oyente global: este se registra
+    // después, así que si no, el global soltaría lo pendiente antes de que este
+    // guardara la última frase.
+    var guardaYa = function () {
+      if (timer) { clearTimeout(timer); timer = null; flushSave(); }
+      if (window.Sync) Sync.flushPush();
+    };
+    window.addEventListener("beforeunload", guardaYa);
+    window.addEventListener("pagehide", guardaYa);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") guardaYa();
+    });
 
     doneBtn.addEventListener("click", function () {
       var w = countWords(ta.value);
@@ -1583,6 +1601,13 @@
     if (Sync.isConfigured()) pullAndMerge();
     window.addEventListener("focus", function () {
       if (Sync.isConfigured() && !Sync.getState().busy) pullAndMerge();
+    });
+    // Al irse ya no hay más oportunidades: lo que quede en el acelerador sale
+    // ahora. `pagehide` es el que sí llega en iOS, donde `beforeunload` no.
+    var despedida = function () { if (window.Sync) Sync.flushPush(); };
+    window.addEventListener("pagehide", despedida);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") despedida();
     });
   }
 })();

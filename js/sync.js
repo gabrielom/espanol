@@ -284,7 +284,13 @@
     return api("PATCH", "/gists/" + gistId, token, { files: files });
   }
 
-  /* ---- Ciclo completo: pull → merge → apply → push ---- */
+  /* ---- Ciclo completo: pull → merge → apply → push ----
+     El PATCH solo sale si la fusión aporta algo que el gist no tenga ya. Antes
+     se escribía siempre, y como también se sincroniza al enfocar la ventana,
+     cambiar de app y volver escribía en el gist sin que hubiera cambiado nada.
+     Los PATCH son justo lo que cuenta en el límite secundario de GitHub —el de
+     las peticiones que modifican contenido, mucho más bajo que el de 5000/hora—,
+     así que ahorrarlos es todo el asunto. */
   function sync(getLocal, apply) {
     var token = getToken();
     if (!token) return Promise.resolve();
@@ -293,6 +299,8 @@
       return pullRemote(token, gistId).then(function (remote) {
         var merged = merge(getLocal(), remote);
         apply(merged);
+        if (remote && JSON.stringify(merged) === JSON.stringify(remote)) return null;
+        lastPushAt = Date.now();
         return pushRemote(token, gistId, merged);
       });
     }).then(function () {
@@ -302,16 +310,40 @@
     });
   }
 
-  /* ---- Empuje tras un cambio local (con rebote) ---- */
-  function schedulePush(getLocal, apply) {
+  /* ---- Empuje tras un cambio local ----
+     Escribir una redacción son cientos de guardados: si cada uno saliera a la
+     red, una sesión de escritura agota sola el límite de GitHub. El guardado
+     local sigue siendo instantáneo —eso es gratis—; lo que se frena es la red.
+
+     Dos brakes distintos. El rebote (SETTLE) espera a que dejes de teclear. El
+     acelerador (MIN_GAP) impone un mínimo entre envíos: mientras corre, un
+     cambio nuevo no adelanta el envío, solo se suma al que ya está previsto, y
+     una hora de escritura cabe en un envío por minuto en vez de veinte.
+
+     `immediate` se salta el acelerador, y es para lo que no puede esperar:
+     terminar una redacción, completar una lección, guardar una nota, o irse de
+     la página. */
+  var SETTLE = 1500;
+  var MIN_GAP = 60000;
+  var lastPushAt = 0;
+
+  function runPending() {
+    pushTimer = null;
+    var p = pending; pending = null;
+    if (p) sync(p.getLocal, p.apply);
+  }
+  function schedulePush(getLocal, apply, immediate) {
     if (!getToken()) return;
     pending = { getLocal: getLocal, apply: apply };
+    var wait = immediate ? 0 : Math.max(SETTLE, MIN_GAP - (Date.now() - lastPushAt));
     if (pushTimer) clearTimeout(pushTimer);
-    pushTimer = setTimeout(function () {
-      pushTimer = null;
-      var p = pending; pending = null;
-      if (p) sync(p.getLocal, p.apply);
-    }, 1500);
+    pushTimer = setTimeout(runPending, wait);
+  }
+  // Lo que quede pendiente, ya. Al irse de la página no hay otra oportunidad.
+  function flushPush() {
+    if (!pending) return;
+    if (pushTimer) { clearTimeout(pushTimer); pushTimer = null; }
+    runPending();
   }
 
   window.Sync = {
@@ -330,6 +362,7 @@
     getState: function () { return state; },
     sync: sync,
     schedulePush: schedulePush,
+    flushPush: flushPush,
     merge: merge
   };
 })();

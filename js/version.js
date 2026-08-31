@@ -5,4 +5,4 @@
 // Este archivo viaja dentro de la caché del service worker, así que dice
 // SIEMPRE qué copia se está ejecutando. La publicada se mira aparte, con
 // version.json, que el worker deja pasar sin cachear.
-window.APP_VERSION = {"version": "e47e4c3", "commit": "e47e4c3203dcc4dd7f77d2c8ba9e1b69a1f022f4", "title": "Ajustes: la ficha del dispositivo, sin scroll y con un solo código", "pr": 49, "built": "2026-08-31T19:38:20Z"};
+window.APP_VERSION = {"version": "ca9cc42", "commit": "ca9cc42c076b43cce70add01602170990d4fdb8c", "title": "No agotar la API de GitHub al escribir una redacción", "pr": 50, "built": "2026-08-31T19:57:16Z"};
