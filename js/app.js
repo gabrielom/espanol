@@ -1205,6 +1205,26 @@
     for (id in c.CH || {}) if (c.CH[id]) n++;
     return n;
   }
+  // Qué sesiones del módulo 9 tienen respuestas guardadas aquí. Un total no
+  // sirve para «la profesora no ve las sesiones 1 y 2»: hace falta saber
+  // cuáles hay en cada aparato, y comparar las dos líneas.
+  function cuadernoSesiones(c) {
+    var m9 = null, i;
+    for (i = 0; i < MODULES.length; i++) if (MODULES[i].id === "m9") m9 = MODULES[i];
+    if (!m9 || !c) return "—";
+    var conRespuesta = [];
+    m9.lessons.forEach(function (l, idx) {
+      var suyos = (l.exercises || []).map(function (e) { return e.id; });
+      var tiene = suyos.some(function (id) {
+        var box = (c.R || {})[id], k;
+        for (k in box || {}) if (box[k] !== "" && box[k] !== undefined && box[k] !== null) return true;
+        for (k in c.CH || {}) if (c.CH[k] && k.indexOf(id + ":") === 0) return true;
+        return false;
+      });
+      if (tiene) conRespuesta.push(idx + 1);
+    });
+    return conRespuesta.length ? conRespuesta.join("") : "ninguna";
+  }
   function diagText() {
     var vieja = (window.Cuaderno && Cuaderno.localState) ? Cuaderno.localState() : null;
     var st = window.Sync ? Sync.getState() : { status: "?" };
@@ -1213,8 +1233,10 @@
       perfil: role(),
       app: document.documentElement.classList.contains("is-tauri") ? "escritorio" : "navegador",
       cuaderno: cuadernoCount(progress.cuaderno),
+      sesiones: cuadernoSesiones(progress.cuaderno),
       cuadernoAt: progress.cuadernoAt ? new Date(progress.cuadernoAt).toISOString().slice(0, 16) : "—",
       claveVieja: cuadernoCount(vieja),
+      sesionesVieja: cuadernoSesiones(vieja),
       redacciones: Object.keys(progress.essays || {}).length,
       lecciones: Object.keys(progress.lessons || {}).length,
       sync: window.Sync && Sync.isConfigured() ? (st.status + (st.detail ? " · " + st.detail : "")) : "sin conectar",
