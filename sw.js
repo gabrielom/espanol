@@ -11,7 +11,7 @@
      versión hay publicada, así que tiene que saltarse la caché siempre.
    - Origen cruzado (api.github.com para el gist) y no-GET: nunca se interceptan.
    Subir CACHE tira las cachés viejas en el siguiente activate. */
-var CACHE = "espanol-cache-v9";
+var CACHE = "espanol-cache-v10";
 var SHELL = [
   "./",
   "./index.html",

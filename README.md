@@ -33,9 +33,28 @@ una caja de luz sobre lo que estés haciendo: como no cambia de ruta, volver a
 pulsarlo te deja en la misma página y en el mismo punto. En el móvil no hay sitio
 para una caja, así que ahí sigue siendo una página (`#/ajustes`).
 
-La fila **Versión** lo dice todo en un renglón —el número del pull request hace de
-número de versión, y detrás van el commit y la fecha en que se publicó—; la fila
-entera se despliega para leer el título del cambio y saltar a GitHub.
+Es una tira de estado arriba y, debajo, una rejilla etiqueta/valor: **Perfil**,
+**Código**, **Versión**, **Apariencia** y **Aparato**. La fila **Versión** lo dice
+todo en un renglón —el número del pull request hace de número de versión, y detrás
+van el commit y la fecha en que se publicó—; la fila entera se despliega para leer
+el título del cambio y saltar a GitHub. En el móvil, donde el renglón no da para
+tanto, ahí queda solo el PR y el resto baja al desplegable.
+
+### Tema claro y oscuro
+
+Toda la hoja de estilos pinta a través de tokens (`--bg`, `--ink`, `--accent`…),
+así que el tema es un cambio de valores, no de reglas. **No es una inversión**: el
+acento se *aclara* (`#4a5fd0` no contrasta sobre casi negro), las líneas de un
+píxel se *oscurecen* (`#ececec` sobre negro grita) y `--on-accent` —lo que va
+encima de un relleno de acento— pasa a ser tinta oscura en vez de blanca.
+
+Hay tres estados, no dos: **Auto** sigue al sistema y no marca nada en `<html>`;
+**Claro** y **Oscuro** ponen `data-theme` y ganan al sistema. Se elige en *Ajustes
+→ Apariencia* y se guarda en este aparato (no se sincroniza). El tema se aplica en
+`js/platform.js`, antes del primer pintado, para que no haya fogonazo blanco al
+abrir; ese mismo archivo reescribe `<meta name="theme-color">`, que es lo único
+que lee la barra de estado del móvil. Al imprimir se vuelve siempre a la paleta
+clara: el papel es blanco.
 
 - **Alumno** (por defecto): el curso completo, con su progreso.
 - **Profesora**: lee las redacciones, les pone **nota y comentario** y los guarda en un
@@ -135,7 +154,8 @@ quitar la cuarentena: `xattr -dr com.apple.quarantine "/Applications/Español pa
 
 ```
 index.html            página única (SPA con router por hash)
-css/styles.css        sistema visual minimalista (tokens tinta/acento, JetBrains Mono)
+css/styles.css        sistema visual minimalista (tokens claro/oscuro, JetBrains Mono)
+js/platform.js        antes del primer pintado: plataforma y tema
 fonts/                JetBrains Mono servida localmente (sin CDNs: la app es 100% autocontenida)
 js/sync.js            sincronización opcional entre dispositivos (gist secreto)
 js/exercises.js       cuaderno interactivo: ejercicios y taller (módulo 9)

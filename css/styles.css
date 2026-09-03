@@ -22,7 +22,26 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* ---------- Tokens ----------
+   Un solo juego de nombres para los dos temas. Todo el resto de la hoja pinta
+   a través de estas variables: si un color se escribe literal en una regla,
+   sobrevive al cambio de tema y rompe uno de los dos.
+
+   El tema oscuro NO es una inversión. Dos cosas que una inversión ingenua hace
+   mal: el acento tiene que ACLARARSE (#4a5fd0 no contrasta sobre casi negro) y
+   las líneas de un píxel tienen que OSCURECERSE (#ececec sobre negro grita).
+   Y `--on-accent` —lo que va ENCIMA de un relleno de acento— pasa a ser tinta
+   oscura, no blanca. */
 :root {
+  color-scheme: light;
+
+  --bg: #ffffff;          /* superficie de la app */
+  --panel: #fafafa;       /* llamadas, tira de estado */
+  --hairline: #ececec;    /* todas las reglas de 1px y las pistas de progreso */
+  --hair-2: #f4f4f2;      /* separadores dentro de la barra lateral */
+  --card-border: #e4e3e0; /* tarjetas y diálogos */
+  --ring: #e0e0e0;        /* círculos vacíos */
+
   --ink: #141414;
   --ink-2: #1a1a1a;
   --body: #2c2c2c;
@@ -34,14 +53,120 @@
   --faint-2: #b0b0b0;
   --faint-3: #c2c2c2;
   --faint-4: #cbcbcb;
+
   --accent: #4a5fd0;
   --accent-hover: #2e42ad;
+  --accent-soft: #d5d9f4;   /* borde del engranaje activo, botón copiar */
+  --accent-tint: #eef0fc;   /* fondos teñidos de acento */
+  --accent-tint-2: #f4f6fe; /* el más pálido: opción correcta */
+  --accent-tint-3: #fafbff; /* opción seleccionada */
+  --on-accent: #ffffff;     /* texto y glifos SOBRE un relleno de acento */
+
+  --ok: #3f9d7f;            /* punto de sincronización */
+  --ok-text: #3f7d6b;       /* «al día» */
+  --warn: #d9a441;
+  --warn-text: #8a6a00;
   --error: #c86a5a;
-  --hairline: #ececec;
-  --card-border: #e4e3e0;
-  --callout-bg: #fafafa;
+  --error-tint: #fdf7f6;
+  --error-soft: #f0d9d4;
+
+  --veil: rgba(20, 20, 20, .28);
+  --shadow-lightbox: 0 18px 48px rgba(20, 20, 20, .16), 0 2px 6px rgba(20, 20, 20, .06);
+  --shadow-drawer: 14px 0 40px -18px rgba(20, 20, 20, .3);
+
   --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+}
+
+/* Tres estados, no dos: «claro», «oscuro» y —el que trae el navegador por
+   defecto— «lo que diga el sistema», que no marca nada en <html>. Por eso el
+   bloque del sistema se protege con :not([data-theme="light"]): así una
+   elección manual de claro gana a un sistema oscuro, y al revés. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #1a1a19;
+    --panel: #212120;
+    --hairline: #2c2c2a;
+    --hair-2: #232321;
+    --card-border: #302f2c;
+    --ring: #3a3936;
+
+    --ink: #f2f1ee;
+    --ink-2: #e8e6e3;
+    --body: #cfcdc8;
+    --mut-1: #a5a29c;
+    --mut-2: #8f8c86;
+    --mut-3: #84817b;
+    --mut-4: #7a7772;
+    --faint-1: #6e6b66;
+    --faint-2: #625f5a;
+    --faint-3: #57544f;
+    --faint-4: #4e4b47;
+
+    --accent: #8f9fee;
+    --accent-hover: #b3bef5;
+    --accent-soft: #2f3663;
+    --accent-tint: #23264a;
+    --accent-tint-2: #1f2240;
+    --accent-tint-3: #1d1f38;
+    --on-accent: #14142a;
+
+    --ok: #4fb894;
+    --ok-text: #6cc7a8;
+    --warn: #e0b45c;
+    --warn-text: #d9a441;
+    --error: #e08a78;
+    --error-tint: #2a1f1c;
+    --error-soft: #4a322c;
+
+    --veil: rgba(0, 0, 0, .62);
+    --shadow-lightbox: 0 18px 48px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .3);
+    --shadow-drawer: 14px 0 40px -18px rgba(0, 0, 0, .7);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #1a1a19;
+  --panel: #212120;
+  --hairline: #2c2c2a;
+  --hair-2: #232321;
+  --card-border: #302f2c;
+  --ring: #3a3936;
+
+  --ink: #f2f1ee;
+  --ink-2: #e8e6e3;
+  --body: #cfcdc8;
+  --mut-1: #a5a29c;
+  --mut-2: #8f8c86;
+  --mut-3: #84817b;
+  --mut-4: #7a7772;
+  --faint-1: #6e6b66;
+  --faint-2: #625f5a;
+  --faint-3: #57544f;
+  --faint-4: #4e4b47;
+
+  --accent: #8f9fee;
+  --accent-hover: #b3bef5;
+  --accent-soft: #2f3663;
+  --accent-tint: #23264a;
+  --accent-tint-2: #1f2240;
+  --accent-tint-3: #1d1f38;
+  --on-accent: #14142a;
+
+  --ok: #4fb894;
+  --ok-text: #6cc7a8;
+  --warn: #e0b45c;
+  --warn-text: #d9a441;
+  --error: #e08a78;
+  --error-tint: #2a1f1c;
+  --error-soft: #4a322c;
+
+  --veil: rgba(0, 0, 0, .62);
+  --shadow-lightbox: 0 18px 48px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .3);
+  --shadow-drawer: 14px 0 40px -18px rgba(0, 0, 0, .7);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,7 +176,7 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--sans);
   color: var(--body);
-  background: #fff;
+  background: var(--bg);
   line-height: 1.6;
   font-size: 15.5px;
   -webkit-font-smoothing: antialiased;
@@ -72,7 +197,7 @@ a:hover { color: var(--accent-hover); }
 
 /* ---------- App shell (barra de la app) ---------- */
 .appbar {
-  background: #fff;
+  background: var(--bg);
   border-bottom: 1px solid var(--hairline);
   position: sticky;
   top: 0;
@@ -126,7 +251,7 @@ a:hover { color: var(--accent-hover); }
   height: 30px;
   border: 1px solid var(--hairline);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg);
   color: var(--mut-3);
   cursor: pointer;
   flex: none;
@@ -272,7 +397,7 @@ a:hover { color: var(--accent-hover); }
 .btn {
   display: inline-block;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   border: 1px solid var(--accent);
   border-radius: 2px;
   padding: 11px 22px;
@@ -282,19 +407,19 @@ a:hover { color: var(--accent-hover); }
   cursor: pointer;
   transition: background .15s ease, border-color .15s ease, color .15s ease;
 }
-.btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+.btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-accent); }
 .btn.ghost {
   background: transparent;
   color: var(--mut-2);
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--ring);
 }
 .btn.ghost:hover { border-color: var(--ink); color: var(--ink); background: transparent; }
 .btn.outline-accent {
-  background: #fff;
+  background: var(--bg);
   color: var(--accent);
   border: 1px solid var(--accent);
 }
-.btn.outline-accent:hover { color: var(--accent-hover); border-color: var(--accent-hover); background: #fff; }
+.btn.outline-accent:hover { color: var(--accent-hover); border-color: var(--accent-hover); background: var(--bg); }
 .btn.outline-accent .pct { font-family: var(--mono); font-size: 13px; margin-left: 8px; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn.green { background: var(--accent); border-color: var(--accent); }
@@ -323,7 +448,7 @@ a:hover { color: var(--accent-hover); }
 .card, .lrow { color: inherit; text-decoration: none; }
 
 .card {
-  background: #fff;
+  background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 4px;
   padding: 22px 22px 20px;
@@ -429,14 +554,14 @@ a:hover { color: var(--accent-hover); }
   justify-content: center;
   font-size: 11px;
   line-height: 1;
-  border: 1.5px solid #d0d0d0;
+  border: 1.5px solid var(--ring);
   color: transparent;
   justify-self: center;
 }
 .lrow .mark.done {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .lrow .mark.eval.passed {
   background: transparent;
@@ -447,7 +572,7 @@ a:hover { color: var(--accent-hover); }
   border-radius: 2px;
   width: 16px;
   height: 16px;
-  border: 1.5px solid #d0d0d0;
+  border: 1.5px solid var(--ring);
 }
 .lrow .lrow-body { min-width: 0; }
 .lrow .eyebrow { display: block; margin-bottom: 3px; font-size: 10.5px; }
@@ -552,7 +677,7 @@ a:hover { color: var(--accent-hover); }
 /* Tarea escrita: se corrige con la profesora, no la evalúa la app */
 .callout.task {
   border-left-color: var(--ink);
-  background: #fff;
+  background: var(--bg);
   border-color: var(--ink);
 }
 .callout.task .callout-title { color: var(--ink); }
@@ -576,7 +701,7 @@ a:hover { color: var(--accent-hover); }
   padding: 14px 18px;
   margin: 18px 0;
   font-size: 14.5px;
-  background: #fff;
+  background: var(--bg);
 }
 .ex .wrong { display: block; color: var(--mut-4); margin-bottom: 6px; }
 .ex .wrong::before { content: "✗  "; color: var(--error); font-weight: 600; }
@@ -648,9 +773,9 @@ a:hover { color: var(--accent-hover); }
   line-height: 1.55;
 }
 .opt:hover { border-color: var(--ink); }
-.opt.selected { border-color: var(--accent); background: #fafbff; }
-.opt.correct { border-color: var(--accent); background: #f4f6fe; }
-.opt.incorrect { border-color: var(--error); background: #fdf7f6; }
+.opt.selected { border-color: var(--accent); background: var(--accent-tint-3); }
+.opt.correct { border-color: var(--accent); background: var(--accent-tint-2); }
+.opt.incorrect { border-color: var(--error); background: var(--error-tint); }
 .opt input { margin-top: 4px; accent-color: var(--accent); }
 .opt.locked { cursor: default; }
 
@@ -733,11 +858,11 @@ a:hover { color: var(--accent-hover); }
   gap: 16px;
   padding: 28px;
 }
-.fc-front { background: #fff; }
+.fc-front { background: var(--bg); }
 .fc-back {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   transform: rotateY(180deg);
 }
 .fc-label {
@@ -836,9 +961,9 @@ a:hover { color: var(--accent-hover); }
 .locked-box li { margin-bottom: 6px; font-size: 14.5px; }
 
 /* ---------- Sincronización / ajustes ---------- */
-.toolbtn.gear.ok { color: var(--accent); border-color: #d5d9f4; }
-.toolbtn.gear.syncing { color: #d9a441; }
-.toolbtn.gear.err { color: var(--error); border-color: #f0d9d4; }
+.toolbtn.gear.ok { color: var(--accent); border-color: var(--accent-soft); }
+.toolbtn.gear.syncing { color: var(--warn); }
+.toolbtn.gear.err { color: var(--error); border-color: var(--error-soft); }
 
 .settings-h2 {
   font-family: var(--mono);
@@ -872,7 +997,7 @@ a:hover { color: var(--accent-hover); }
   display: inline-block;
   font-family: var(--mono);
   font-size: 11px;
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
   width: 17px; height: 17px;
   line-height: 17px;
@@ -884,15 +1009,15 @@ a:hover { color: var(--accent-hover); }
 .sync-help code {
   font-family: var(--mono);
   font-size: 12px;
-  background: #eceafe;
+  background: var(--accent-tint);
   color: var(--accent-hover);
   padding: 1px 6px;
   border-radius: 2px;
   word-break: break-all;
 }
 .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint-3); flex: none; }
-.sync-dot.ok { background: #3f9d7f; }
-.sync-dot.syncing { background: #d9a441; }
+.sync-dot.ok { background: var(--ok); }
+.sync-dot.syncing { background: var(--warn); }
 .sync-dot.error { background: var(--error); }
 
 
@@ -980,7 +1105,7 @@ a:hover { color: var(--accent-hover); }
   font-size: 15.5px;
   line-height: 1.8;
   color: var(--body);
-  background: #fff;
+  background: var(--bg);
 }
 .essay-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
 .essay-note { font-size: 12px; line-height: 1.65; color: var(--faint-1); }
@@ -1103,8 +1228,8 @@ a:hover { color: var(--accent-hover); }
   font-family: var(--mono);
   font-size: 12px;
   color: var(--accent);
-  background: #fff;
-  border: 1px solid #dfe3f7;
+  background: var(--bg);
+  border: 1px solid var(--accent-soft);
   border-radius: 3px;
   padding: 3px 9px;
 }
@@ -1126,11 +1251,11 @@ input.gap {
 }
 input.gap:focus { outline: none; border-bottom-color: var(--accent); }
 input.gap.ok { border-bottom-color: var(--accent); color: var(--accent); }
-input.gap.near { border-bottom-color: #d9a441; color: #8a6a00; }
+input.gap.near { border-bottom-color: var(--warn); color: var(--warn-text); }
 input.gap.err { border-bottom-color: var(--error); color: var(--error); }
 .sol { font-family: var(--mono); font-size: 12px; margin-left: 8px; }
 .sol.ok { color: var(--accent); }
-.sol.near { color: #8a6a00; }
+.sol.near { color: var(--warn-text); }
 .sol.err { color: var(--error); }
 
 .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -1140,7 +1265,7 @@ input.gap.err { border-bottom-color: var(--error); color: var(--error); }
   text-align: left;
   border: 1px solid var(--card-border);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg);
   color: var(--body);
   padding: 8px 13px;
   cursor: pointer;
@@ -1148,9 +1273,9 @@ input.gap.err { border-bottom-color: var(--error); color: var(--error); }
   line-height: 1.5;
 }
 .opt-btn:hover { border-color: var(--ink); }
-.opt-btn[data-s="sel"] { border-color: var(--accent); background: #fafbff; }
-.opt-btn[data-s="ok"] { border-color: var(--accent); background: #f4f6fe; color: var(--accent-hover); }
-.opt-btn[data-s="err"] { border-color: var(--error); background: #fdf7f6; color: var(--error); }
+.opt-btn[data-s="sel"] { border-color: var(--accent); background: var(--accent-tint-3); }
+.opt-btn[data-s="ok"] { border-color: var(--accent); background: var(--accent-tint-2); color: var(--accent-hover); }
+.opt-btn[data-s="err"] { border-color: var(--error); background: var(--error-tint); color: var(--error); }
 
 .prompt-line { font-size: 15px; line-height: 1.7; margin-bottom: 8px; }
 textarea.mini {
@@ -1273,7 +1398,7 @@ textarea.mini:focus { outline: none; border-color: var(--accent); }
   height: calc(100vh - var(--appbar-h));
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--bg);
   overflow: hidden;
 }
 .sidebar[hidden] { display: none; }
@@ -1301,7 +1426,7 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   flex: none;
   border: 1px solid var(--hairline);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg);
   color: var(--mut-3);
   font-size: 12px;
   line-height: 1;
@@ -1319,7 +1444,7 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   align-items: baseline;
   gap: 6px;
   padding: 13px 14px 13px 18px;
-  border-top: 1px solid #f4f4f2;
+  border-top: 1px solid var(--hair-2);
 }
 .sb-modmain {
   flex: 1;
@@ -1333,7 +1458,7 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   cursor: pointer;
 }
 .sb-num { font-family: var(--mono); font-size: 11px; color: var(--faint-2); }
-.sb-modtitle { font-size: 13.5px; color: #3c3c3c; font-weight: 500; line-height: 1.4; }
+.sb-modtitle { font-size: 13.5px; color: var(--body); font-weight: 500; line-height: 1.4; }
 .sb-modmain:hover .sb-modtitle { color: var(--ink); }
 .sb-mod.open .sb-modtitle { color: var(--ink); font-weight: 600; }
 .sb-modmeta {
@@ -1352,7 +1477,7 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   cursor: pointer;
   transition: background-color .12s ease;
 }
-.sb-modmeta:hover { background: #f4f4f2; }
+.sb-modmeta:hover { background: var(--hair-2); }
 .sb-modmeta:hover .sb-caret { color: var(--ink); }
 .sb-pct { font-family: var(--mono); font-size: 10px; color: var(--faint-1); }
 .sb-caret { font-family: var(--mono); font-size: 12px; color: var(--faint-3); }
@@ -1367,7 +1492,7 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   color: inherit;
 }
 .sb-row.sub { padding: 7px 14px 7px 16px; }
-.sb-row:hover { background: #fbfbfa; }
+.sb-row:hover { background: var(--hair-2); }
 .sb-bar { align-self: stretch; background: transparent; border-radius: 1px; }
 .sb-row.here .sb-bar { background: var(--accent); }
 .sb-label { font-size: 13px; line-height: 1.45; color: var(--ink-2); font-weight: 500; }
@@ -1386,7 +1511,7 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   width: 15px; height: 15px;
   box-sizing: border-box;
   border-radius: 50%;
-  border: 1.5px solid #e0e0e0;
+  border: 1.5px solid var(--ring);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1395,13 +1520,13 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   color: transparent;
   margin-top: 1px;
 }
-.sb-dot.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.sb-dot.done { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .sb-dot.current { border-color: var(--accent); }
 .sb-dot.eval.passed { background: transparent; border-color: var(--accent); color: var(--accent); }
 .sb-sq {
   width: 14px; height: 14px;
   box-sizing: border-box;
-  border: 1.5px solid #d0d0d0;
+  border: 1.5px solid var(--ring);
   border-radius: 2px;
   margin-top: 2px;
 }
@@ -1475,7 +1600,7 @@ body.sb-drawer .sidebar {
   height: calc(100vh - var(--appbar-h));
   transform: translateX(-290px);
   transition: transform .24s ease;
-  box-shadow: 14px 0 40px -18px rgba(20, 20, 20, .3);
+  box-shadow: var(--shadow-drawer);
   z-index: 45;
 }
 body.sb-drawer-open .sidebar { transform: translateX(0); }
@@ -1501,8 +1626,8 @@ body.is-teacher .appbar::after {
   font-size: 9px;
   letter-spacing: .16em;
   color: var(--accent);
-  background: #eef0fc;
-  border: 1px solid #d5d9f4;
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-soft);
   border-bottom: none;
   border-radius: 3px 3px 0 0;
   padding: 1px 8px;
@@ -1601,12 +1726,12 @@ body.is-teacher .appbar::after {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--accent);
-  border: 1px solid #d5d9f4;
-  background: #f4f6fe;
+  border: 1px solid var(--accent-soft);
+  background: var(--accent-tint-2);
   border-radius: 3px;
   padding: 3px 9px;
 }
-.corr-badge.pending { color: var(--faint-2); border-color: var(--hairline); background: #fff; }
+.corr-badge.pending { color: var(--faint-2); border-color: var(--hairline); background: var(--bg); }
 
 @media (max-width: 640px) {
   .corr-row { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -1649,105 +1774,77 @@ body.is-teacher .appbar::after {
   min-width: 0;
 }
 
-/* ---------- Ajustes: la ficha del dispositivo ----------
-   Una tarjeta que dice qué es este aparato (perfil, sincronización, versión)
-   y, debajo, lo único que se hace aquí: sumar otro. Cabe sin scroll dentro de
-   la caja de luz, así que nada de esto puede crecer a lo alto sin motivo. */
-.dev-card {
-  border: 1px solid var(--card-border);
-  border-radius: 9px;
-  padding: 14px 15px;
+/* ---------- Ajustes ----------
+   Una tira de estado arriba y, debajo, una rejilla etiqueta/valor. La rejilla
+   es lo que hace que Perfil, Código, Versión, Apariencia y Aparato se lean
+   como una ficha y no como cinco bloques sueltos: las etiquetas alineadas a la
+   izquierda dan una columna por la que bajar la vista. */
+.set-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 7px;
+  padding: 11px 14px;
 }
-.dev-t { font-size: 12.5px; font-weight: 500; color: var(--ink); }
-.dev-strip { display: flex; align-items: center; gap: 8px; margin-top: 9px; flex-wrap: wrap; }
-.dev-chip {
+.set-strip-l { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--ink); }
+.set-strip-r {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--faint-1);
+}
+
+.set-rows { margin-top: 4px; }
+.set-row {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 14px;
+  align-items: baseline;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--hairline);
+}
+.set-row:last-child { border-bottom: 0; }
+.set-k {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--mut-3);
+}
+.set-v { min-width: 0; font-size: 13px; color: var(--ink-2); }
+.set-plain { color: var(--mut-1); }
+.set-link { display: inline-block; margin-left: 12px; font-size: 12.5px; }
+/* Filas cuyo valor es un bloque alto (los tres pasos del token). */
+.set-row-stack { align-items: start; }
+
+/* Píldoras: perfil y apariencia. Un solo control, dos usos. */
+.pills { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.pill {
   font-family: var(--sans);
   font-size: 12.5px;
   color: var(--mut-1);
-  background: #fff;
+  background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 6px;
-  padding: 3px 11px;
+  padding: 4px 12px;
   cursor: pointer;
   transition: border-color .12s ease, color .12s ease;
 }
-.dev-chip:hover { border-color: var(--ink); color: var(--ink); }
-.dev-chip.on {
+.pill:hover { border-color: var(--ink); color: var(--ink); }
+.pill.on {
   border-color: var(--accent);
   box-shadow: inset 0 0 0 1px var(--accent);
   color: var(--accent);
   font-weight: 600;
 }
-.dev-sep { color: var(--faint-3); }
-.dev-st { font-size: 12px; color: var(--mut-1); }
-.dev-link { font-size: 13px; margin-top: 10px; }
 
-/* La fila de versión: PR, commit, fecha y estado en un solo renglón, y la
-   fila entera hace de botón para el título del cambio. Sin etiqueta nueva. */
-.vrow { margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--hairline); }
-.vrow > summary {
-  list-style: none;
-  cursor: pointer;
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 12px;
-  gap: 11px;
-  align-items: baseline;
-}
-.vrow > summary::-webkit-details-marker { display: none; }
-.vrow-k {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--mut-3);
-}
-.vrow-v {
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 11px;
-}
-.vrow-line { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
-.vrow-pr { color: var(--accent); font-weight: 700; }
-.vrow-rest { color: var(--mut-2); }
-.vrow-state { font-size: 12px; white-space: nowrap; color: var(--mut-2); }
-.vrow-state::before { content: "●"; font-size: 7px; vertical-align: 2px; margin-right: 5px; }
-.vrow-state.ok { color: #3f7d6b; }
-.vrow-state.muted { color: var(--mut-3); }
-.vrow-state.new { color: var(--accent); }
-.vrow-chev {
-  justify-self: end;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--faint-2);
-  transition: transform .16s ease, color .12s ease;
-}
-.vrow[open] .vrow-chev { transform: rotate(90deg); }
-.vrow > summary:hover .vrow-chev { color: var(--ink); }
-.vrow-drop { padding: 9px 0 1px 67px; }
-.vrow-title { font-size: 12.5px; line-height: 1.45; color: var(--ink); }
-.vrow-note { font-size: 12px; line-height: 1.5; color: var(--mut-1); }
-.vrow-note:not(:empty) { margin-top: 5px; }
-.vrow-note code { font-family: var(--mono); font-size: 11.5px; }
-.vrow-links { font-size: 12px; color: var(--faint-2); margin-top: 6px; }
-
-/* Añadir otro dispositivo: un campo, dos botones. */
-.link-blk { margin-top: 17px; }
-.link-h { font-size: 12.5px; font-weight: 600; color: var(--ink); }
-.link-note { font-size: 12px; color: var(--mut-1); margin-top: 7px; }
-.code-field {
-  margin-top: 9px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  border: 1px solid var(--card-border);
-  border-radius: 7px;
-  padding: 8px 10px;
-  background: #fff;
-}
-.code-field[hidden] { display: none; }
-.code-field:focus-within { border-color: var(--accent); }
+/* La línea del código: la parte pública se lee, la cola va con puntos. */
+.code-line { display: flex; align-items: center; gap: 10px; }
 .code-val {
   flex: 1;
   min-width: 0;
@@ -1761,20 +1858,35 @@ body.is-teacher .appbar::after {
   -webkit-user-select: all;
 }
 .code-hid { color: var(--faint-2); letter-spacing: .5px; }
-.code-eye {
-  flex: none;
+.code-acts { display: flex; gap: 6px; flex: none; }
+.minibtn {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .08em;
   color: var(--mut-2);
-  background: #fff;
+  background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 5px;
-  padding: 2px 7px;
+  padding: 3px 8px;
   cursor: pointer;
+  transition: border-color .12s ease, color .12s ease;
 }
-.code-eye:hover { border-color: var(--ink); color: var(--ink); }
+.minibtn:hover { border-color: var(--ink); color: var(--ink); }
+.minibtn.on { color: var(--accent); border-color: var(--accent-soft); }
+
+.code-field {
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--card-border);
+  border-radius: 7px;
+  padding: 9px 11px;
+  background: var(--bg);
+}
+.code-field[hidden] { display: none; }
+.code-field:focus-within { border-color: var(--accent); }
 .code-in {
   flex: 1;
   min-width: 0;
@@ -1786,31 +1898,107 @@ body.is-teacher .appbar::after {
   background: none;
 }
 .code-in:focus { outline: none; }
-.link-btns { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* El pie: diagnóstico a la izquierda, las dos acciones a la derecha. */
-.dev-foot {
+/* Traer el progreso: la otra dirección, y por eso va en su propia fila
+   perfilada en vez de mezclarse con la rejilla. */
+.set-bring {
+  width: 100%;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 7px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .12s ease;
+}
+.set-bring:hover { border-color: var(--accent); }
+.set-bring.on { border-color: var(--accent); }
+.set-bring-x { font-family: var(--mono); font-size: 13px; color: var(--faint-2); }
+
+.set-foot {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 17px;
-  padding-top: 12px;
+  margin-top: 16px;
+  padding-top: 13px;
   border-top: 1px solid var(--hairline);
 }
-.dev-acts { display: flex; align-items: baseline; gap: 10px; flex: none; }
+.set-foot-l { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; min-width: 0; }
 .linkish {
   font-family: var(--sans);
-  font-size: 12px;
-  color: var(--mut-1);
+  font-size: 12.5px;
+  color: var(--accent);
   background: none;
   border: 0;
   padding: 0;
   cursor: pointer;
   transition: color .12s ease;
 }
-.linkish:hover { color: var(--ink); }
+.linkish:hover { color: var(--accent-hover); }
+.linkish.danger { color: var(--error); }
+.linkish.danger:hover { color: var(--error); opacity: .8; }
 .diag-acts { margin-top: 10px; }
+
+/* La fila de versión: PR, commit, fecha y estado en un solo renglón, y la
+   fila entera hace de botón para el título del cambio. Comparte la rejilla de
+   .set-row y le añade una tercera columna para el chevrón, para que la
+   etiqueta siga alineada con las demás. */
+.vrow { display: block; padding: 0; }
+.vrow > summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) 12px;
+  gap: 14px;
+  align-items: baseline;
+  padding: 13px 2px;
+}
+.vrow > summary::-webkit-details-marker { display: none; }
+.vrow-v {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 11px;
+}
+.vrow-line { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+.vrow-pr { color: var(--accent); font-weight: 700; }
+.vrow-rest { color: var(--mut-2); }
+.vrow-state { font-size: 12px; white-space: nowrap; color: var(--mut-2); }
+.vrow-state::before { content: "\25CF"; font-size: 7px; vertical-align: 2px; margin-right: 5px; }
+.vrow-state.ok { color: var(--ok-text); }
+.vrow-state.muted { color: var(--mut-3); }
+.vrow-state.new { color: var(--accent); }
+.vrow-chev {
+  justify-self: end;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint-2);
+  transition: transform .16s ease, color .12s ease;
+}
+.vrow[open] .vrow-chev { transform: rotate(90deg); }
+.vrow > summary:hover .vrow-chev { color: var(--ink); }
+.vrow-drop { padding: 0 0 13px 92px; }
+.vrow-meta {
+  display: none;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--mut-2);
+  margin-bottom: 5px;
+}
+.vrow-title { font-size: 12.5px; line-height: 1.45; color: var(--ink); }
+.vrow-note { font-size: 12px; line-height: 1.5; color: var(--mut-1); }
+.vrow-note:not(:empty) { margin-top: 5px; }
+.vrow-note code { font-family: var(--mono); font-size: 11.5px; }
+.vrow-links { font-size: 12px; color: var(--faint-2); margin-top: 6px; }
 
 /* ---------- Código de conexión (Ajustes) ---------- */
 .code-msg {
@@ -1827,20 +2015,16 @@ body.is-teacher .appbar::after {
 /* Vive dentro del pie de la ficha, que ya pone la línea y el aire. */
 .diag-wrap { min-width: 0; }
 .diag-wrap > summary {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: var(--faint-1);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--accent);
   cursor: pointer;
   list-style: none;
   transition: color .12s ease;
 }
 .diag-wrap > summary::-webkit-details-marker { display: none; }
-.diag-wrap > summary::before { content: "+ "; }
-.diag-wrap[open] > summary::before { content: "− "; }
-.diag-wrap > summary:hover { color: var(--mut-2); }
-.diag-wrap[open] > summary { margin-bottom: 14px; color: var(--mut-2); }
+.diag-wrap > summary:hover { color: var(--accent-hover); }
+.diag-wrap[open] > summary { margin-bottom: 12px; }
 
 .diag {
   font-family: var(--mono);
@@ -1878,10 +2062,10 @@ body.is-teacher .appbar::after {
   max-height: calc(100vh - var(--appbar-h) - 52px);
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 10px;
-  box-shadow: 0 18px 48px rgba(20, 20, 20, .16), 0 2px 6px rgba(20, 20, 20, .06);
+  box-shadow: var(--shadow-lightbox);
   outline: none;
   pointer-events: auto;
   animation: lb-panel .2s cubic-bezier(.2, .7, .3, 1);
@@ -1936,8 +2120,8 @@ body.lightbox-open { overflow: hidden; }
 
 /* ---------- Focus visibility ---------- */
 .btn:focus-visible, .opt:focus-visible, .flashcard:focus-visible, .card:focus-visible,
-.lightbox-x:focus-visible, .dev-chip:focus-visible, .linkish:focus-visible,
-.code-eye:focus-visible, .vrow > summary:focus-visible,
+.lightbox-x:focus-visible, .pill:focus-visible, .linkish:focus-visible,
+.minibtn:focus-visible, .set-bring:focus-visible, .vrow > summary:focus-visible,
 .sb-modmain:focus-visible, .sb-modmeta:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -1965,6 +2149,18 @@ body.lightbox-open { overflow: hidden; }
 }
 
 @media (max-width: 640px) {
+  /* En el móvil el renglón de versión solo da para el PR: el commit y la
+     fecha bajan al desplegable, que es donde ya está el título del cambio. */
+  .vrow-rest { display: none; }
+  .vrow-meta { display: block; }
+  .set-row, .vrow > summary { grid-template-columns: 68px minmax(0, 1fr); gap: 12px; }
+  .vrow > summary { grid-template-columns: 68px minmax(0, 1fr) 12px; }
+  .vrow-drop { padding-left: 80px; }
+  /* Superficies táctiles: 44px de mínimo en todo lo que se pulsa. */
+  .pill, .minibtn { min-height: 44px; display: inline-flex; align-items: center; }
+  .set-bring { min-height: 44px; }
+  .linkish, .diag-wrap > summary { min-height: 44px; display: inline-flex; align-items: center; }
+
   .wrap { padding: 24px 22px 64px; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
   .appbar {
     padding: 12px 22px;
@@ -1996,8 +2192,21 @@ body.lightbox-open { overflow: hidden; }
   .sync-actions .btn { width: 100%; text-align: center; }
 }
 
+/* El papel siempre es blanco: imprimir en tema oscuro daría una hoja negra —o,
+   peor, una hoja blanca con letra clarísima si el navegador quita los fondos.
+   Aquí se vuelve a la paleta clara pase lo que pase en pantalla. */
 @media print {
+  :root, :root[data-theme="dark"] {
+    color-scheme: light;
+    --bg: #ffffff; --panel: #fafafa; --hairline: #ececec; --hair-2: #f4f4f2;
+    --card-border: #e4e3e0; --ring: #e0e0e0;
+    --ink: #141414; --ink-2: #1a1a1a; --body: #2c2c2c;
+    --mut-1: #5f5f5f; --mut-2: #767676; --mut-3: #8a8a8a; --mut-4: #9a9a9a;
+    --faint-1: #a2a2a2; --faint-2: #b0b0b0; --faint-3: #c2c2c2; --faint-4: #cbcbcb;
+    --accent: #4a5fd0; --accent-hover: #2e42ad; --on-accent: #ffffff;
+    --ok: #3f9d7f; --ok-text: #3f7d6b; --error: #c86a5a;
+  }
   .appbar, .lesson-nav, .btn, .crumbs, .back-link, .cert-form, .lightbox { display: none !important; }
-  body { background: #fff; }
-  .certificate { border: 1px solid #141414; }
+  body { background: #fff; color: var(--body); }
+  .certificate { border: 1px solid var(--ink); }
 }
