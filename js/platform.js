@@ -24,4 +24,55 @@
   if (standalone) cls.add("is-standalone");
   // Instalada en iPad: iPadOS superpone sus controles arriba a la izquierda.
   if (isIPad && standalone) cls.add("is-ipad-window");
+
+  /* ---------- Tema ----------
+     Tres estados: "auto" (lo que diga el sistema, y no marca nada en <html>),
+     "claro" y "oscuro". Se aplica AQUÍ, antes del primer pintado: hacerlo más
+     tarde enseñaría un fogonazo blanco antes de ponerse oscuro.
+
+     La barra de estado del sistema —la del móvil— no lee CSS: hay que
+     escribirle el color a mano en <meta name="theme-color">, y volver a
+     escribirlo cuando cambie el tema o cuando cambie el del sistema. */
+  var TEMA_KEY = "espanol-tema";
+  var COLOR = { claro: "#ffffff", oscuro: "#1a1a19" };
+
+  function leer() {
+    try {
+      var v = localStorage.getItem(TEMA_KEY);
+      return (v === "claro" || v === "oscuro") ? v : "auto";
+    } catch (e) { return "auto"; }
+  }
+  function delSistema() {
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ? "oscuro" : "claro";
+  }
+  function resuelto() {
+    var t = leer();
+    return t === "auto" ? delSistema() : t;
+  }
+  function pintar() {
+    var t = leer();
+    if (t === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t === "oscuro" ? "dark" : "light");
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute("content", COLOR[resuelto()]);
+  }
+  function poner(t) {
+    try {
+      if (t === "auto") localStorage.removeItem(TEMA_KEY);
+      else localStorage.setItem(TEMA_KEY, t);
+    } catch (e) {}
+    pintar();
+  }
+
+  pintar();
+  // En "auto" hay que seguir al sistema mientras la app está abierta.
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    var alCambiar = function () { if (leer() === "auto") pintar(); };
+    if (mq.addEventListener) mq.addEventListener("change", alCambiar);
+    else if (mq.addListener) mq.addListener(alCambiar);
+  }
+
+  window.Tema = { get: leer, set: poner, resuelto: resuelto };
 })();

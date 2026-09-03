@@ -1056,16 +1056,19 @@
      con nada montado, donde de verdad hacen falta. */
   function syncSetupHtml(tokenUrl) {
     return (
-      '<p class="link-h">Sincronizar dispositivos</p>' +
-      '<p class="link-note">Pega tu token de GitHub, o el código de un aparato que ya funcione.</p>' +
-      '<div class="code-field">' +
-        '<input type="password" id="code-in" class="code-in" placeholder="ghp_… · github_pat_… · espanol:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-      '</div>' +
-      '<div class="code-msg" id="code-msg"></div>' +
-      '<div class="sync-help">' +
-        '<p><span class="sn">1</span> Crea un token en <a href="' + tokenUrl + '" target="_blank" rel="noopener">github.com</a> con el permiso <code>gist</code> (ya viene marcado). Ningún otro permiso hace falta.</p>' +
-        '<p><span class="sn">2</span> Pégalo aquí: se creará (o reutilizará) un gist <strong>secreto</strong> con tu progreso, y se sincroniza solo.</p>' +
-        '<p><span class="sn">3</span> En tu iPhone, iPad y Mac abre esta misma página → <em>Ajustes</em> → pega el código que este aparato te dará. Eso es todo.</p>' +
+      '<div class="set-row set-row-stack">' +
+        '<span class="set-k">Sincronización</span>' +
+        '<div class="set-v">' +
+          '<div class="code-field">' +
+            '<input type="password" id="code-in" class="code-in" placeholder="ghp_… · github_pat_… · espanol:…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+          '</div>' +
+          '<div class="code-msg" id="code-msg"></div>' +
+          '<div class="sync-help">' +
+            '<p><span class="sn">1</span> Crea un token en <a href="' + tokenUrl + '" target="_blank" rel="noopener">github.com</a> con el permiso <code>gist</code> (ya viene marcado). Ningún otro permiso hace falta.</p>' +
+            '<p><span class="sn">2</span> Pégalo aquí: se creará (o reutilizará) un gist <strong>secreto</strong> con tu progreso, y se sincroniza solo.</p>' +
+            '<p><span class="sn">3</span> En tu iPhone, iPad y Mac abre esta misma página → <em>Ajustes</em> → pega el código que este aparato te dará. Eso es todo.</p>' +
+          '</div>' +
+        '</div>' +
       '</div>'
     );
   }
@@ -1075,21 +1078,30 @@
      funciona en cualquier aparato, recién estrenado o no. */
   function syncConnectedHtml() {
     return (
-      '<p class="link-h">Añadir otro dispositivo</p>' +
-      '<p class="link-note">Cópialo y pégalo en el otro aparato.</p>' +
-      '<div class="code-field" id="code-show">' +
-        '<span class="code-val" id="code-val"></span>' +
-        '<button type="button" class="code-eye" id="code-eye">ver</button>' +
-      '</div>' +
-      '<div class="code-field" id="code-edit" hidden>' +
-        '<input type="password" id="code-in" class="code-in" placeholder="Pega aquí el código del otro aparato" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-      '</div>' +
-      '<div class="link-btns">' +
-        '<button class="btn" id="code-copy">Copiar</button>' +
-        '<button class="btn ghost" id="code-paste">Pegar…</button>' +
-      '</div>' +
-      '<div class="code-msg" id="code-msg"></div>'
+      '<div class="set-row">' +
+        '<span class="set-k">Código</span>' +
+        '<div class="set-v code-line">' +
+          '<span class="code-val" id="code-val"></span>' +
+          '<span class="code-acts">' +
+            '<button type="button" class="minibtn" id="code-eye">ver</button>' +
+            '<button type="button" class="minibtn on" id="code-copy">copiar</button>' +
+          '</span>' +
+        '</div>' +
+      '</div>'
     );
+  }
+  // Qué es este aparato. En la caja de Ajustes es la línea que contesta «¿en
+  // cuál de los tres estoy?» sin tener que mirar el gist.
+  function aparatoTxt() {
+    var cls = document.documentElement.classList;
+    var ua = navigator.userAgent || "";
+    var nombre = /iPhone/.test(ua) ? "iPhone"
+      : (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) ? "iPad"
+      : /Mac/.test(ua) ? "Mac"
+      : /Android/.test(ua) ? "Android" : "Ordenador";
+    var envoltorio = cls.contains("is-tauri") ? "escritorio"
+      : cls.contains("is-standalone") ? "instalada" : "navegador";
+    return nombre + " · " + envoltorio;
   }
   // Cuerpo de Ajustes. Se pinta igual en la página (#/ajustes, que es lo que
   // se ve en el móvil) y dentro de la caja de luz del engranaje.
@@ -1097,33 +1109,72 @@
     var configured = Sync.isConfigured();
     var tokenUrl = "https://github.com/settings/tokens/new?scopes=gist&description=Espanol%20para%20brasilenos%20sync";
     var st = window.Sync.getState();
-    var statusTxt = configured
-      ? (st.detail || (st.status === "syncing" ? "Sincronizando…" : "Conectado"))
-      : "Sin sincronizar";
+    var tema = (window.Tema ? Tema.get() : "auto");
     return (
-      '<div class="dev-card">' +
-        '<div class="dev-t">Este dispositivo</div>' +
-        '<div class="dev-strip">' +
-          '<button type="button" class="dev-chip' + (isTeacher() ? '' : ' on') + '" data-role="alumno">Alumno</button>' +
-          '<button type="button" class="dev-chip' + (isTeacher() ? ' on' : '') + '" data-role="profesora">Profesora</button>' +
-          '<span class="dev-sep">·</span>' +
-          '<span class="sync-dot ' + (configured ? st.status : "off") + '"></span>' +
-          '<span class="dev-st">' + esc(statusTxt) + '</span>' +
+      // Tira de estado: lo primero que se mira al abrir Ajustes es si esto
+      // está sincronizando o no. El titular dice el estado y el detalle va a
+      // la derecha; cuando algo falla, el titular lo dice — poner
+      // «Sincronizado» junto a un punto rojo sería mentir en grande.
+      '<div class="set-strip">' +
+        '<span class="set-strip-l"><span class="sync-dot ' + (configured ? st.status : "off") + '"></span>' +
+          esc(!configured ? "Sin sincronizar"
+            : st.status === "error" ? "No se pudo sincronizar"
+            : st.status === "syncing" ? "Sincronizando…"
+            : "Sincronizado") + '</span>' +
+        '<span class="set-strip-r">' +
+          esc(configured ? (st.detail || "—") : "solo en este aparato") + '</span>' +
+      '</div>' +
+
+      '<div class="set-rows">' +
+        '<div class="set-row">' +
+          '<span class="set-k">Perfil</span>' +
+          '<div class="set-v">' +
+            '<span class="pills">' +
+              '<button type="button" class="pill' + (isTeacher() ? '' : ' on') + '" data-role="alumno">Alumno</button>' +
+              '<button type="button" class="pill' + (isTeacher() ? ' on' : '') + '" data-role="profesora">Profesora</button>' +
+            '</span>' +
+            (isTeacher() ? '<a class="set-link" href="#/correcciones">Corregir redacciones →</a>' : '') +
+          '</div>' +
         '</div>' +
-        (isTeacher() ? '<p class="dev-link"><a href="#/correcciones">Corregir redacciones →</a></p>' : '') +
-        versionHTML() +
-      '</div>' +
-      '<div class="link-blk">' +
+
         (configured ? syncConnectedHtml() : syncSetupHtml(tokenUrl)) +
+
+        versionHTML() +
+
+        '<div class="set-row">' +
+          '<span class="set-k">Apariencia</span>' +
+          '<div class="set-v">' +
+            '<span class="pills">' +
+              '<button type="button" class="pill' + (tema === "auto" ? " on" : "") + '" data-tema="auto">Auto</button>' +
+              '<button type="button" class="pill' + (tema === "claro" ? " on" : "") + '" data-tema="claro">Claro</button>' +
+              '<button type="button" class="pill' + (tema === "oscuro" ? " on" : "") + '" data-tema="oscuro">Oscuro</button>' +
+            '</span>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="set-row">' +
+          '<span class="set-k">Aparato</span>' +
+          '<div class="set-v"><span class="set-plain">' + esc(aparatoTxt()) + '</span></div>' +
+        '</div>' +
       '</div>' +
-      '<div class="dev-foot">' +
-        diagHTML() +
+
+      (configured
+        ? '<button type="button" class="set-bring" id="code-paste">' +
+            '<span>Traer el progreso de otro aparato</span><span class="set-bring-x">+</span>' +
+          '</button>' +
+          '<div class="code-field" id="code-edit" hidden>' +
+            '<input type="password" id="code-in" class="code-in" placeholder="Pega aquí el código del otro aparato" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+          '</div>' +
+          '<div class="code-msg" id="code-msg"></div>'
+        : '') +
+
+      '<div class="set-foot">' +
+        '<div class="set-foot-l">' +
+          (configured ? '<button type="button" class="linkish" id="sync-now">Sincronizar</button>' : '') +
+          diagHTML() +
+        '</div>' +
         (configured
-          ? '<div class="dev-acts">' +
-              '<button type="button" class="linkish" id="sync-now">Sincronizar</button>' +
-              '<span class="dev-sep">·</span>' +
-              '<button type="button" class="linkish" id="sync-disconnect">Desconectar</button>' +
-            '</div>'
+          ? '<button type="button" class="linkish danger" id="sync-disconnect">Desconectar</button>'
           : '') +
       '</div>'
     );
@@ -1171,10 +1222,10 @@
     if (v.pr) links.push('<a href="' + REPO + '/pull/' + encodeURIComponent(v.pr) + '" target="_blank" rel="noopener">Ver el pull request</a>');
     if (v.commit) links.push('<a href="' + REPO + '/commit/' + esc(v.commit) + '" target="_blank" rel="noopener">ver el commit</a>');
     return (
-      '<details class="vrow">' +
+      '<details class="set-row vrow">' +
         '<summary>' +
-          '<span class="vrow-k">Versión</span>' +
-          '<span class="vrow-v">' +
+          '<span class="set-k">Versión</span>' +
+          '<span class="set-v vrow-v">' +
             '<span class="vrow-line"><span class="vrow-pr">' + head + '</span>' +
               (tail.length ? '<span class="vrow-rest"> · ' + tail.join(" · ") + '</span>' : '') +
             '</span>' +
@@ -1183,6 +1234,10 @@
           '<span class="vrow-chev">›</span>' +
         '</summary>' +
         '<div class="vrow-drop">' +
+          // En el móvil el renglón no da para el commit y la fecha, así que
+          // ahí se enseña solo el PR y esta copia toma el relevo dentro del
+          // desplegable. En pantalla ancha sobra y se oculta.
+          (tail.length ? '<div class="vrow-meta">' + tail.join(" · ") + '</div>' : '') +
           (v.title ? '<div class="vrow-title">' + esc(v.title) + '</div>' : '') +
           '<div class="vrow-note" id="ver-note"></div>' +
           (links.length ? '<div class="vrow-links">' + links.join(" · ") + '</div>' : '') +
@@ -1323,6 +1378,13 @@
     root.querySelectorAll("[data-role]").forEach(function (b) {
       b.addEventListener("click", function () { setRole(b.dataset.role); repaint(); });
     });
+    // Apariencia. «Auto» no fija nada: sigue al sistema mientras esté abierta.
+    root.querySelectorAll("[data-tema]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (window.Tema) Tema.set(b.dataset.tema);
+        repaint();
+      });
+    });
     wireVersion(root);
     wireDiag(root);
 
@@ -1406,18 +1468,22 @@
       });
     }
 
-    // «Pegar…» cambia el recuadro por un campo, en el mismo sitio.
+    // «Traer el progreso de otro aparato» despliega el campo donde se pega.
+    // El código de arriba no se esconde: son dos direcciones distintas —de
+    // aquí hacia fuera y de fuera hacia aquí— y verlas a la vez lo aclara.
     var paste = root.querySelector("#code-paste");
-    var show = root.querySelector("#code-show");
     var edit = root.querySelector("#code-edit");
-    if (paste && show && edit) {
+    if (paste && edit) {
+      var label = paste.querySelector("span");
+      var mas = paste.querySelector(".set-bring-x");
       paste.addEventListener("click", function () {
-        var editing = !edit.hidden;
-        edit.hidden = editing;
-        show.hidden = !editing;
-        paste.textContent = editing ? "Pegar…" : "Cancelar";
+        var abierto = !edit.hidden;
+        edit.hidden = abierto;
+        paste.classList.toggle("on", !abierto);
+        if (label) label.textContent = abierto ? "Traer el progreso de otro aparato" : "Pega aquí el código del otro aparato";
+        if (mas) mas.textContent = abierto ? "+" : "×";
         say("", "");
-        if (!editing) {
+        if (!abierto) {
           var i = edit.querySelector("#code-in");
           if (i) { i.value = ""; i.focus(); }
         }

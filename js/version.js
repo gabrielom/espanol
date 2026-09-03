@@ -5,4 +5,4 @@
 // Este archivo viaja dentro de la caché del service worker, así que dice
 // SIEMPRE qué copia se está ejecutando. La publicada se mira aparte, con
 // version.json, que el worker deja pasar sin cachear.
-window.APP_VERSION = {"version": "deae158", "commit": "deae158c2877303865a949d7b87e3330a15ca68c", "title": "Decir qué sesiones del módulo 9 tiene cada dispositivo", "pr": 51, "built": "2026-09-01T00:50:34Z"};
+window.APP_VERSION = {"version": "9ac8c5b", "commit": "9ac8c5b8bba11fa1232857c43876c3240d5f7940", "title": "Tema oscuro y la ficha de Ajustes", "pr": 52, "built": "2026-09-03T09:55:57Z"};
