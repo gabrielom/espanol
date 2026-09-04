@@ -1802,7 +1802,7 @@ body.is-teacher .appbar::after {
 .set-rows { margin-top: 4px; }
 .set-row {
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr);
+  grid-template-columns: 64px minmax(0, 1fr);
   gap: 14px;
   align-items: baseline;
   padding: 13px 2px;
@@ -1817,7 +1817,13 @@ body.is-teacher .appbar::after {
   color: var(--mut-3);
 }
 .set-v { min-width: 0; font-size: 13px; color: var(--ink-2); }
+/* Perfil es un interruptor de identidad y va al borde derecho, como los
+   controles de Código y Versión. Apariencia se lee como un valor más y se
+   queda a la izquierda, pegada a su etiqueta. */
+.set-row-role .set-v { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 .set-plain { color: var(--mut-1); }
+.k-largo { display: none; }
+.code-copy-wide { display: none; }
 .set-link { display: inline-block; margin-left: 12px; font-size: 12.5px; }
 /* Filas cuyo valor es un bloque alto (los tres pasos del token). */
 .set-row-stack { align-items: start; }
@@ -1899,29 +1905,73 @@ body.is-teacher .appbar::after {
 }
 .code-in:focus { outline: none; }
 
-/* Traer el progreso: la otra dirección, y por eso va en su propia fila
-   perfilada en vez de mezclarse con la rejilla. */
-.set-bring {
-  width: 100%;
+/* Traer de otro aparato. Antes era una fila perfilada con un «+» que no
+   decía qué hacer y no llevaba a ninguna parte visible; ahora el campo ES el
+   destino y está a la vista. El botón apagado hace de validación: se enciende
+   cuando lo pegado tiene forma de código, así no hace falta un mensaje de
+   error mientras todavía estás pegando. */
+.bring {
   margin-top: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-family: var(--sans);
-  font-size: 13px;
-  color: var(--accent);
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+}
+.bring-k {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--mut-3);
+  margin-bottom: 9px;
+}
+.bring-row { display: flex; gap: 8px; align-items: stretch; }
+.bring-in {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
   background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 7px;
-  padding: 12px 14px;
-  cursor: pointer;
-  text-align: left;
+  padding: 10px 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: border-color .12s ease;
 }
-.set-bring:hover { border-color: var(--accent); }
-.set-bring.on { border-color: var(--accent); }
-.set-bring-x { font-family: var(--mono); font-size: 13px; color: var(--faint-2); }
+.bring-in::placeholder { color: var(--faint-3); }
+.bring-in:focus { outline: none; border-color: var(--accent); }
+.bring-in.on { border-color: var(--accent); }
+.bring-in.mal { border-color: var(--error); }
+.bring-btn {
+  flex-shrink: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 7px;
+  padding: 10px 18px;
+  cursor: pointer;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent);
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.bring-btn:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+.bring-btn:disabled {
+  background: var(--bg);
+  color: var(--faint-3);
+  border-color: var(--card-border);
+  cursor: default;
+}
+.bring-hint {
+  margin-top: 9px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--faint-1);
+}
+.bring-hint.ok { color: var(--accent); }
+.bring-hint.err { color: var(--error); }
+.bring-hint.warn { color: var(--mut-1); }
 
 .set-foot {
   display: flex;
@@ -1957,7 +2007,7 @@ body.is-teacher .appbar::after {
   list-style: none;
   cursor: pointer;
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr) 12px;
+  grid-template-columns: 64px minmax(0, 1fr) 12px;
   gap: 14px;
   align-items: baseline;
   padding: 13px 2px;
@@ -1986,7 +2036,7 @@ body.is-teacher .appbar::after {
 }
 .vrow[open] .vrow-chev { transform: rotate(90deg); }
 .vrow > summary:hover .vrow-chev { color: var(--ink); }
-.vrow-drop { padding: 0 0 13px 92px; }
+.vrow-drop { padding: 0 0 13px 78px; }
 .vrow-meta {
   display: none;
   font-family: var(--mono);
@@ -2121,7 +2171,7 @@ body.lightbox-open { overflow: hidden; }
 /* ---------- Focus visibility ---------- */
 .btn:focus-visible, .opt:focus-visible, .flashcard:focus-visible, .card:focus-visible,
 .lightbox-x:focus-visible, .pill:focus-visible, .linkish:focus-visible,
-.minibtn:focus-visible, .set-bring:focus-visible, .vrow > summary:focus-visible,
+.minibtn:focus-visible, .bring-btn:focus-visible, .vrow > summary:focus-visible,
 .sb-modmain:focus-visible, .sb-modmeta:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -2132,6 +2182,16 @@ body.lightbox-open { overflow: hidden; }
   .wrap { padding: 44px 32px 80px; }
   .hero h1 { font-size: 30px; }
   .module-head h1, .lesson-shell h1 { font-size: 28px; }
+}
+
+/* iPad: la rejilla de Ajustes se queda en dos columnas —hay ancho de sobra—,
+   pero es táctil, así que los controles crecen al blanco de 44px. */
+@media (hover: none) and (min-width: 641px) {
+  .pill { padding: 9px 13px; font-size: 12.5px; }
+  .minibtn { padding: 8px 11px; }
+  .bring-in, .bring-btn { padding-top: 13px; padding-bottom: 13px; }
+  .bring-btn { padding-left: 20px; padding-right: 20px; }
+  .linkish, .diag-wrap > summary { min-height: 44px; display: inline-flex; align-items: center; }
 }
 
 @media (max-width: 767px) and (min-width: 641px) {
@@ -2149,16 +2209,50 @@ body.lightbox-open { overflow: hidden; }
 }
 
 @media (max-width: 640px) {
-  /* En el móvil el renglón de versión solo da para el PR: el commit y la
-     fecha bajan al desplegable, que es donde ya está el título del cambio. */
+  /* En el móvil no hay sitio para dos columnas: la etiqueta sube y se
+     convierte en el rótulo del bloque, y el control ocupa el ancho entero.
+     Es lo que hace que las píldoras lleguen al blanco táctil sin apretarse. */
+  .set-row {
+    display: block;
+    padding: 15px 0;
+  }
+  .set-row .set-k { display: block; margin-bottom: 9px; }
+  .k-corto { display: none; }
+  .k-largo { display: inline; }
+  .set-row-role .set-v { display: block; }
+  .pills { display: grid; gap: 7px; }
+  .set-row-role .pills { grid-template-columns: 1fr 1fr; }
+  .set-row .pills { grid-template-columns: repeat(3, 1fr); }
+  .pill { min-height: 44px; padding: 0; justify-content: center; font-size: 13px; }
+  .set-link { display: block; margin: 10px 0 0; }
+
+  /* La versión sí se queda en dos columnas: es una línea, no un control. */
+  .vrow > summary { grid-template-columns: 64px minmax(0, 1fr) 12px; gap: 12px; }
   .vrow-rest { display: none; }
   .vrow-meta { display: block; }
-  .set-row, .vrow > summary { grid-template-columns: 68px minmax(0, 1fr); gap: 12px; }
-  .vrow > summary { grid-template-columns: 68px minmax(0, 1fr) 12px; }
-  .vrow-drop { padding-left: 80px; }
+  .vrow-drop { padding-left: 76px; }
+
+  /* Copiar deja de ser un botoncito y pasa a ser el botón del bloque. */
+  .code-acts .minibtn.on { display: none; }
+  .code-copy-wide {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 13px 0;
+    border-radius: 2px;
+    background: var(--accent);
+    color: var(--on-accent);
+    border: 1px solid var(--accent);
+    cursor: pointer;
+  }
+
   /* Superficies táctiles: 44px de mínimo en todo lo que se pulsa. */
-  .pill, .minibtn { min-height: 44px; display: inline-flex; align-items: center; }
-  .set-bring { min-height: 44px; }
+  .minibtn { min-height: 44px; display: inline-flex; align-items: center; }
+  .bring-in, .bring-btn { padding-top: 13px; padding-bottom: 13px; }
+  .bring-btn { padding-left: 16px; padding-right: 16px; }
   .linkish, .diag-wrap > summary { min-height: 44px; display: inline-flex; align-items: center; }
 
   .wrap { padding: 24px 22px 64px; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
