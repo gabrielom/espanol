@@ -34,7 +34,9 @@ pulsarlo te deja en la misma página y en el mismo punto. En el móvil no hay si
 para una caja, así que ahí sigue siendo una página (`#/ajustes`).
 
 Es una tira de estado arriba y, debajo, una rejilla etiqueta/valor: **Perfil**,
-**Código**, **Versión**, **Apariencia** y **Aparato**. La fila **Versión** lo dice
+**Código**, **Versión**, **Apariencia** y **Aparato**, y al final **Traer de otro
+aparato** — un campo donde se pega el código del aparato que va por delante, con
+el botón apagado hasta que lo pegado tiene forma de código. La fila **Versión** lo dice
 todo en un renglón —el número del pull request hace de número de versión, y detrás
 van el commit y la fecha en que se publicó—; la fila entera se despliega para leer
 el título del cambio y saltar a GitHub. En el móvil, donde el renglón no da para

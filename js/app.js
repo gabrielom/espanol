@@ -1078,7 +1078,7 @@
      funciona en cualquier aparato, recién estrenado o no. */
   function syncConnectedHtml() {
     return (
-      '<div class="set-row">' +
+      '<div class="set-row set-row-code">' +
         '<span class="set-k">Código</span>' +
         '<div class="set-v code-line">' +
           '<span class="code-val" id="code-val"></span>' +
@@ -1087,6 +1087,9 @@
             '<button type="button" class="minibtn on" id="code-copy">copiar</button>' +
           '</span>' +
         '</div>' +
+        // En el móvil el par de botoncitos no llega al blanco táctil, así que
+        // copiar pasa a ser un botón entero y con nombre completo.
+        '<button type="button" class="code-copy-wide" id="code-copy-wide">Copiar el código de este aparato</button>' +
       '</div>'
     );
   }
@@ -1126,7 +1129,7 @@
       '</div>' +
 
       '<div class="set-rows">' +
-        '<div class="set-row">' +
+        '<div class="set-row set-row-role">' +
           '<span class="set-k">Perfil</span>' +
           '<div class="set-v">' +
             '<span class="pills">' +
@@ -1141,8 +1144,10 @@
 
         versionHTML() +
 
+        // «Aparien.» abreviado para caber en la columna de 64px sin ensancharla;
+        // en el móvil, donde la etiqueta va encima y sobra sitio, entera.
         '<div class="set-row">' +
-          '<span class="set-k">Apariencia</span>' +
+          '<span class="set-k"><span class="k-corto">Aparien.</span><span class="k-largo">Apariencia</span></span>' +
           '<div class="set-v">' +
             '<span class="pills">' +
               '<button type="button" class="pill' + (tema === "auto" ? " on" : "") + '" data-tema="auto">Auto</button>' +
@@ -1158,14 +1163,17 @@
         '</div>' +
       '</div>' +
 
+      // Traer de otro aparato. Antes era una fila perfilada con un «+» que no
+      // decía qué hacer; ahora el campo ES el destino, y está a la vista.
       (configured
-        ? '<button type="button" class="set-bring" id="code-paste">' +
-            '<span>Traer el progreso de otro aparato</span><span class="set-bring-x">+</span>' +
-          '</button>' +
-          '<div class="code-field" id="code-edit" hidden>' +
-            '<input type="password" id="code-in" class="code-in" placeholder="Pega aquí el código del otro aparato" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-          '</div>' +
-          '<div class="code-msg" id="code-msg"></div>'
+        ? '<div class="bring">' +
+            '<p class="bring-k">Traer de otro aparato</p>' +
+            '<div class="bring-row">' +
+              '<input type="text" id="code-in" class="bring-in" placeholder="espanol:········:·····" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">' +
+              '<button type="button" class="bring-btn" id="code-bring" disabled>Traer</button>' +
+            '</div>' +
+            '<p class="bring-hint" id="code-msg">Cópialo en el aparato que va por delante — Ajustes → Código → Copiar.</p>' +
+          '</div>'
         : '') +
 
       '<div class="set-foot">' +
@@ -1413,9 +1421,12 @@
      y sincroniza. */
   function wireCode(root, repaint) {
     var msg = root.querySelector("#code-msg");
+    // La pista de «Traer» y los mensajes de resultado son el mismo renglón:
+    // no se acumulan dos líneas debajo del campo, se relevan.
+    var base = msg && msg.classList.contains("bring-hint") ? "bring-hint" : "code-msg";
     function say(t, cls) {
       if (!msg) return;
-      msg.className = "code-msg" + (cls ? " " + cls : "");
+      msg.className = base + (cls ? " " + cls : "");
       msg.textContent = t;
     }
 
@@ -1449,9 +1460,9 @@
 
     // Copiar el código entero. El campo se destapa a la vez: si el
     // portapapeles falla, ahí queda para seleccionarlo a mano.
-    var copy = root.querySelector("#code-copy");
-    if (copy) {
-      copy.addEventListener("click", function () {
+    function wireCopy(btn) {
+      if (!btn) return;
+      btn.addEventListener("click", function () {
         var code = Sync.exportCode();
         if (!code) { say("No hay nada que copiar todavía.", "warn"); return; }
         shown = true;
@@ -1467,55 +1478,60 @@
         }
       });
     }
+    wireCopy(root.querySelector("#code-copy"));
+    wireCopy(root.querySelector("#code-copy-wide"));
 
-    // «Traer el progreso de otro aparato» despliega el campo donde se pega.
-    // El código de arriba no se esconde: son dos direcciones distintas —de
-    // aquí hacia fuera y de fuera hacia aquí— y verlas a la vez lo aclara.
-    var paste = root.querySelector("#code-paste");
-    var edit = root.querySelector("#code-edit");
-    if (paste && edit) {
-      var label = paste.querySelector("span");
-      var mas = paste.querySelector(".set-bring-x");
-      paste.addEventListener("click", function () {
-        var abierto = !edit.hidden;
-        edit.hidden = abierto;
-        paste.classList.toggle("on", !abierto);
-        if (label) label.textContent = abierto ? "Traer el progreso de otro aparato" : "Pega aquí el código del otro aparato";
-        if (mas) mas.textContent = abierto ? "+" : "×";
-        say("", "");
-        if (!abierto) {
-          var i = edit.querySelector("#code-in");
-          if (i) { i.value = ""; i.focus(); }
-        }
-      });
+    /* ---- Traer de otro aparato ----
+       El campo es el destino, y se ve desde el principio. El botón está
+       apagado hasta que lo pegado tiene forma de código: así el estado del
+       botón es la validación, sin un mensaje de error que aparezca mientras
+       todavía estás pegando. Solo protesta si sueltas algo que no vale. */
+    var input = root.querySelector("#code-in");
+    var bring = root.querySelector("#code-bring");
+    if (!input) return;
+
+    var PISTA = "Cópialo en el aparato que va por delante — Ajustes → Código → Copiar.";
+    var PROMESA = "Se fusiona con lo que ya tienes: de cada lección gana el estado más avanzado. Nada se borra.";
+
+    // Qué tiene el campo, sin tocar nada todavía.
+    function mira(raw) {
+      var s = String(raw || "").trim();
+      if (!s) return { estado: "vacio" };
+      if (Sync.looksLikeToken(s)) return { estado: "ok", valor: s };
+      var parsed = Sync.parseCode(s);
+      if (!parsed) return { estado: "malo" };
+      if (parsed.kind === "gist" && !Sync.isConfigured()) return { estado: "solo-gist" };
+      return { estado: "ok", valor: s };
     }
 
-    // El campo conecta solo, en cuanto lo pegado tiene sentido. Mientras se
-    // escribe a medias no dice nada: solo protesta si al soltar sigue sin valer.
-    var input = root.querySelector("#code-in");
-    if (!input) return;
-    function tryUse(raw, quiet) {
-      var s = String(raw || "").trim();
-      if (!s) { if (!quiet) say("Pega aquí el código del otro aparato.", "warn"); return; }
-      var token = Sync.looksLikeToken(s);
-      var parsed = token ? null : Sync.parseCode(s);
-      if (!token && !parsed) {
-        if (!quiet) say("Eso no es un código ni un token. El código empieza por «espanol:» — cópialo entero desde el otro aparato.", "err");
-        return;
-      }
-      if (parsed && parsed.kind === "gist" && !Sync.isConfigured()) {
-        say("Ese código antiguo lleva solo el gist, y aquí todavía no hay token. Pega el token de GitHub, o el código nuevo del otro aparato.", "err");
-        return;
-      }
-      if (!Sync.importCode(s)) { say("No he podido usar eso.", "err"); return; }
+    function repinta(protesta) {
+      var q = mira(input.value);
+      var listo = q.estado === "ok";
+      if (bring) bring.disabled = !listo;
+      input.classList.toggle("on", listo);
+      input.classList.toggle("mal", protesta && (q.estado === "malo" || q.estado === "solo-gist"));
+      if (listo) say(PROMESA, "");
+      else if (protesta && q.estado === "malo") say("Eso no tiene forma de código. Empieza por «espanol:» — cópialo entero desde el otro aparato.", "err");
+      else if (protesta && q.estado === "solo-gist") say("Ese código antiguo lleva solo el gist, y aquí todavía no hay token. Pega el token de GitHub, o el código nuevo del otro aparato.", "err");
+      else say(PISTA, "");
+      return q;
+    }
+
+    function traer() {
+      var q = repinta(true);
+      if (q.estado !== "ok") return;
+      if (!Sync.importCode(q.valor)) { say("No he podido usar eso.", "err"); return; }
       say("Conectado. Sincronizando…", "ok");
       Sync.sync(function () { return progress; }, function (m) { applyMerged(m, true); }).then(repaint, repaint);
     }
-    input.addEventListener("input", function () { tryUse(input.value, true); });
-    input.addEventListener("change", function () { tryUse(input.value, false); });
+
+    repinta(false);
+    input.addEventListener("input", function () { repinta(false); });
+    input.addEventListener("change", function () { repinta(true); });
     input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") { e.preventDefault(); tryUse(input.value, false); }
+      if (e.key === "Enter") { e.preventDefault(); traer(); }
     });
+    if (bring) bring.addEventListener("click", traer);
   }
 
   function isSettingsRoute() { return /^#\/?(ajustes|sync)\b/.test(location.hash); }
