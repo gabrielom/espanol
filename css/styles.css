@@ -1796,14 +1796,15 @@ body.is-teacher .appbar::after {
   padding: 13px 14px;
 }
 .lightbox-body .set-strip {
-  margin: 0 -22px;
+  margin: -4px -22px 0;
   padding: 14px 22px;
   border-radius: 0;
   border-top: 0;
   border-left: 0;
   border-right: 0;
 }
-.set-strip-l { display: flex; align-items: center; gap: 10px; font-size: 14.5px; line-height: 1.2; color: var(--ink); }
+.set-strip-l { display: flex; align-items: center; font-size: 14.5px; line-height: 1.2; color: var(--ink); }
+.set-strip-l .sync-dot { margin-right: 9px; }
 .set-strip-r {
   font-family: var(--mono);
   font-size: 11px;
@@ -1823,7 +1824,9 @@ body.is-teacher .appbar::after {
 }
 /* Las filas cuyo valor es un control se centran y respiran un punto más;
    las de texto alinean por la línea de base. Así lo hace el prototipo. */
-.set-row-role, .set-row-tema { align-items: center; padding: 13px 0; }
+.set-row-role { align-items: center; padding: 13px 0; }
+.set-row-tema { align-items: center; padding: 9px 0; }
+.set-row-tema .pill { font-size: 12px; padding: 4px 10px; border-radius: 5px; }
 .set-row:last-child { border-bottom: 0; }
 .set-k {
   font-family: var(--mono);
@@ -1831,7 +1834,7 @@ body.is-teacher .appbar::after {
   text-transform: uppercase;
   letter-spacing: .1em;
   line-height: 1.2;
-  color: var(--faint-1);
+  color: var(--mut-3);
 }
 .set-v { min-width: 0; font-size: 13px; line-height: 1.2; color: var(--ink-2); }
 /* Perfil es un interruptor de identidad y va al borde derecho, como los
@@ -1879,18 +1882,18 @@ body.is-teacher .appbar::after {
   user-select: all;
   -webkit-user-select: all;
 }
-.code-hid { color: var(--faint-2); letter-spacing: .5px; }
+.code-hid { color: var(--faint-3); letter-spacing: .5px; }
 .code-acts { display: flex; gap: 6px; flex: none; }
 .minibtn {
   font-family: var(--mono);
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
   color: var(--mut-2);
   background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 5px;
-  padding: 3px 8px;
+  padding: 2px 7px;
   cursor: pointer;
   transition: border-color .12s ease, color .12s ease;
 }
@@ -1993,12 +1996,12 @@ body.is-teacher .appbar::after {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  margin-top: 16px;
-  padding-top: 13px;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid var(--hairline);
 }
-.set-foot-l { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; min-width: 0; }
+.set-foot-l { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; min-width: 0; }
 .linkish {
   font-family: var(--sans);
   font-size: 12.5px;
@@ -2035,10 +2038,10 @@ body.is-teacher .appbar::after {
   justify-content: space-between;
   gap: 11px;
 }
-.vrow-line { font-family: var(--mono); font-size: 12px; line-height: 1.2; white-space: nowrap; color: var(--mut-1); }
+.vrow-line { font-family: var(--mono); font-size: 11.5px; line-height: 1.2; white-space: nowrap; color: var(--mut-1); }
 .vrow-pr { color: var(--mut-1); }
 .vrow-rest { color: var(--mut-1); }
-.vrow-state { font-size: 12px; white-space: nowrap; color: var(--mut-2); }
+.vrow-state { font-size: 11.5px; white-space: nowrap; color: var(--mut-2); }
 .vrow-state::before { content: "\25CF"; font-size: 7px; vertical-align: 2px; margin-right: 5px; }
 .vrow-state.ok { color: var(--ok-text); }
 .vrow-state.muted { color: var(--mut-3); }
@@ -2046,9 +2049,9 @@ body.is-teacher .appbar::after {
 .vrow-chev {
   justify-self: end;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1;
-  color: var(--faint-2);
+  color: var(--faint-3);
   transition: transform .16s ease, color .12s ease;
 }
 .vrow[open] .vrow-chev { transform: rotate(90deg); }
@@ -2162,6 +2165,8 @@ body.is-teacher .appbar::after {
   height: 28px;
   display: grid;
   place-items: center;
+  font-size: 19px;
+  line-height: 1;
   color: var(--mut-3);
   background: none;
   border: 1px solid transparent;
@@ -2173,7 +2178,7 @@ body.is-teacher .appbar::after {
 .lightbox-body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 22px 22px;
+  padding: 4px 22px 22px;
 }
 /* Dentro de la caja el primer encabezado ya no necesita separarse del h1. */
 .lightbox-body .settings-h2:first-child { margin-top: 18px; }
