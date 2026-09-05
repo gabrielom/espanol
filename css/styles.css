@@ -2145,7 +2145,7 @@ body.is-teacher .appbar::after {
 .lightbox-head h2 {
   margin: 0;
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -.01em;
   color: var(--ink);
 }
@@ -2155,8 +2155,6 @@ body.is-teacher .appbar::after {
   height: 28px;
   display: grid;
   place-items: center;
-  font-size: 19px;
-  line-height: 1;
   color: var(--mut-3);
   background: none;
   border: 1px solid transparent;

@@ -1581,7 +1581,11 @@
       '<div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" tabindex="-1">' +
         '<div class="lightbox-head">' +
           '<h2 id="lightbox-title">Ajustes</h2>' +
-          '<button type="button" class="lightbox-x" data-close aria-label="Cerrar ajustes">×</button>' +
+          '<button type="button" class="lightbox-x" data-close aria-label="Cerrar ajustes">' +
+            '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">' +
+              '<path d="M1 1 12 12M12 1 1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+            '</svg>' +
+          '</button>' +
         '</div>' +
         '<div class="lightbox-body"></div>' +
       '</div>';
