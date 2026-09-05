@@ -5,4 +5,4 @@
 // Este archivo viaja dentro de la caché del service worker, así que dice
 // SIEMPRE qué copia se está ejecutando. La publicada se mira aparte, con
 // version.json, que el worker deja pasar sin cachear.
-window.APP_VERSION = {"version": "69ba329", "commit": "69ba3298991a750e7651896c55098c037f98ec6a", "title": "Ajustar Ajustes a la maqueta", "pr": 55, "built": "2026-09-05T11:44:25Z"};
+window.APP_VERSION = {"version": "99e984b", "commit": "99e984bc246a02e3b0ea87bdfdbfeaf406bad51d", "title": "Ajustar Ajustes a la maqueta", "pr": 55, "built": "2026-09-05T11:46:27Z"};
