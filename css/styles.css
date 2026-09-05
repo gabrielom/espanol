@@ -1800,10 +1800,11 @@ body.is-teacher .appbar::after {
   margin: 0 -22px;
   padding: 12px 22px;
   border-radius: 0;
+  border-top: 0;
   border-left: 0;
   border-right: 0;
 }
-.set-strip-l { display: flex; align-items: center; gap: 10px; font-size: 15px; line-height: 1.3; color: var(--ink); }
+.set-strip-l { display: flex; align-items: center; gap: 10px; font-size: 15px; line-height: 1.4; color: var(--ink); }
 .set-strip-r {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -2166,7 +2167,7 @@ body.is-teacher .appbar::after {
 .lightbox-body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 4px 22px 22px;
+  padding: 0 22px 22px;
 }
 /* Dentro de la caja el primer encabezado ya no necesita separarse del h1. */
 .lightbox-body .settings-h2:first-child { margin-top: 18px; }
