@@ -1779,6 +1779,12 @@ body.is-teacher .appbar::after {
    es lo que hace que Perfil, Código, Versión, Apariencia y Aparato se lean
    como una ficha y no como cinco bloques sueltos: las etiquetas alineadas a la
    izquierda dan una columna por la que bajar la vista. */
+/* La tira va A SANGRE dentro de la caja de luz: de borde a borde, con una
+   línea arriba y otra abajo y sin esquinas redondeadas. Es lo que la separa
+   del resto —parece parte del marco, no una tarjeta más— y lo que hace que el
+   punto de color quede a la misma sangría que las etiquetas de abajo.
+   En la página del móvil no hay marco del que colgar, así que ahí sí es una
+   tarjeta con sus esquinas. */
 .set-strip {
   display: flex;
   align-items: center;
@@ -1788,9 +1794,16 @@ body.is-teacher .appbar::after {
   background: var(--panel);
   border: 1px solid var(--hairline);
   border-radius: 7px;
-  padding: 11px 14px;
+  padding: 12px 14px;
 }
-.set-strip-l { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--ink); }
+.lightbox-body .set-strip {
+  margin: 0 -22px;
+  padding: 12px 22px;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
+.set-strip-l { display: flex; align-items: center; gap: 10px; font-size: 15px; line-height: 1.3; color: var(--ink); }
 .set-strip-r {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -1805,7 +1818,7 @@ body.is-teacher .appbar::after {
   grid-template-columns: 64px minmax(0, 1fr);
   gap: 14px;
   align-items: baseline;
-  padding: 13px 2px;
+  padding: 12px 0;
   border-bottom: 1px solid var(--hairline);
 }
 .set-row:last-child { border-bottom: 0; }
@@ -1814,9 +1827,10 @@ body.is-teacher .appbar::after {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: .12em;
+  line-height: 1.3;
   color: var(--mut-3);
 }
-.set-v { min-width: 0; font-size: 13px; color: var(--ink-2); }
+.set-v { min-width: 0; font-size: 13px; line-height: 1.3; color: var(--ink-2); }
 /* Perfil es un interruptor de identidad y va al borde derecho, como los
    controles de Código y Versión. Apariencia se lee como un valor más y se
    queda a la izquierda, pegada a su etiqueta. */
@@ -1837,14 +1851,13 @@ body.is-teacher .appbar::after {
   background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 6px;
-  padding: 4px 12px;
+  padding: 3px 12px;
   cursor: pointer;
   transition: border-color .12s ease, color .12s ease;
 }
 .pill:hover { border-color: var(--ink); color: var(--ink); }
 .pill.on {
   border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--accent);
   color: var(--accent);
   font-weight: 600;
 }
@@ -2010,7 +2023,7 @@ body.is-teacher .appbar::after {
   grid-template-columns: 64px minmax(0, 1fr) 12px;
   gap: 14px;
   align-items: baseline;
-  padding: 13px 2px;
+  padding: 12px 0;
 }
 .vrow > summary::-webkit-details-marker { display: none; }
 .vrow-v {
@@ -2019,9 +2032,9 @@ body.is-teacher .appbar::after {
   justify-content: space-between;
   gap: 11px;
 }
-.vrow-line { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
-.vrow-pr { color: var(--accent); font-weight: 700; }
-.vrow-rest { color: var(--mut-2); }
+.vrow-line { font-family: var(--mono); font-size: 12px; white-space: nowrap; color: var(--mut-1); }
+.vrow-pr { color: var(--mut-1); }
+.vrow-rest { color: var(--mut-1); }
 .vrow-state { font-size: 12px; white-space: nowrap; color: var(--mut-2); }
 .vrow-state::before { content: "\25CF"; font-size: 7px; vertical-align: 2px; margin-right: 5px; }
 .vrow-state.ok { color: var(--ok-text); }

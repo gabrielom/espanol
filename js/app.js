@@ -1104,7 +1104,10 @@
       : /Android/.test(ua) ? "Android" : "Ordenador";
     var envoltorio = cls.contains("is-tauri") ? "escritorio"
       : cls.contains("is-standalone") ? "instalada" : "navegador";
-    return nombre + " · " + envoltorio;
+    // El tercer dato solo aparece cuando falta: decir «con conexión» siempre
+    // sería ruido, y decir que no la hay explica por qué no se sincroniza.
+    var suelto = (navigator.onLine === false) ? " · sin conexión disponible" : "";
+    return nombre + " · " + envoltorio + suelto;
   }
   // Cuerpo de Ajustes. Se pinta igual en la página (#/ajustes, que es lo que
   // se ve en el móvil) y dentro de la caja de luz del engranaje.
@@ -1353,10 +1356,10 @@
     }
 
     if (mine === "dev") {
-      say("Desarrollo", "muted", "Copia de desarrollo, sin sello de versión.");
+      say("desarrollo", "muted", "Copia de desarrollo, sin sello de versión.");
       return;
     }
-    say("Comprobando…", "muted", "");
+    say("comprobando…", "muted", "");
     // `no-store` y, además, el worker no intercepta version.json: esto siempre
     // sale a la red, así que refleja de verdad lo que hay publicado.
     fetch("version.json", { cache: "no-store" })
@@ -1364,17 +1367,17 @@
       .then(function (live) {
         if (!live || !live.version) return Promise.reject();
         if (live.version === mine) {
-          say("Al día", "ok", "");
+          say("al día", "ok", "");
         } else {
           var howToApply = document.documentElement.classList.contains("is-tauri")
             ? "Cierra y vuelve a abrir la app para aplicarla."
             : "Recarga la página para aplicarla.";
-          say("Hay una nueva", "new",
+          say("hay una nueva", "new",
             "Publicada la <code>" + esc(live.version) + "</code>. Ya se está descargando. " + howToApply);
         }
       })
       .catch(function () {
-        say("Sin conexión", "muted",
+        say("sin conexión", "muted",
           "No se puede comprobar si hay una versión nueva. Estás usando la copia guardada.");
       });
   }
