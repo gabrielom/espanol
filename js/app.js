@@ -1149,7 +1149,7 @@
 
         // «Aparien.» abreviado para caber en la columna de 64px sin ensancharla;
         // en el móvil, donde la etiqueta va encima y sobra sitio, entera.
-        '<div class="set-row">' +
+        '<div class="set-row set-row-tema">' +
           '<span class="set-k"><span class="k-corto">Aparien.</span><span class="k-largo">Apariencia</span></span>' +
           '<div class="set-v">' +
             '<span class="pills">' +
