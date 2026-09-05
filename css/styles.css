@@ -179,7 +179,6 @@ body {
   background: var(--bg);
   line-height: 1.6;
   font-size: 15.5px;
-  -webkit-font-smoothing: antialiased;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -1779,23 +1778,38 @@ body.is-teacher .appbar::after {
    es lo que hace que Perfil, Código, Versión, Apariencia y Aparato se lean
    como una ficha y no como cinco bloques sueltos: las etiquetas alineadas a la
    izquierda dan una columna por la que bajar la vista. */
+/* La tira va A SANGRE dentro de la caja de luz: de borde a borde, con una
+   línea arriba y otra abajo y sin esquinas redondeadas. Es lo que la separa
+   del resto —parece parte del marco, no una tarjeta más— y lo que hace que el
+   punto de color quede a la misma sangría que las etiquetas de abajo.
+   En la página del móvil no hay marco del que colgar, así que ahí sí es una
+   tarjeta con sus esquinas. */
 .set-strip {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
   flex-wrap: wrap;
   background: var(--panel);
   border: 1px solid var(--hairline);
   border-radius: 7px;
-  padding: 11px 14px;
+  padding: 13px 14px;
 }
-.set-strip-l { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--ink); }
+.lightbox-body .set-strip {
+  margin: -4px -22px 0;
+  padding: 14px 22px;
+  border-radius: 0;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+}
+.set-strip-l { display: flex; align-items: center; font-size: 14.5px; line-height: 1.2; color: var(--ink); }
+.set-strip-l .sync-dot { margin-right: 9px; }
 .set-strip-r {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: .1em;
+  letter-spacing: .06em;
   color: var(--faint-1);
 }
 
@@ -1805,18 +1819,24 @@ body.is-teacher .appbar::after {
   grid-template-columns: 64px minmax(0, 1fr);
   gap: 14px;
   align-items: baseline;
-  padding: 13px 2px;
-  border-bottom: 1px solid var(--hairline);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--hair-2);
 }
+/* Las filas cuyo valor es un control se centran y respiran un punto más;
+   las de texto alinean por la línea de base. Así lo hace el prototipo. */
+.set-row-role { align-items: center; padding: 13px 0; }
+.set-row-tema { align-items: center; padding: 9px 0; }
+.set-row-tema .pill { font-size: 12px; padding: 4px 10px; border-radius: 5px; }
 .set-row:last-child { border-bottom: 0; }
 .set-k {
   font-family: var(--mono);
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
+  line-height: 1.2;
   color: var(--mut-3);
 }
-.set-v { min-width: 0; font-size: 13px; color: var(--ink-2); }
+.set-v { min-width: 0; font-size: 13px; line-height: 1.2; color: var(--ink-2); }
 /* Perfil es un interruptor de identidad y va al borde derecho, como los
    controles de Código y Versión. Apariencia se lee como un valor más y se
    queda a la izquierda, pegada a su etiqueta. */
@@ -1837,14 +1857,13 @@ body.is-teacher .appbar::after {
   background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 6px;
-  padding: 4px 12px;
+  padding: 3px 11px;
   cursor: pointer;
   transition: border-color .12s ease, color .12s ease;
 }
 .pill:hover { border-color: var(--ink); color: var(--ink); }
 .pill.on {
   border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--accent);
   color: var(--accent);
   font-weight: 600;
 }
@@ -1863,18 +1882,18 @@ body.is-teacher .appbar::after {
   user-select: all;
   -webkit-user-select: all;
 }
-.code-hid { color: var(--faint-2); letter-spacing: .5px; }
+.code-hid { color: var(--faint-3); letter-spacing: .5px; }
 .code-acts { display: flex; gap: 6px; flex: none; }
 .minibtn {
   font-family: var(--mono);
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
   color: var(--mut-2);
   background: var(--bg);
   border: 1px solid var(--card-border);
   border-radius: 5px;
-  padding: 3px 8px;
+  padding: 2px 7px;
   cursor: pointer;
   transition: border-color .12s ease, color .12s ease;
 }
@@ -1977,12 +1996,12 @@ body.is-teacher .appbar::after {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  margin-top: 16px;
-  padding-top: 13px;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid var(--hairline);
 }
-.set-foot-l { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; min-width: 0; }
+.set-foot-l { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; min-width: 0; }
 .linkish {
   font-family: var(--sans);
   font-size: 12.5px;
@@ -2010,7 +2029,7 @@ body.is-teacher .appbar::after {
   grid-template-columns: 64px minmax(0, 1fr) 12px;
   gap: 14px;
   align-items: baseline;
-  padding: 13px 2px;
+  padding: 12px 0;
 }
 .vrow > summary::-webkit-details-marker { display: none; }
 .vrow-v {
@@ -2019,10 +2038,10 @@ body.is-teacher .appbar::after {
   justify-content: space-between;
   gap: 11px;
 }
-.vrow-line { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
-.vrow-pr { color: var(--accent); font-weight: 700; }
-.vrow-rest { color: var(--mut-2); }
-.vrow-state { font-size: 12px; white-space: nowrap; color: var(--mut-2); }
+.vrow-line { font-family: var(--mono); font-size: 11.5px; line-height: 1.2; white-space: nowrap; color: var(--mut-1); }
+.vrow-pr { color: var(--mut-1); }
+.vrow-rest { color: var(--mut-1); }
+.vrow-state { font-size: 11.5px; white-space: nowrap; color: var(--mut-2); }
 .vrow-state::before { content: "\25CF"; font-size: 7px; vertical-align: 2px; margin-right: 5px; }
 .vrow-state.ok { color: var(--ok-text); }
 .vrow-state.muted { color: var(--mut-3); }
@@ -2030,8 +2049,9 @@ body.is-teacher .appbar::after {
 .vrow-chev {
   justify-self: end;
   font-family: var(--mono);
-  font-size: 12px;
-  color: var(--faint-2);
+  font-size: 11px;
+  line-height: 1;
+  color: var(--faint-3);
   transition: transform .16s ease, color .12s ease;
 }
 .vrow[open] .vrow-chev { transform: rotate(90deg); }
@@ -2064,16 +2084,19 @@ body.is-teacher .appbar::after {
 
 /* Vive dentro del pie de la ficha, que ya pone la línea y el aire. */
 .diag-wrap { min-width: 0; }
+/* Gris, no azul: en el pie solo «Sincronizar» es una acción de las que
+   llevan acento. El diagnóstico es una herramienta de cuando algo no cuadra,
+   y así lo pinta el prototipo (mute2). */
 .diag-wrap > summary {
   font-family: var(--sans);
   font-size: 12.5px;
-  color: var(--accent);
+  color: var(--mut-2);
   cursor: pointer;
   list-style: none;
   transition: color .12s ease;
 }
 .diag-wrap > summary::-webkit-details-marker { display: none; }
-.diag-wrap > summary:hover { color: var(--accent-hover); }
+.diag-wrap > summary:hover { color: var(--ink); }
 .diag-wrap[open] > summary { margin-bottom: 12px; }
 
 .diag {

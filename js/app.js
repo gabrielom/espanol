@@ -1104,7 +1104,10 @@
       : /Android/.test(ua) ? "Android" : "Ordenador";
     var envoltorio = cls.contains("is-tauri") ? "escritorio"
       : cls.contains("is-standalone") ? "instalada" : "navegador";
-    return nombre + " · " + envoltorio;
+    // El tercer dato solo aparece cuando falta: decir «con conexión» siempre
+    // sería ruido, y decir que no la hay explica por qué no se sincroniza.
+    var suelto = (navigator.onLine === false) ? " · sin conexión disponible" : "";
+    return nombre + " · " + envoltorio + suelto;
   }
   // Cuerpo de Ajustes. Se pinta igual en la página (#/ajustes, que es lo que
   // se ve en el móvil) y dentro de la caja de luz del engranaje.
@@ -1146,7 +1149,7 @@
 
         // «Aparien.» abreviado para caber en la columna de 64px sin ensancharla;
         // en el móvil, donde la etiqueta va encima y sobra sitio, entera.
-        '<div class="set-row">' +
+        '<div class="set-row set-row-tema">' +
           '<span class="set-k"><span class="k-corto">Aparien.</span><span class="k-largo">Apariencia</span></span>' +
           '<div class="set-v">' +
             '<span class="pills">' +
@@ -1353,10 +1356,10 @@
     }
 
     if (mine === "dev") {
-      say("Desarrollo", "muted", "Copia de desarrollo, sin sello de versión.");
+      say("desarrollo", "muted", "Copia de desarrollo, sin sello de versión.");
       return;
     }
-    say("Comprobando…", "muted", "");
+    say("comprobando…", "muted", "");
     // `no-store` y, además, el worker no intercepta version.json: esto siempre
     // sale a la red, así que refleja de verdad lo que hay publicado.
     fetch("version.json", { cache: "no-store" })
@@ -1364,17 +1367,17 @@
       .then(function (live) {
         if (!live || !live.version) return Promise.reject();
         if (live.version === mine) {
-          say("Al día", "ok", "");
+          say("al día", "ok", "");
         } else {
           var howToApply = document.documentElement.classList.contains("is-tauri")
             ? "Cierra y vuelve a abrir la app para aplicarla."
             : "Recarga la página para aplicarla.";
-          say("Hay una nueva", "new",
+          say("hay una nueva", "new",
             "Publicada la <code>" + esc(live.version) + "</code>. Ya se está descargando. " + howToApply);
         }
       })
       .catch(function () {
-        say("Sin conexión", "muted",
+        say("sin conexión", "muted",
           "No se puede comprobar si hay una versión nueva. Estás usando la copia guardada.");
       });
   }
@@ -1578,7 +1581,7 @@
       '<div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" tabindex="-1">' +
         '<div class="lightbox-head">' +
           '<h2 id="lightbox-title">Ajustes</h2>' +
-          '<button type="button" class="lightbox-x" data-close aria-label="Cerrar ajustes">×</button>' +
+          '<button type="button" class="lightbox-x" data-close aria-label="Cerrar ajustes">\u2715</button>' +
         '</div>' +
         '<div class="lightbox-body"></div>' +
       '</div>';
