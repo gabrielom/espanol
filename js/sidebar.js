@@ -48,6 +48,11 @@
      si ya se ve, no se mueve ni un píxel. */
   var HERE_PAD = 8;   // margen para no dejarla pegada al borde
   var scrollAt = { list: 0, rail: 0 };
+  // «Al llegar» es literal: solo la navegación lo pide. Antes lo hacía cada
+  // repintado, y como redimensionar repinta, arrastrar el borde de la ventana
+  // te tiraba la lista hasta la lección actual — y encima guardaba esa
+  // posición encima de la tuya, así que no había vuelta atrás.
+  var revealPending = false;
   try {
     var saved = JSON.parse(sessionStorage.getItem(KEY_SCROLL));
     if (saved && typeof saved === "object") {
@@ -77,7 +82,7 @@
     var key = box.classList.contains("sb-list") ? "list" : "rail";
     // El navegador recorta solo si la lista es más corta que la posición.
     box.scrollTop = scrollAt[key];
-    revealHere(box);
+    if (revealPending) { revealHere(box); revealPending = false; }
     // Lo que haya quedado (ya recortado por el navegador) es la nueva posición.
     scrollAt[key] = box.scrollTop;
     try { sessionStorage.setItem(KEY_SCROLL, JSON.stringify(scrollAt)); } catch (e) {}
@@ -88,12 +93,26 @@
     });
   }
 
+  /* El cajón es para el iPad, y el ancho por sí solo no distingue un iPad de
+     una ventana de escritorio encogida. Sin `hover: none`, bajar de 1024px
+     arrastrando el borde te escondía la barra detrás de una hamburguesa, sin
+     manera de volver a fijarla. Con ratón no hace falta ningún cajón: la barra
+     se estrecha con «, que es una decisión tuya y se guarda. */
   function isTouchTablet() {
-    return window.matchMedia("(max-width: 1024px) and (min-width: 641px)").matches;
+    return window.matchMedia("(hover: none) and (max-width: 1024px) and (min-width: 641px)").matches;
   }
   function isPhone() {
     return window.matchMedia("(max-width: 640px)").matches;
   }
+
+  // Lo único de la barra que depende del tamaño de la ventana. El HTML no: por
+  // eso redimensionar solo tiene que repintar cuando esto cambia.
+  function mode() {
+    if (!ctx.view || ctx.view === "home" || isPhone()) return "oculta";
+    if (isTouchTablet()) return "cajon";
+    return expanded() ? "ancha" : "estrecha";
+  }
+  var lastMode = null;
 
   /* ---------- Expandida o colapsada ----------
      En la página de módulo se entra colapsada: ahí el contenido ya es el índice
@@ -269,6 +288,7 @@
     var burger = document.getElementById("burger-btn");
     if (!el) return;
 
+    lastMode = mode();
     var show = ctx.view && ctx.view !== "home" && !isPhone();
     document.body.classList.toggle("has-sidebar", !!show);
     if (burger) burger.hidden = !(show && isTouchTablet());
@@ -333,13 +353,21 @@
     document.addEventListener("click", onClick);
     var scrim = document.getElementById("scrim");
     if (scrim) scrim.addEventListener("click", function () { drawerOpen = false; render(); });
-    window.addEventListener("resize", function () { measureBar(); render(); });
+    // Arrastrar el borde de una ventana dispara cientos de `resize`. Rehacer
+    // en cada uno los nueve módulos enteros era tirar y reponer toda la barra
+    // por fotograma, y cada reposición manoseaba la posición de la lista. El
+    // HTML no depende del ancho: basta repintar cuando cambia el modo.
+    window.addEventListener("resize", function () {
+      measureBar();
+      if (mode() !== lastMode) render();
+    });
     measureBar();
   }
 
   function update(next) {
     ctx = next;
     drawerOpen = false;      // cada navegación cierra el cajón
+    revealPending = true;    // has llegado a algo: enséñame dónde estoy
     // Llegar a un módulo lo colapsa, salvo si vienes de pulsarlo en la barra.
     // El resto de navegaciones no tocan el ancho: se arrastra el que hubiera.
     if (ctx.view === "module") wide = !!cameFromSidebar;
