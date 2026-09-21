@@ -45,10 +45,14 @@
     </div>
   </header>
 
+  <!-- La barra y la lateral son marco: no ruedan. El único que se desplaza es
+       `.scroller`, y `.wrap` sigue siendo la columna centrada de contenido. -->
   <div class="shell">
     <aside class="sidebar" id="sidebar" hidden></aside>
     <div class="scrim" id="scrim" hidden></div>
-    <main class="wrap" id="app"></main>
+    <div class="scroller" id="scroller">
+      <main class="wrap" id="app"></main>
+    </div>
   </div>
 
   <script src="js/version.js"></script>
