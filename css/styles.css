@@ -171,7 +171,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html { height: 100%; }
 
 body {
   font-family: var(--sans);
@@ -179,6 +179,19 @@ body {
   background: var(--bg);
   line-height: 1.6;
   font-size: 15.5px;
+  /* Marco de aplicación, no página web. La ventana no rueda: la barra y la
+     lateral ocupan su hueco y se quedan ahí, y lo único que se desplaza es el
+     contenido. Antes las dos iban `sticky` sobre una página que rodaba entera,
+     y eso en el iPad y en la app de escritorio no aguanta: al rebotar arriba se
+     despegan, y el `100vh` de la lateral no es lo que realmente se ve cuando
+     Safari esconde su barra. Aquí no hay nada que adivinar ni nada que
+     despegarse — cada pieza tiene su sitio y el hueco que sobra es el que rueda.
+     dvh para que el alto siga a la barra del navegador; vh como respaldo. */
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -198,8 +211,10 @@ a:hover { color: var(--accent-hover); }
 .appbar {
   background: var(--bg);
   border-bottom: 1px solid var(--hairline);
-  position: sticky;
-  top: 0;
+  /* Primera fila del marco: no se desplaza porque no está en nada que ruede.
+     `relative` sólo para que la cinta de PROFESORA se cuelgue de ella. */
+  flex: none;
+  position: relative;
   z-index: 50;
   display: flex;
   align-items: center;
@@ -1386,15 +1401,28 @@ textarea.mini:focus { outline: none; border-color: var(--accent); }
 /* ---------- Barra lateral del curso ---------- */
 :root { --appbar-h: 57px; }
 
-.shell { display: flex; align-items: flex-start; }
-.wrap { flex: 1; min-width: 0; }
+/* Segunda fila del marco: se queda con todo el alto que la barra no usa, y
+   dentro reparte a lo ancho. `min-height: 0` porque un hijo flexible se niega a
+   encoger por debajo de su contenido si no se le dice, y entonces el desbordo
+   vuelve a la ventana — que es justo lo que estamos quitando. */
+.shell { flex: 1; min-height: 0; display: flex; position: relative; }
+
+/* Lo único que rueda en toda la app. `.wrap` sigue siendo la columna de
+   contenido —ancho máximo y centrada— pero dentro de esto. */
+.scroller {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Que el rebote del final no arrastre nada detrás. */
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
 
 .sidebar {
   flex: none;
+  min-height: 0;
   border-right: 1px solid var(--hairline);
-  position: sticky;
-  top: var(--appbar-h);
-  height: calc(100vh - var(--appbar-h));
   display: flex;
   flex-direction: column;
   background: var(--bg);
@@ -1577,10 +1605,11 @@ body.sb-collapsed .sidebar { width: 56px; padding: 14px 0; align-items: center; 
   margin: 4px auto 0;
 }
 
-/* Velo (solo en modo cajón) */
+/* Velo (solo en modo cajón). Cubre el marco entero menos la barra, que sigue
+   respondiendo al clic — y eso ahora sale solo: va pegado a `.shell`. */
 .scrim {
-  position: fixed;
-  inset: var(--appbar-h) 0 0 0;
+  position: absolute;
+  inset: 0;
   background: var(--ink);
   opacity: 0;
   pointer-events: none;
@@ -1592,11 +1621,11 @@ body.sb-drawer-open .scrim { opacity: .34; pointer-events: auto; }
 
 /* iPad: cajón temporal */
 body.sb-drawer .sidebar {
-  position: fixed;
-  top: var(--appbar-h);
+  position: absolute;
+  top: 0;
+  bottom: 0;
   left: 0;
   width: 290px;
-  height: calc(100vh - var(--appbar-h));
   transform: translateX(-290px);
   transition: transform .24s ease;
   box-shadow: var(--shadow-drawer);
@@ -1632,7 +1661,6 @@ body.is-teacher .appbar::after {
   padding: 1px 8px;
   pointer-events: none;
 }
-.appbar { position: sticky; }
 
 .corr { margin-top: 30px; padding-top: 6px; }
 .corr-empty { font-size: 14px; color: var(--faint-1); }
@@ -2182,7 +2210,9 @@ body.is-teacher .appbar::after {
 }
 /* Dentro de la caja el primer encabezado ya no necesita separarse del h1. */
 .lightbox-body .settings-h2:first-child { margin-top: 18px; }
-body.lightbox-open { overflow: hidden; }
+/* Con los ajustes abiertos, el contenido de detrás no se mueve. Ahora el que
+   rueda es `.scroller`, así que el freno va ahí. */
+body.lightbox-open .scroller { overflow: hidden; }
 
 @keyframes lb-veil { from { opacity: 0; } }
 @keyframes lb-panel { from { opacity: 0; transform: translate(-50%, -8px); } }
@@ -2324,6 +2354,12 @@ body.lightbox-open { overflow: hidden; }
     --ok: #3f9d7f; --ok-text: #3f7d6b; --error: #c86a5a;
   }
   .appbar, .lesson-nav, .btn, .crumbs, .back-link, .cert-form, .lightbox { display: none !important; }
-  body { background: #fff; color: var(--body); }
+  .sidebar, .scrim { display: none !important; }
+  /* El papel no tiene marco: se deshace el alto fijo y el desbordo oculto para
+     que la hoja crezca con el texto en vez de cortarse en la primera pantalla. */
+  html, body { height: auto; overflow: visible; }
+  body { display: block; background: #fff; color: var(--body); }
+  .shell { display: block; }
+  .scroller { overflow: visible; }
   .certificate { border: 1px solid var(--ink); }
 }

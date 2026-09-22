@@ -251,7 +251,12 @@
     app.innerHTML = html;
     updateTopbar();
     if (typeof notifySidebar === "function") notifySidebar();
-    window.scrollTo(0, 0);
+    // Cada pantalla empieza por arriba. Lo que rueda es el marco de contenido,
+    // no la ventana: `scrollTo(0, 0)` sobre window ya no mueve nada. El
+    // `behavior: "instant"` es necesario porque `.scroller` tiene el desplazado
+    // suave puesto, y una vista nueva no se "desliza" hasta arriba: aparece.
+    var box = document.getElementById("scroller");
+    if (box) box.scrollTo({ top: 0, behavior: "instant" });
   }
 
   // Botón "atrás" de la barra: visible en todo lo que no sea Inicio.
