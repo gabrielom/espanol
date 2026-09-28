@@ -811,6 +811,9 @@ a:hover { color: var(--accent-hover); }
 }
 .quiz-result.pass { border-left: 2px solid var(--accent); }
 .quiz-result.fail { border-left: 2px solid var(--error); }
+/* Los botones del resultado, en fila: repetir y seguir adelante. Se envuelven
+   en vez de salirse cuando la caja se queda estrecha. */
+.quiz-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 .quiz-result .score {
   font-family: var(--mono);
   font-size: 34px;
@@ -2335,6 +2338,10 @@ body.lightbox-open .scroller { overflow: hidden; }
   .card { min-height: 0; padding: 18px 18px 16px; }
   .lrow { min-height: 44px; }
   .lesson-nav .btn:not(.ghost) { width: 100%; text-align: center; }
+  /* Uno debajo de otro y a todo el ancho: dos botones de 22px de costado no
+     caben en una fila de 390px sin quedarse en un pellizco cada uno. */
+  .quiz-acts { display: grid; }
+  .quiz-acts .btn { text-align: center; }
   .certificate { padding: 36px 20px; }
   .sync-actions .btn { width: 100%; text-align: center; }
 }
