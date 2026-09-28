@@ -1434,6 +1434,12 @@ textarea.mini:focus { outline: none; border-color: var(--accent); }
 .scroller {
   flex: 1;
   min-width: 0;
+  /* El horizontal, cerrado a mano. Poner solo `overflow-y: auto` deja el otro
+     eje en `auto` —el CSS no permite un eje desplazable y el otro visible—, y
+     con eso basta un ancho de más para poder arrastrar la columna de lado. Lo
+     que sí tiene que rodar a lo ancho son las tablas, y cada una lleva su
+     propio `.table-scroll`. */
+  overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   /* Que el rebote del final no arrastre nada detrás. */
