@@ -171,7 +171,16 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { height: 100%; }
+/* La raíz también se cierra, no solo el cuerpo. En una PWA instalada en
+   iPadOS, `overflow: hidden` puesto únicamente en <body> no siempre frena el
+   documento: WebKit deja que la página ruede igual y se lleva la barra por
+   delante. Cerrando <html> no queda nada que pueda rodar, y
+   `overscroll-behavior: none` quita además el rebote elástico. */
+html {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 
 body {
   font-family: var(--sans);
@@ -186,12 +195,22 @@ body {
      despegan, y el `100vh` de la lateral no es lo que realmente se ve cuando
      Safari esconde su barra. Aquí no hay nada que adivinar ni nada que
      despegarse — cada pieza tiene su sitio y el hueco que sobra es el que rueda.
-     dvh para que el alto siga a la barra del navegador; vh como respaldo. */
+
+     `fixed` y no un bloque normal: clavado al hueco de la ventana, el marco no
+     puede irse con un desplazamiento aunque el motor decida que hay algo que
+     desplazar. El alto sigue siendo dvh —que sigue a la barra del navegador,
+     con vh de respaldo— en vez de `bottom: 0`, porque cada versión de Safari
+     resuelve a su manera contra qué viewport se clava un elemento fijo. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 100vh;
   height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -2362,10 +2381,11 @@ body.lightbox-open .scroller { overflow: hidden; }
   }
   .appbar, .lesson-nav, .btn, .crumbs, .back-link, .cert-form, .lightbox { display: none !important; }
   .sidebar, .scrim { display: none !important; }
-  /* El papel no tiene marco: se deshace el alto fijo y el desbordo oculto para
-     que la hoja crezca con el texto en vez de cortarse en la primera pantalla. */
+  /* El papel no tiene marco: se deshace el alto fijo, el desbordo oculto y el
+     clavado para que la hoja crezca con el texto en vez de cortarse en la
+     primera pantalla. */
   html, body { height: auto; overflow: visible; }
-  body { display: block; background: #fff; color: var(--body); }
+  body { position: static; display: block; background: #fff; color: var(--body); }
   .shell { display: block; }
   .scroller { overflow: visible; }
   .certificate { border: 1px solid var(--ink); }

@@ -1382,9 +1382,17 @@
         if (live.version === mine) {
           say("al día", "ok", "");
         } else {
-          var howToApply = document.documentElement.classList.contains("is-tauri")
+          // Instalada en el iPad no hay «recargar»: el único modo de aplicarla
+          // es cerrar la app de verdad. Decirle «recarga la página» a quien la
+          // abrió desde el icono lo deja sin salida — y el worker sirve la
+          // copia guardada y revalida por detrás, así que hasta que no se
+          // reabre se sigue viendo la de antes.
+          var plat = document.documentElement.classList;
+          var howToApply = plat.contains("is-tauri")
             ? "Cierra y vuelve a abrir la app para aplicarla."
-            : "Recarga la página para aplicarla.";
+            : plat.contains("is-standalone")
+              ? "Ciérrala del todo —deslízala hacia arriba en el selector de apps— y vuelve a abrirla para aplicarla."
+              : "Recarga la página para aplicarla.";
           say("hay una nueva", "new",
             "Publicada la <code>" + esc(live.version) + "</code>. Ya se está descargando. " + howToApply);
         }
