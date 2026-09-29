@@ -12,7 +12,6 @@
   "use strict";
 
   var KEY_EXPANDED = "sidebar:expanded";
-  var KEY_OPEN = "sidebar:open-modules";
   var KEY_SCROLL = "sidebar:scroll";
 
   var api = null;          // funciones de estado que inyecta app.js
@@ -28,11 +27,27 @@
   function setPref(v) {
     try { localStorage.setItem(KEY_EXPANDED, v ? "1" : "0"); } catch (e) {}
   }
-  function openSet() {
-    try { return JSON.parse(localStorage.getItem(KEY_OPEN)) || {}; } catch (e) { return {}; }
-  }
-  function saveOpen(o) {
-    try { localStorage.setItem(KEY_OPEN, JSON.stringify(o)); } catch (e) {}
+
+  /* ---------- Qué módulo va desplegado ----------
+     Manda dónde estás, no lo que abriste hace tres días. Antes era una
+     preferencia guardada para siempre, y por eso podías estar en el módulo 4
+     con el 3 abierto en la lista: el estado de ayer ganándole al de ahora.
+
+     Se recalcula en cada navegación. Dentro de algo de un módulo —lección,
+     evaluación, redacción, tarjetas— se abre ese y solo ese. En la propia
+     página del módulo, ninguno: el índice ya lo tienes delante y repetirlo al
+     lado no añade nada.
+
+     A partir de ahí manda el ±: lo que abras o cierres a mano se respeta tal
+     cual hasta la siguiente navegación, que vuelve a poner el de donde estés.
+     Por eso tampoco se guarda entre sesiones — al recargar vuelves a la misma
+     ruta, así que sale lo mismo, y sin arrastrar nada viejo. */
+  var open = {};
+
+  function openPorDefecto() {
+    var o = {};
+    if (ctx.mid && ctx.view !== "module") o[ctx.mid] = true;
+    return o;
   }
 
   /* ---------- Posición de la lista ----------
@@ -114,34 +129,25 @@
   }
   var lastMode = null;
 
-  /* ---------- Expandida o colapsada ----------
-     En la página de módulo se entra colapsada: ahí el contenido ya es el índice
-     del módulo y la barra repetiría lo mismo. Eso vale cuando LLEGAS a esa
-     página — desde Inicio, o volviendo con «atrás» desde una lección.
+  /* ---------- Ancha o estrecha ----------
+     El ancho es tuyo y de nadie más: lo deciden « y », se guarda, y navegar no
+     lo toca. Si la abres, sigue abierta cuando vuelvas a la página del módulo;
+     si la cierras, sigue cerrada. Antes la llegada a un módulo la cerraba sola
+     —y había que marcar `cameFromSidebar` para que no se cerrase en la cara de
+     quien acababa de usarla—, lo que dejaba el ancho a merced de por dónde
+     hubieras entrado.
 
-     La excepción es pulsar un módulo en la propia barra expandida: cerrártela
-     justo después de usarla sería quitarte la herramienta de las manos. Ese
-     caso se marca al hacer clic (`cameFromSidebar`), porque desde la ruta no se
-     distingue: los dos caminos acaban en el mismo #/module/<id>.
-
-     El raíl colapsado no marca nada: ahí ya estás en modo estrecho y navegar a
-     otro módulo no es motivo para abrirla.
-
-     Salvo en esa llegada, el ancho NO se recalcula al navegar: se arrastra tal
-     cual. Si estabas en el módulo con la barra estrecha y abres un ejercicio,
-     sigue estrecha — abrirla es cosa tuya, con el botón «. Antes se consultaba
-     de nuevo la preferencia guardada en cuanto salías del módulo, y por eso se
-     abría sola justo después de que la llegada la hubiera cerrado.
+     De fábrica, estrecha: el raíl deja la pantalla entera para lo que estés
+     leyendo y el índice sigue a un botón de distancia.
 
      `wide` es el ancho de esta sesión; `null` significa «aún sin decidir», y
-     entonces manda tu preferencia guardada (o expandida, si nunca la tocaste). */
+     entonces manda tu preferencia guardada. */
   var wide = null;
-  var cameFromSidebar = false;
 
   function expanded() {
     if (wide !== null) return wide;
     var p = pref();
-    return p === null ? true : p;
+    return p === null ? false : p;
   }
   // Pulsar « o » decide, y esa decisión sobrevive al recargado.
   function setExpanded(v) {
@@ -171,16 +177,6 @@
   /* ---------- Raíl expandido ---------- */
   function expandedHTML() {
     var mods = api.modules();
-    var open = openSet();
-    // La lista del módulo se despliega sola solo cuando estás DENTRO de algo
-    // suyo — lección, evaluación, redacción, tarjetas —, para enseñarte dónde
-    // estás. En la propia página del módulo no: ahí el índice ya lo tienes
-    // delante, y abrirla sería repetirlo.
-    // Es transitorio: no se guarda, así que no pisa lo que hayas abierto o
-    // cerrado tú con el ±, que siempre manda.
-    if (ctx.mid && ctx.view !== "module" && open[ctx.mid] === undefined) {
-      open[ctx.mid] = true;
-    }
 
     var h = '<div class="sb-head">' +
       '<span class="sb-title">Contenido del curso</span>' +
@@ -196,7 +192,7 @@
       // la lista. Son dos controles distintos, y por eso el botón va FUERA del
       // enlace: un <button> dentro de un <a> no es HTML válido.
       h += '<div class="sb-modrow">' +
-        '<a class="sb-modmain" data-sb="goto-module" href="#/module/' + mod.id + '">' +
+        '<a class="sb-modmain" href="#/module/' + mod.id + '">' +
           '<span class="sb-num">' + num2(mi + 1) + '</span>' +
           '<span class="sb-modtitle">' + esc(api.plainTitle(mod)) + '</span>' +
         '</a>' +
@@ -326,19 +322,14 @@
     var t = e.target.closest("[data-sb]");
     if (!t) return;
     var act = t.dataset.sb;
-    // Ir a un módulo desde la propia barra expandida: no la cierres en la cara.
-    // No se toca el enlace, solo se anota; navega como cualquier otro <a>.
-    if (act === "goto-module") { cameFromSidebar = true; return; }
     if (act === "collapse") { setExpanded(false); render(); }
     else if (act === "expand") { setExpanded(true); render(); }
     else if (act === "close") { drawerOpen = false; render(); }
     else if (act === "open") { drawerOpen = true; render(); }
     else if (act === "toggle") {
-      var o = openSet();
-      var mid = t.dataset.mid;
-      if (ctx.mid && o[ctx.mid] === undefined) o[ctx.mid] = true;
-      o[mid] = !o[mid];
-      saveOpen(o);
+      // El ± manda sobre lo calculado, y sin más ceremonia: abre o cierra ese
+      // módulo y deja el resto como esté. Dura hasta la siguiente navegación.
+      open[t.dataset.mid] = !open[t.dataset.mid];
       render();
     }
   }
@@ -368,10 +359,8 @@
     ctx = next;
     drawerOpen = false;      // cada navegación cierra el cajón
     revealPending = true;    // has llegado a algo: enséñame dónde estoy
-    // Llegar a un módulo lo colapsa, salvo si vienes de pulsarlo en la barra.
-    // El resto de navegaciones no tocan el ancho: se arrastra el que hubiera.
-    if (ctx.view === "module") wide = !!cameFromSidebar;
-    cameFromSidebar = false;
+    open = openPorDefecto(); // y el módulo desplegado es el de aquí, no el de antes
+    // El ancho NO se toca: es tu decisión y viaja contigo.
     measureBar();
     render();
   }

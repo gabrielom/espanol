@@ -657,23 +657,29 @@
       var pct = Math.round((score / quiz.questions.length) * 100);
       var passed = pct >= META.passScore;
 
-      var nextBtn;
+      var acciones = [];
       if (passed) {
         if (lesson.essay && !isEssayDone(mid, lid)) {
-          nextBtn = '<a class="btn" href="#/redaccion/' + mid + "/" + lid + '">Ir a la redacción →</a>';
+          acciones.push('<a class="btn" href="#/redaccion/' + mid + "/" + lid + '">Ir a la redacción →</a>');
         } else if (li < mod.lessons.length - 1) {
-          nextBtn = '<a class="btn" href="#/lesson/' + mid + "/" + mod.lessons[li + 1].id + '">Siguiente lección →</a>';
+          acciones.push('<a class="btn" href="#/lesson/' + mid + "/" + mod.lessons[li + 1].id + '">Siguiente lección →</a>');
         } else {
           var nextMod = MODULES[idx + 1];
-          nextBtn = '<a class="btn ghost" href="#/flashcards/' + mid + '" style="margin-right:8px">Repasar con tarjetas</a>' +
-            (nextMod
-              ? '<a class="btn" href="#/module/' + nextMod.id + '">Siguiente módulo →</a>'
-              : (courseComplete()
-                  ? '<a class="btn" href="#/certificate">Ver mi certificado →</a>'
-                  : '<a class="btn" href="#/">Volver al programa</a>'));
+          acciones.push('<a class="btn ghost" href="#/flashcards/' + mid + '">Repasar con tarjetas</a>');
+          acciones.push(nextMod
+            ? '<a class="btn" href="#/module/' + nextMod.id + '">Siguiente módulo →</a>'
+            : (courseComplete()
+                ? '<a class="btn" href="#/certificate">Ver mi certificado →</a>'
+                : '<a class="btn" href="#/">Volver al programa</a>'));
         }
-      } else {
-        nextBtn = '<button class="btn" id="quiz-retry">Intentar de nuevo</button>';
+      }
+      // Repetir no es solo para el suspenso. Aprobar con un 71% deja tres
+      // preguntas falladas, y hasta ahora el único camino era seguir adelante
+      // con ellas a cuestas. Va al lado del botón de avanzar, en secundario:
+      // has aprobado, seguir sigue siendo lo normal. Con el 100% no aparece —
+      // ahí no queda nada que mejorar.
+      if (!passed || pct < 100) {
+        acciones.unshift('<button class="btn' + (passed ? " ghost" : "") + '" id="quiz-retry">Intentar de nuevo</button>');
       }
 
       document.getElementById("quiz-result").innerHTML =
@@ -682,10 +688,12 @@
           '<p>' + (passed
             ? "Aprobada. Acertaste " + score + " de " + quiz.questions.length + "."
             : "Acertaste " + score + " de " + quiz.questions.length + ". Necesitas " + META.passScore + "% — revisa las explicaciones y vuelve a intentarlo.") + '</p>' +
-          '<p style="margin-top:16px">' + nextBtn + '</p>' +
+          '<div class="quiz-acts">' + acciones.join("") + '</div>' +
         '</div>';
       var retry = document.getElementById("quiz-retry");
-      if (retry) retry.addEventListener("click", function () { location.reload(); });
+      // Repintar la vista, no recargar la página: deja la evaluación en blanco
+      // igual que un recargado, pero sin el fogonazo ni volver a arrancar la app.
+      if (retry) retry.addEventListener("click", function () { viewQuiz(mid, lid); });
       document.getElementById("btn-submit").style.display = "none";
       updateTopbar();
       document.getElementById("quiz-result").scrollIntoView({ behavior: "smooth" });
@@ -1374,9 +1382,17 @@
         if (live.version === mine) {
           say("al día", "ok", "");
         } else {
-          var howToApply = document.documentElement.classList.contains("is-tauri")
+          // Instalada en el iPad no hay «recargar»: el único modo de aplicarla
+          // es cerrar la app de verdad. Decirle «recarga la página» a quien la
+          // abrió desde el icono lo deja sin salida — y el worker sirve la
+          // copia guardada y revalida por detrás, así que hasta que no se
+          // reabre se sigue viendo la de antes.
+          var plat = document.documentElement.classList;
+          var howToApply = plat.contains("is-tauri")
             ? "Cierra y vuelve a abrir la app para aplicarla."
-            : "Recarga la página para aplicarla.";
+            : plat.contains("is-standalone")
+              ? "Ciérrala del todo —deslízala hacia arriba en el selector de apps— y vuelve a abrirla para aplicarla."
+              : "Recarga la página para aplicarla.";
           say("hay una nueva", "new",
             "Publicada la <code>" + esc(live.version) + "</code>. Ya se está descargando. " + howToApply);
         }
